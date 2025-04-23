@@ -54,6 +54,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
+            <Tabs.Screen
+          name="registro"
+          options={{
+            //href: null, 
+            title: 'Registrarse',
+          }}
+        />
+
     </Tabs>
   );
 }
