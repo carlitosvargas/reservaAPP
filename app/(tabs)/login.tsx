@@ -19,7 +19,7 @@ export default function LoginScreen() {
     console.log('Iniciar sesión con:', usuario, contrasenia);
 
      try {
-          const response = await axios.post('http://192.168.0.10:3000/api/auth/login', {
+          const response = await axios.post('http://192.168.1.109:3000/api/auth/login', {
             usuario,
             contrasenia
           });

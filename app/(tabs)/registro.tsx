@@ -11,6 +11,9 @@ import {
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 export default function RegistroScreen() {
   const colorScheme = useColorScheme();
@@ -18,15 +21,53 @@ export default function RegistroScreen() {
 
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
+  const [dni, setDni] = useState('');
+  const [telefono, setTelefono] = useState('');
   const [email, setEmail] = useState('');
   const [usuario, setUsuario] = useState('');
-  const [password, setPassword] = useState('');
+  const [contrasenia, setContrasenia] = useState('');
+  const [perfil_id, setPerfil_id] = useState('');
+  
+
 
   const isDark = colorScheme === 'dark';
+ 
+  const handleRegistro = async() => {
+    console.log('Registrando usuario:', { nombre, apellido, dni, telefono, email, usuario, contrasenia, perfil_id });
+    const payload = {
+      nombre,
+      apellido,
+      dni,
+      telefono,
+      email,
+      usuario,
+      contrasenia,
+      perfil_id,
+    };
+    try {
+      const response = await axios.post('http://192.168.1.109:3000/usuarios/crearUsuario', payload);
+      console.log(contrasenia);
+      console.log(usuario);
+      const { token, perfil } = response.data;
+    //  await login(token, perfil);
 
-  const handleRegistro = () => {
-    console.log('Registrando usuario:', { nombre, apellido, email, usuario, password });
-    // Acá podrías hacer la llamada a tu API
+      // Guardar token y perfil en almacenamiento local
+     // await AsyncStorage.setItem('token', token);
+      //await AsyncStorage.setItem('perfil', perfil);
+      console.log(token)
+      console.log(perfil);
+
+      
+
+      // Redirigir a pantalla principal
+      router.push('/'); 
+    }
+
+      catch (error: any) {
+        console.error('Error al registrarse:', error.response?.data || error.message);
+        const mensaje = error.response?.data?.mensaje || 'Datos incorrectos';
+        
+      }
     router.replace('/login');
   };
 
@@ -93,10 +134,13 @@ export default function RegistroScreen() {
   
         <TextInput style={styles.input} placeholder="Nombre" placeholderTextColor={isDark ? '#ccc' : '#888'} value={nombre} onChangeText={setNombre} />
         <TextInput style={styles.input} placeholder="Apellido" placeholderTextColor={isDark ? '#ccc' : '#888'} value={apellido} onChangeText={setApellido} />
+        <TextInput style={styles.input} placeholder="DNI" placeholderTextColor={isDark ? '#ccc' : '#888'} value={dni} onChangeText={setDni} />
+        <TextInput style={styles.input} placeholder="Telefono" placeholderTextColor={isDark ? '#ccc' : '#888'} value={telefono} onChangeText={setTelefono} />
         <TextInput style={styles.input} placeholder="Email" placeholderTextColor={isDark ? '#ccc' : '#888'} value={email} onChangeText={setEmail} />
         <TextInput style={styles.input} placeholder="Usuario" placeholderTextColor={isDark ? '#ccc' : '#888'} value={usuario} onChangeText={setUsuario} />
-        <TextInput style={styles.input} placeholder="Contraseña" placeholderTextColor={isDark ? '#ccc' : '#888'} secureTextEntry value={password} onChangeText={setPassword} />
-  
+        <TextInput style={styles.input} placeholder="Contraseña" placeholderTextColor={isDark ? '#ccc' : '#888'} secureTextEntry value={contrasenia} onChangeText={setContrasenia} />
+        <TextInput style={styles.input} placeholder="Perfil" placeholderTextColor={isDark ? '#ccc' : '#888'} value={perfil_id} onChangeText={setPerfil_id} />
+
         <Pressable style={styles.button} onPress={handleRegistro}>
           <Text style={styles.buttonText}>Registrarse</Text>
         </Pressable>
