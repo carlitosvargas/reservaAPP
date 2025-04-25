@@ -37,7 +37,7 @@ export default function LoginScreen() {
           
     
           // Redirigir a pantalla principal
-          router.push('/'); 
+          router.replace('/(tabs)/principal'); 
         }
     
           catch (error: any) {
@@ -49,9 +49,7 @@ export default function LoginScreen() {
           
   };
 
-  const handleRegistro = () => {
-    router.push('/registro'); 
-  };
+
 
   const isDark = colorScheme === 'dark';
 
@@ -136,7 +134,7 @@ export default function LoginScreen() {
   
         <Text style={styles.registroLink}>
           ¿No tenés cuenta?{' '}
-          <Text style={styles.linkText} onPress={() => router.replace('/registro')}>
+          <Text style={styles.linkText} onPress={() => router.push('../screens/registro')}>
             Registrarse
           </Text>
         </Text>

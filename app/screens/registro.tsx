@@ -68,7 +68,7 @@ export default function RegistroScreen() {
         const mensaje = error.response?.data?.mensaje || 'Datos incorrectos';
         
       }
-    router.replace('/login');
+    router.replace('../(tabs)/login');
   };
 
   const styles = StyleSheet.create({
@@ -147,7 +147,7 @@ export default function RegistroScreen() {
   
         <Text style={styles.volverLogin}>
           ¿Ya tenés cuenta?{' '}
-          <Text style={styles.volverLink} onPress={() => router.replace('/login')}>
+          <Text style={styles.volverLink} onPress={() => router.replace('/')}>
             Iniciar sesión
           </Text>
         </Text>
