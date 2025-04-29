@@ -45,7 +45,7 @@ export default function RegistroScreen() {
       perfil_id,
     };
     try {
-      const response = await axios.post('http://192.168.1.109:3000/usuarios/crearUsuario', payload);
+      const response = await axios.post('http://192.168.0.11:3000/usuarios/crearUsuario', payload);
       console.log(contrasenia);
       console.log(usuario);
       const { token, perfil } = response.data;
@@ -60,7 +60,7 @@ export default function RegistroScreen() {
       
 
       // Redirigir a pantalla principal
-      router.push('/'); 
+      router.push('/(tabs)/index'); 
     }
 
       catch (error: any) {
@@ -147,7 +147,7 @@ export default function RegistroScreen() {
   
         <Text style={styles.volverLogin}>
           ¿Ya tenés cuenta?{' '}
-          <Text style={styles.volverLink} onPress={() => router.replace('/')}>
+          <Text style={styles.volverLink} onPress={() => router.replace('/screens/login')}>
             Iniciar sesión
           </Text>
         </Text>

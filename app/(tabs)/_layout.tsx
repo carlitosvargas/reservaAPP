@@ -1,32 +1,34 @@
-import React from 'react';
+import React from 'react'; 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable, View } from 'react-native';
-import login from '../screens/login' 
-import Colors from '@/constants/Colors';
+import { Tabs } from 'expo-router';
 import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-import NavBar from '../../components/navBar';
-import Login from '../screens/login';
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    
-    <Tabs>
-    <Tabs.Screen   
-    name="principal"
-    />
-    
+    <Tabs
+      screenOptions={{
+        headerStyle: { backgroundColor: '#000' },
+        headerTintColor: '#007AFF',
+        tabBarActiveTintColor: '#007AFF',
+        tabBarInactiveTintColor: '#888',
+        tabBarActiveBackgroundColor: '#000',
+        tabBarInactiveBackgroundColor: '#111',
+        tabBarStyle: { borderTopColor: '#333' },
+      }}
+    >
+      <Tabs.Screen name="home" options={{ title: 'Inicio' , href:null}} />
+      <Tabs.Screen name="index" options={{ title: 'Iniciar Sesión' }} />
+      <Tabs.Screen name="login" options={{ title: 'login' , href:null}} />
+   
     </Tabs>
-  )
+  );
 }
