@@ -1,17 +1,22 @@
-import React from 'react'; 
+import React, { useEffect, useState } from 'react';
+import { Tabs, Redirect } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs } from 'expo-router';
-import { useColorScheme } from '@/components/useColorScheme';
-
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
-}
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const token = await AsyncStorage.getItem('token');
+      setIsLoggedIn(!!token);
+    };
+    checkLogin();
+  }, []);
+
+  if (isLoggedIn === null) return null; // o un loader si quieres
+
+  
 
   return (
     <Tabs
@@ -23,12 +28,13 @@ export default function TabLayout() {
         tabBarActiveBackgroundColor: '#000',
         tabBarInactiveBackgroundColor: '#111',
         tabBarStyle: { borderTopColor: '#333' },
+        headerShown: false,
       }}
     >
-      <Tabs.Screen name="home" options={{ title: 'Inicio' , href:null}} />
-      <Tabs.Screen name="index" options={{ title: 'Iniciar Sesión' }} />
-      <Tabs.Screen name="login" options={{ title: 'login' , href:null}} />
-   
+      <Tabs.Screen name="index" options={{ title: 'Inicio' }} />
+      <Tabs.Screen name="reserva" options={{ title: 'Reservar' }} />
+      <Tabs.Screen name="viajes" options={{ title: 'Viajes' }} />
+      <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
     </Tabs>
   );
 }

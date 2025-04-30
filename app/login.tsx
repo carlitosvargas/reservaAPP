@@ -3,9 +3,10 @@ import {View,Text,TextInput,Pressable,StyleSheet,useColorScheme,KeyboardAvoiding
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from './context/AuthContext';
+import { loginUsuario } from './services/authService';
 
-export default function LoginScreen() {
+export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => void }) {
 
   const { login } = useAuth();
   const colorScheme = useColorScheme();
@@ -19,13 +20,10 @@ export default function LoginScreen() {
     console.log('Iniciar sesión con:', usuario, contrasenia);
 
      try {
-          const response = await axios.post('http://192.168.0.11:3000/api/auth/login', {
-            usuario,
-            contrasenia
-          });
+      const { token, perfil } = await loginUsuario(usuario, contrasenia);
           console.log(contrasenia);
           console.log(usuario);
-          const { token, perfil } = response.data;
+          //const { token, perfil } = response.data;
           await login(token, perfil);
     
           // Guardar token y perfil en almacenamiento local
@@ -33,11 +31,13 @@ export default function LoginScreen() {
           await AsyncStorage.setItem('perfil', perfil);
           console.log(token)
           console.log(perfil);
-    
+          if (onLoginSuccess) {
+            onLoginSuccess(); // informa al index que se inició sesión
+          }
           
     
           // Redirigir a pantalla principal
-          router.replace('/screens/reserva'); 
+          router.replace('/(tabs)'); 
         }
     
           catch (error: any) {
@@ -61,6 +61,7 @@ export default function LoginScreen() {
       backgroundColor: isDark ? '#000' : '#fff',
       paddingHorizontal: 20,
     },
+    
     formContainer: {
       width: '100%',
       maxWidth: 360,
@@ -134,7 +135,7 @@ export default function LoginScreen() {
   
         <Text style={styles.registroLink}>
           ¿No tenés cuenta?{' '}
-          <Text style={styles.linkText} onPress={() => router.push('../screens/registro')}>
+          <Text style={styles.linkText} onPress={() => router.push('/registro')}>
             Registrarse
           </Text>
         </Text>

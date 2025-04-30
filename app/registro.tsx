@@ -13,7 +13,7 @@ import {
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from './context/AuthContext';
 
 export default function RegistroScreen() {
   const colorScheme = useColorScheme();
@@ -60,7 +60,7 @@ export default function RegistroScreen() {
       
 
       // Redirigir a pantalla principal
-      router.push('/(tabs)/index'); 
+      router.push('/'); 
     }
 
       catch (error: any) {
@@ -68,7 +68,7 @@ export default function RegistroScreen() {
         const mensaje = error.response?.data?.mensaje || 'Datos incorrectos';
         
       }
-    router.replace('../(tabs)/login');
+    router.replace('/login');
   };
 
   const styles = StyleSheet.create({
@@ -147,7 +147,7 @@ export default function RegistroScreen() {
   
         <Text style={styles.volverLogin}>
           ¿Ya tenés cuenta?{' '}
-          <Text style={styles.volverLink} onPress={() => router.replace('/screens/login')}>
+          <Text style={styles.volverLink} onPress={() => router.replace('/login')}>
             Iniciar sesión
           </Text>
         </Text>

@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../app/context/AuthContext';
 
 export default function NavBar() {
   const router = useRouter();
