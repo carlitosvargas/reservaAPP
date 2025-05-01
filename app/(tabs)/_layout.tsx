@@ -1,22 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Tabs, Redirect } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useAuth } from '../context/AuthContext';
 
 export default function TabLayout() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const { isLoggedIn, isLoading } = useAuth();
 
-  useEffect(() => {
-    const checkLogin = async () => {
-      const token = await AsyncStorage.getItem('token');
-      setIsLoggedIn(!!token);
-    };
-    checkLogin();
-  }, []);
+  if (isLoading) return null; 
 
-  if (isLoggedIn === null) return null; // o un loader si quieres
-
-  
+  if (!isLoggedIn) return <Redirect href="/login" />;
 
   return (
     <Tabs
