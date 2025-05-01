@@ -1,41 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, ActivityIndicator, Text, Button, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Login from '../login';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
-
+import Login from '../login';
 
 export default function Index() {
-  const { logout } = useAuth();
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const { isLoggedIn, logout, isLoading } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const token = await AsyncStorage.getItem('token');
-      setIsLoggedIn(!!token);
-    };
-
-    checkLoginStatus();
-  }, []);
-
   const handleLogout = async () => {
-    
     await logout();
-    setIsLoggedIn(false);
+    router.replace('../login'); 
   };
 
-  if (isLoggedIn === null) {
+  if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" />
       </View>
     );
-  } 
-
+  }
+ console.log('ver estado', isLoggedIn)
   if (!isLoggedIn) {
-    return <Login onLoginSuccess={() => setIsLoggedIn(true)} />;
+    return <Login onLoginSuccess={() => {}} />;
   }
 
   return (
