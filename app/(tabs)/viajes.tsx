@@ -5,7 +5,9 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { listarViajes } from '../services/authService';
+import { listarViajes } from '../services/viajeServices';
+import { useRouter } from 'expo-router';
+
 
 interface Viaje {
     id: number;
@@ -21,11 +23,16 @@ interface Viaje {
   
   
   export default function ViajesScreen() {
+
+    const router = useRouter();
+
+
     const [viajes, setViajes] = useState<Viaje[]>([]);
     const [origen, setOrigen] = useState('');
     const [destino, setDestino] = useState('');
     const [loading, setLoading] = useState(false);
     const [mensaje, setMensaje] = useState('');
+    
   
     const buscarViajes = async () => {
       if (!origen || !destino) {
@@ -81,7 +88,8 @@ interface Viaje {
             <ActivityIndicator size="large" color="#007AFF" />
           ) : (
             viajes.map((item) => (
-              <View key={item.id} style={styles.card}>
+              <Pressable key={item.id} onPress={() => router.push({pathname:'/pantallas/realizarReserva',params:{id:item.id}})}
+              style={styles.card}>
                 <Text style={styles.cardTitle}>Viaje #{item.id}</Text>
                 <Text>Origen: {item.origenLocalidad}</Text>
                 <Text>Destino: {item.destinoLocalidad}</Text>
@@ -95,14 +103,17 @@ interface Viaje {
                 </Text>
                 <Text>Precio: ${item.precio}</Text>
                 <Text>Chofer: {item.chofer}</Text>
-              </View>
+              </Pressable>
             ))
           )}
         </ScrollView>
       </KeyboardAvoidingView>
     );
   }
-  
+
+
+
+
   const styles = StyleSheet.create({
     container: {
       padding: 16,
@@ -150,4 +161,3 @@ interface Viaje {
       color: '#007AFF',
     },
   });
-  
