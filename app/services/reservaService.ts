@@ -1,6 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const API_URL = 'http://192.168.0.55:3000';
+const API_URL = 'http://192.168.1.108:3000';
 
 export const crearReserva = async (reservaData: any) => {
   try {

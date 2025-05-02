@@ -12,7 +12,7 @@ export default function Index() {
     await logout();
     router.replace('../login'); 
   };
-
+  console.log('ver estado isLoading', isLoading)
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
@@ -20,7 +20,7 @@ export default function Index() {
       </View>
     );
   }
- console.log('ver estado', isLoggedIn)
+ console.log('ver estado isLoggedIn', isLoggedIn)
   if (!isLoggedIn) {
     return <Login onLoginSuccess={() => {}} />;
   }
