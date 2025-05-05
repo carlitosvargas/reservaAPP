@@ -28,7 +28,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Pantalla index</Text>
-      <Button title="Cerrar sesión" onPress={handleLogout} />
+      
     </View>
   );
 }

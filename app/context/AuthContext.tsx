@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { decodeToken } from '../services/tokenService'
 
 type AuthContextType = {
   isLoggedIn: boolean;
@@ -26,10 +27,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkToken();
   }, []);
 
-  const login = async (token: string, perfil: string) => {
+  const login = async (token: string) => {
+    const tokenDecode = decodeToken(token) 
+    if (tokenDecode) {
+      console.log('perfil descodificado',tokenDecode.perfil )
     await AsyncStorage.setItem('token', token);
-    await AsyncStorage.setItem('perfil', perfil);
-    setIsLoggedIn(true);
+    await AsyncStorage.setItem('perfil', tokenDecode.perfil);
+    setIsLoggedIn(true);}
+
   };
 
   const logout = async () => {

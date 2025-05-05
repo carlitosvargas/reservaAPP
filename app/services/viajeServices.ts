@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'http://192.168.1.108:3000';
+import { API_URL } from '../config';
 
 export const listarViajes = async (origen: string, destino: string) => {
     const token = await AsyncStorage.getItem('token');
