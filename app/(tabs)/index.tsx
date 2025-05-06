@@ -8,10 +8,6 @@ export default function Index() {
   const { isLoggedIn, logout, isLoading } = useAuth();
   const router = useRouter();
 
-  const handleLogout = async () => {
-    await logout();
-    router.replace('../login'); 
-  };
   console.log('ver estado isLoading', isLoading)
   if (isLoading) {
     return (

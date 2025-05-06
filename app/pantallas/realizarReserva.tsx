@@ -4,15 +4,20 @@ import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert
 // import Ionicons from 'react-native-vector-icons/Ionicons'; // <- descomentá si querés usar íconos
 import { obtenerViajesId } from '../services/viajeServices';
 import { crearReserva } from '../services/reservaService';
+import { useAuth } from '../context/AuthContext';
 
-export default function DetalleViaje() {
+
+
+export default  function DetalleViaje() {
   const { id } = useLocalSearchParams();
   const [viaje, setViaje] = useState<any>(null);
   const [pasajeros, setPasajeros] = useState([{ nombre: '', apellido: '', dni: '', ubicacionOrigen: '', ubicacionDestino: '' }]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { userInfo } = useAuth();
 
-  const usuarios_id = 1; // Ajustá esto según el usuario logueado
+  const usuarios_id = userInfo?.id 
+  console.log('*****id user',userInfo?.id )
 
   useEffect(() => {
     if (id) {

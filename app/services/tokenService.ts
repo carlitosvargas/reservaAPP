@@ -8,7 +8,7 @@ interface TokenPayload {
 }
 export const decodeToken = (token: any) => {
   try {
-    return jwtDecode<TokenPayload>(token); // Devuelve el payload del token
+    return jwtDecode<TokenPayload>(token); 
   } catch (error) {
     console.error('Token inválido o mal formado:', error);
     return null;
