@@ -8,11 +8,7 @@ export default function Index() {
   const { isLoggedIn, logout, isLoading } = useAuth();
   const router = useRouter();
 
-  const handleLogout = async () => {
-    await logout();
-    router.replace('../login'); 
-  };
-
+  console.log('ver estado isLoading', isLoading)
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
@@ -20,7 +16,7 @@ export default function Index() {
       </View>
     );
   }
- console.log('ver estado', isLoggedIn)
+ console.log('ver estado isLoggedIn', isLoggedIn)
   if (!isLoggedIn) {
     return <Login onLoginSuccess={() => {}} />;
   }
@@ -28,7 +24,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Pantalla index</Text>
-      <Button title="Cerrar sesión" onPress={handleLogout} />
+      
     </View>
   );
 }

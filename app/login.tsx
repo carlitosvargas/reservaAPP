@@ -14,15 +14,16 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
 
   const [usuario, setUsuario] = useState('');
   const [contrasenia, setPassword] = useState('');
+  const [errorMensaje, setErrorMensaje] = useState('');
+
 
   const handleLogin = async() => {
     // Tu lógica de login va acá
-    console.log('Iniciar sesión con:', usuario, contrasenia);
+
 
      try {
       const { token, perfil } = await loginUsuario(usuario, contrasenia);
-          console.log(contrasenia);
-          console.log(usuario);
+        
           //const { token, perfil } = response.data;
           await login(token, perfil);
     
@@ -43,7 +44,7 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
           catch (error: any) {
             console.error('Error al iniciar sesión:', error.response?.data || error.message);
             const mensaje = error.response?.data?.mensaje || 'Usuario o contraseña incorrectos';
-            
+            setErrorMensaje(mensaje);
           }
           
           
@@ -129,7 +130,12 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
           value={contrasenia}
           onChangeText={setPassword}
         />
-        <Pressable style={styles.button} onPress={handleLogin}>
+            {errorMensaje !== '' && (
+          <Text style={{ color: 'red', marginBottom: 10, textAlign: 'center' }}>
+            {errorMensaje}
+          </Text>
+        )}
+          <Pressable style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Ingresar</Text>
         </Pressable>
   

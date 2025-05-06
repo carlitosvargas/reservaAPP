@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  StyleSheet,
-  useColorScheme,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, useColorScheme } from 'react-native';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { useAuth } from './context/AuthContext';
+
+// Definir el tipo para los errores
+type Errores = {
+  nombre?: string;
+  apellido?: string;
+  dni?: string;
+  telefono?: string;
+  email?: string;
+  usuario?: string;
+  contrasenia?: string;
+  perfil_id?: string;
+};
 
 export default function RegistroScreen() {
   const colorScheme = useColorScheme();
@@ -27,12 +27,11 @@ export default function RegistroScreen() {
   const [usuario, setUsuario] = useState('');
   const [contrasenia, setContrasenia] = useState('');
   const [perfil_id, setPerfil_id] = useState('');
-  
-
+  const [errores, setErrores] = useState<Errores>({});  // Especificar el tipo de errores
 
   const isDark = colorScheme === 'dark';
- 
-  const handleRegistro = async() => {
+
+  const handleRegistro = async () => {
     console.log('Registrando usuario:', { nombre, apellido, dni, telefono, email, usuario, contrasenia, perfil_id });
     const payload = {
       nombre,
@@ -44,31 +43,23 @@ export default function RegistroScreen() {
       contrasenia,
       perfil_id,
     };
+
     try {
       const response = await axios.post('http://192.168.0.11:3000/usuarios/crearUsuario', payload);
-      console.log(contrasenia);
-      console.log(usuario);
       const { token, perfil } = response.data;
-    //  await login(token, perfil);
-
-      // Guardar token y perfil en almacenamiento local
-     // await AsyncStorage.setItem('token', token);
-      //await AsyncStorage.setItem('perfil', perfil);
-      console.log(token)
+      console.log(token);
       console.log(perfil);
-
-      
-
-      // Redirigir a pantalla principal
-      router.push('/'); 
-    }
-
-      catch (error: any) {
-        console.error('Error al registrarse:', error.response?.data || error.message);
-        const mensaje = error.response?.data?.mensaje || 'Datos incorrectos';
-        
+      router.push('/');
+    } catch (error: any) {
+      console.error('Error al registrarse:', error.response?.data || error.message);
+      const backendErrors = error.response?.data?.errores;
+      if (backendErrors) {
+        setErrores(backendErrors);
+      } else {
+        const mensaje = error.response?.data?.mensaje || 'Error al registrarse';
+        alert(mensaje);
       }
-    router.replace('/login');
+    }
   };
 
   const styles = StyleSheet.create({
@@ -124,27 +115,95 @@ export default function RegistroScreen() {
       color: '#007AFF',
       fontWeight: 'bold',
     },
+    errorText: {
+      color: 'red',
+      fontSize: 12,
+      marginTop: 5,
+    },
   });
-  
 
   return (
     <View style={styles.wrapper}>
       <View style={styles.formContainer}>
         <Text style={styles.title}>Registrarse</Text>
-  
-        <TextInput style={styles.input} placeholder="Nombre" placeholderTextColor={isDark ? '#ccc' : '#888'} value={nombre} onChangeText={setNombre} />
-        <TextInput style={styles.input} placeholder="Apellido" placeholderTextColor={isDark ? '#ccc' : '#888'} value={apellido} onChangeText={setApellido} />
-        <TextInput style={styles.input} placeholder="DNI" placeholderTextColor={isDark ? '#ccc' : '#888'} value={dni} onChangeText={setDni} />
-        <TextInput style={styles.input} placeholder="Telefono" placeholderTextColor={isDark ? '#ccc' : '#888'} value={telefono} onChangeText={setTelefono} />
-        <TextInput style={styles.input} placeholder="Email" placeholderTextColor={isDark ? '#ccc' : '#888'} value={email} onChangeText={setEmail} />
-        <TextInput style={styles.input} placeholder="Usuario" placeholderTextColor={isDark ? '#ccc' : '#888'} value={usuario} onChangeText={setUsuario} />
-        <TextInput style={styles.input} placeholder="Contraseña" placeholderTextColor={isDark ? '#ccc' : '#888'} secureTextEntry value={contrasenia} onChangeText={setContrasenia} />
-        <TextInput style={styles.input} placeholder="Perfil" placeholderTextColor={isDark ? '#ccc' : '#888'} value={perfil_id} onChangeText={setPerfil_id} />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre"
+          placeholderTextColor={isDark ? '#ccc' : '#888'}
+          value={nombre}
+          onChangeText={(text) => { setNombre(text); setErrores((prev: Errores) => ({ ...prev, nombre: '' })); }}
+        />
+        {errores.nombre && <Text style={styles.errorText}>{errores.nombre}</Text>}
+
+        <TextInput
+          style={styles.input}
+          placeholder="Apellido"
+          placeholderTextColor={isDark ? '#ccc' : '#888'}
+          value={apellido}
+          onChangeText={(text) => { setApellido(text); setErrores((prev: Errores) => ({ ...prev, apellido: '' })); }}
+        />
+        {errores.apellido && <Text style={styles.errorText}>{errores.apellido}</Text>}
+
+        <TextInput
+          style={styles.input}
+          placeholder="DNI"
+          placeholderTextColor={isDark ? '#ccc' : '#888'}
+          value={dni}
+          onChangeText={(text) => { setDni(text); setErrores((prev: Errores) => ({ ...prev, dni: '' })); }}
+        />
+        {errores.dni && <Text style={styles.errorText}>{errores.dni}</Text>}
+
+        <TextInput
+          style={styles.input}
+          placeholder="Telefono"
+          placeholderTextColor={isDark ? '#ccc' : '#888'}
+          value={telefono}
+          onChangeText={(text) => { setTelefono(text); setErrores((prev: Errores) => ({ ...prev, telefono: '' })); }}
+        />
+        {errores.telefono && <Text style={styles.errorText}>{errores.telefono}</Text>}
+
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor={isDark ? '#ccc' : '#888'}
+          value={email}
+          onChangeText={(text) => { setEmail(text); setErrores((prev: Errores) => ({ ...prev, email: '' })); }}
+        />
+        {errores.email && <Text style={styles.errorText}>{errores.email}</Text>}
+
+        <TextInput
+          style={styles.input}
+          placeholder="Usuario"
+          placeholderTextColor={isDark ? '#ccc' : '#888'}
+          value={usuario}
+          onChangeText={(text) => { setUsuario(text); setErrores((prev: Errores) => ({ ...prev, usuario: '' })); }}
+        />
+        {errores.usuario && <Text style={styles.errorText}>{errores.usuario}</Text>}
+
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          placeholderTextColor={isDark ? '#ccc' : '#888'}
+          secureTextEntry
+          value={contrasenia}
+          onChangeText={(text) => { setContrasenia(text); setErrores((prev: Errores) => ({ ...prev, contrasenia: '' })); }}
+        />
+        {errores.contrasenia && <Text style={styles.errorText}>{errores.contrasenia}</Text>}
+
+        <TextInput
+          style={styles.input}
+          placeholder="Perfil"
+          placeholderTextColor={isDark ? '#ccc' : '#888'}
+          value={perfil_id}
+          onChangeText={(text) => { setPerfil_id(text); setErrores((prev: Errores) => ({ ...prev, perfil_id: '' })); }}
+        />
+        {errores.perfil_id && <Text style={styles.errorText}>{errores.perfil_id}</Text>}
 
         <Pressable style={styles.button} onPress={handleRegistro}>
           <Text style={styles.buttonText}>Registrarse</Text>
         </Pressable>
-  
+
         <Text style={styles.volverLogin}>
           ¿Ya tenés cuenta?{' '}
           <Text style={styles.volverLink} onPress={() => router.replace('/login')}>
@@ -154,5 +213,4 @@ export default function RegistroScreen() {
       </View>
     </View>
   );
-  
 }

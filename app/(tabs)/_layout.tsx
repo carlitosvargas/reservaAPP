@@ -23,10 +23,11 @@ export default function TabLayout() {
         headerShown: false,
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Inicio' }} />
+      <Tabs.Screen name="index" options={{ title: 'Inicio'}} />
       <Tabs.Screen name="reserva" options={{ title: 'Reservar' }} />
       <Tabs.Screen name="viajes" options={{ title: 'Viajes' }} />
       <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
+      <Tabs.Screen name="home" options={{ title: 'Home' }} />
     </Tabs>
   );
 }
