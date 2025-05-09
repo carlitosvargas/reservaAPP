@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,Text,TextInput,Pressable,StyleSheet,FlatList,useColorScheme,ScrollView,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { View,Text,TextInput,Pressable,StyleSheet,FlatList,useColorScheme,ScrollView,ActivityIndicator,KeyboardAvoidingView,Platform,} from 'react-native';
 import { listarViajes } from '../services/viajeServices';
 import { useRouter } from 'expo-router';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 interface Viaje {
     id: number;
     origenLocalidad: string;
     destinoLocalidad: string;
-    horarioSalida: Date; // o Date si lo tratás como objeto
+    horarioSalida: string; // o Date si lo tratás como objeto
     fechaViaje: Date;    // o Date
     precio: number;
     chofer: string;
@@ -63,6 +59,12 @@ interface Viaje {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+
+          {/* Botón "Volver" con icono de flecha en la esquina superior izquierda */}
+        <Pressable style={styles.backButton} onPress={() => router.back()}>
+          <Icon name="arrow-left" size={20} color="#333" /> {/* Icono de flecha */}
+        </Pressable>
+
           <Text style={styles.title}>Buscar Viajes</Text>
   
           <TextInput
@@ -94,18 +96,13 @@ interface Viaje {
                 <Text>Origen: {item.origenLocalidad}</Text>
                 <Text>Destino: {item.destinoLocalidad}</Text>
                 <Text>Fecha: {new Date(item.fechaViaje).toLocaleDateString()}</Text>
-                <Text>
-                  Hora salida:{' '}
-                  {new Date(item.horarioSalida).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </Text>
+                <Text>Hora de Salida: {item.horarioSalida}</Text>
                 <Text>Precio: ${item.precio}</Text>
                 <Text>Chofer: {item.chofer}</Text>
               </Pressable>
             ))
           )}
+          
         </ScrollView>
       </KeyboardAvoidingView>
     );
@@ -160,4 +157,18 @@ interface Viaje {
       marginBottom: 6,
       color: '#007AFF',
     },
+      // Estilos para el botón "Volver" en la esquina superior izquierda
+     backButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#ccc',
+    zIndex: 1, // Asegura que el botón esté encima de otros elementos
+  },
+  backButtonText: {
+    color: '#333',
+    fontWeight: 'bold',
+  },
   });

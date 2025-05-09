@@ -1,49 +1,56 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
-// import Ionicons from 'react-native-vector-icons/Ionicons'; // <- descomentá si querés usar íconos
 import { obtenerViajesId } from '../services/viajeServices';
 import { crearReserva } from '../services/reservaService';
 import { useAuth } from '../context/AuthContext';
 
+interface Pasajero {
+  nombre: string;
+  apellido: string;
+  dni: string;
+  ubicacionOrigen: string;
+  ubicacionDestino: string;
+}
 
+interface Viaje {
+  id: number;
+  origenLocalidad: string;
+  destinoLocalidad: string;
+  fechaViaje: string;
+  horarioSalida: string;
+  precio: number;
+  chofer: string;
+}
 
-export default  function DetalleViaje() {
+export default function DetalleViaje() {
   const { id } = useLocalSearchParams();
-  const [viaje, setViaje] = useState<any>(null);
-  const [pasajeros, setPasajeros] = useState([{ nombre: '', apellido: '', dni: '', ubicacionOrigen: '', ubicacionDestino: '' }]);
+  const [viaje, setViaje] = useState<Viaje | null>(null);
+  const [pasajeros, setPasajeros] = useState<Pasajero[]>([
+    { nombre: '', apellido: '', dni: '', ubicacionOrigen: '', ubicacionDestino: '' },
+  ]);
   const [loading, setLoading] = useState(false);
+  const [mensajeReserva, setMensajeReserva] = useState('');
+  const [esError, setEsError] = useState(false);
   const router = useRouter();
   const { userInfo } = useAuth();
 
-  const usuarios_id = userInfo?.id 
-  console.log('*****id user',userInfo?.id )
+  const usuarios_id = userInfo?.id;
 
   useEffect(() => {
     if (id) {
       obtenerViajesId(Number(id))
-        .then((data) => {
-          console.log(data);
-          setViaje(data);
-        })
-        .catch((error) => {
-          console.error("Error al obtener el viaje:", error);
-        });
+        .then((data) => setViaje(data))
+        .catch((error) => console.error("Error al obtener el viaje:", error));
     }
   }, [id]);
 
-  interface Pasajero {
-    nombre: string;
-    apellido: string;
-    dni: string;
-    ubicacionOrigen: string;
-    ubicacionDestino: string;
-  }
-
   const handleChangePasajero = (index: number, field: keyof Pasajero, value: string) => {
-    const nuevosPasajeros = [...pasajeros] as Pasajero[];
+    const nuevosPasajeros = [...pasajeros];
     nuevosPasajeros[index][field] = value;
     setPasajeros(nuevosPasajeros);
+    setMensajeReserva('');
+    setEsError(false);
   };
 
   const agregarPasajero = () => {
@@ -54,8 +61,22 @@ export default  function DetalleViaje() {
     setPasajeros([...pasajeros, { nombre: '', apellido: '', dni: '', ubicacionOrigen: '', ubicacionDestino: '' }]);
   };
 
+  const validarPasajeros = () => {
+    for (const p of pasajeros) {
+      if (!p.nombre || !p.apellido || !p.dni || !p.ubicacionOrigen || !p.ubicacionDestino) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   const reservar = async () => {
     if (!viaje) return;
+    if (!validarPasajeros()) {
+      Alert.alert('Campos incompletos', 'Por favor, completa todos los campos de los pasajeros.');
+      return;
+    }
+
     try {
       setLoading(true);
       const reservaData = {
@@ -63,13 +84,23 @@ export default  function DetalleViaje() {
         viajes_id: viaje.id,
         personas: pasajeros,
       };
-      console.log('Datos de la reserva:', reservaData);
 
-      await crearReserva(reservaData);
-      Alert.alert('Reserva exitosa', 'Tu reserva fue creada correctamente.');
+      const response = await crearReserva(reservaData);
+      const mensaje = response?.mensaje || 'Tu reserva fue creada correctamente.';
+
+      Alert.alert('Reserva exitosa', mensaje, [
+        {
+          text: 'OK',
+          onPress: () => router.push('/(tabs)/reserva'),
+        },
+      ]);
+
       setPasajeros([{ nombre: '', apellido: '', dni: '', ubicacionOrigen: '', ubicacionDestino: '' }]);
-    } catch (error) {
-      Alert.alert('Error', 'Hubo un problema al crear la reserva.');
+    } catch (error: any) {
+      const mensaje = error?.response?.data?.mensaje || 'Hubo un problema al crear la reserva.';
+      setEsError(true);
+      setMensajeReserva(mensaje);
+      Alert.alert('Error', mensaje);
     } finally {
       setLoading(false);
     }
@@ -85,36 +116,46 @@ export default  function DetalleViaje() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Botón de volver */}
       <TouchableOpacity onPress={() => router.push('/(tabs)/viajes')} style={styles.volverButton}>
         <Text style={styles.volverText}>{'< Volver'}</Text>
-        {/* Si querés usar un ícono: */}
-        {/* <Ionicons name="arrow-back" size={24} color="#007AFF" /> */}
       </TouchableOpacity>
 
       <Text style={styles.title}>Detalle del Viaje</Text>
 
       <View style={styles.card}>
-        <Text style={styles.label}>Origen:</Text>
-        <Text style={styles.value}>{viaje.origenLocalidad}</Text>
+  <View style={styles.infoRow}>
+    <View style={styles.infoBox}>
+      <Text style={styles.label}>Origen</Text>
+      <Text style={styles.value}>{viaje.origenLocalidad}</Text>
+    </View>
+    <View style={styles.infoBox}>
+      <Text style={styles.label}>Destino</Text>
+      <Text style={styles.value}>{viaje.destinoLocalidad}</Text>
+    </View>
+    <View style={styles.infoBox}>
+      <Text style={styles.label}>Fecha</Text>
+      <Text style={styles.value}>{new Date(viaje.fechaViaje).toLocaleDateString()}</Text>
+    </View>
+  </View>
 
-        <Text style={styles.label}>Destino:</Text>
-        <Text style={styles.value}>{viaje.destinoLocalidad}</Text>
+  <View style={styles.infoRow}>
+    <View style={styles.infoBox}>
+      <Text style={styles.label}>Horario</Text>
+      <Text style={styles.value}>
+        {new Date(viaje.horarioSalida).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      </Text>
+    </View>
+    <View style={styles.infoBox}>
+      <Text style={styles.label}>Precio</Text>
+      <Text style={styles.value}>${viaje.precio}</Text>
+    </View>
+    <View style={styles.infoBox}>
+      <Text style={styles.label}>Chofer</Text>
+      <Text style={styles.value}>{viaje.chofer}</Text>
+    </View>
+  </View>
+</View>
 
-        <Text style={styles.label}>Fecha:</Text>
-        <Text style={styles.value}>{new Date(viaje.fechaViaje).toLocaleDateString()}</Text>
-
-        <Text style={styles.label}>Horario de Salida:</Text>
-        <Text style={styles.value}>
-          {new Date(viaje.horarioSalida).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </Text>
-
-        <Text style={styles.label}>Precio:</Text>
-        <Text style={styles.value}>${viaje.precio}</Text>
-
-        <Text style={styles.label}>Chofer:</Text>
-        <Text style={styles.value}>{viaje.chofer}</Text>
-      </View>
 
       <Text style={[styles.title, { marginTop: 30 }]}>Datos de Pasajeros</Text>
 
@@ -165,6 +206,19 @@ export default  function DetalleViaje() {
       >
         <Text style={styles.reservarButtonText}>{loading ? 'Reservando...' : 'Reservar'}</Text>
       </TouchableOpacity>
+
+      {mensajeReserva !== '' && (
+        <Text
+          style={{
+            marginTop: 15,
+            textAlign: 'center',
+            color: esError ? 'red' : '#00C851',
+            fontWeight: 'bold',
+          }}
+        >
+          {mensajeReserva}
+        </Text>
+      )}
     </ScrollView>
   );
 }
@@ -253,4 +307,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  infoBox: {
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  
 });

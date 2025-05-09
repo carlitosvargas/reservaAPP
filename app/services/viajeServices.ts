@@ -28,4 +28,15 @@ export const listarViajes = async (origen: string, destino: string) => {
     return response.data;
   };
 
+  export const obtenerPasajerosPorViaje = async (id: number) => {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/viajes/obtenerPasajerosViajesId/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  };
+
+
 
