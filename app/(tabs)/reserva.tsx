@@ -1,9 +1,18 @@
-import Colors from '@/constants/Colors';
-import React from 'react';
-import { View, Text } from 'react-native';
-import { StyleSheet } from 'react-native';
-import Pestaña from './_layout';
-import { Tabs } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {View,Text,TextInput,Pressable,StyleSheet,FlatList,useColorScheme,ScrollView,ActivityIndicator,KeyboardAvoidingView,Platform,} from 'react-native';
+import { listarViajes } from '../services/viajeServices';
+import { useRouter } from 'expo-router';
+
+
+interface Viaje {
+  id: number;
+  fechaReserva: Date;    // o Date
+  usuarios_id: number;
+  viajes_id: number;
+  eliminado: string;
+}
+
+
 
 export default function ReservaScreen() {
   return (
