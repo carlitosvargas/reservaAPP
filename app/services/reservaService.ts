@@ -19,6 +19,7 @@ export const crearReserva = async (reservaData: any) => {
     throw error;
   }
 };
+
 export const obtenerReservas = async (id:number) => {
   try {
     const token = await AsyncStorage.getItem('token');
@@ -31,12 +32,20 @@ export const obtenerReservas = async (id:number) => {
         Authorization: `Bearer ${token}`,
       },
     });
-  } catch (error: any) {
-       console.error('Error al obtener las reservas', error.response?.data || error.message);
-    throw error;
-  }
-  };
-    
+
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      console.error('Error al obtener las reservas', error.response?.data || error.message);
+    } else {
+      console.error('Error desconocido', error);
+    }
+    throw error;
+  }
+};
+
+
+
   export const actualizarReserva = async (id: number, reservaData: any) => {
     try {
     const token = await AsyncStorage.getItem('token');
