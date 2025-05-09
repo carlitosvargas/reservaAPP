@@ -1,14 +1,17 @@
 import React from 'react';
-import { View, ActivityIndicator, Text, Button, StyleSheet } from 'react-native';
+import {View,Text,ImageBackground,StyleSheet,Pressable,ActivityIndicator,Dimensions,} from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import Login from '../login';
 
+const { width, height } = Dimensions.get('window');
+
 export default function Index() {
-  const { isLoggedIn, logout, isLoading } = useAuth();
+ 
+
+  const { isLoggedIn, isLoading } = useAuth();
   const router = useRouter();
 
-  console.log('ver estado isLoading', isLoading)
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
@@ -16,31 +19,71 @@ export default function Index() {
       </View>
     );
   }
- console.log('ver estado isLoggedIn', isLoggedIn)
+
   if (!isLoggedIn) {
     return <Login onLoginSuccess={() => {}} />;
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Pantalla index</Text>
-      
-    </View>
+    <ImageBackground
+      source={require('../../assets/images/fondo.jpg')} 
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <Text style={styles.title}>V&V Reservas</Text>
+        <Text style={styles.subtitle}>Tu viaje comienza aquí</Text>
+        <Pressable
+          style={styles.button}
+          onPress={() => router.push('/(tabs)/viajes')}
+        >
+          <Text style={styles.buttonText}>Reservar ahora</Text>
+        </Pressable>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   loaderContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: {
-    marginTop: 20,
-    fontSize: 18,
+  background: {
+    width: width,
+    height: height,
+    justifyContent: 'center',
+  },
+  
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 10,
     textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#ddd',
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
   },
 });

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../environment/config';
 
@@ -19,3 +19,32 @@ export const crearReserva = async (reservaData: any) => {
     throw error;
   }
 };
+
+export const obtenerReservas = async (id:number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+
+    const response = await axios.get(`${API_URL}/reserva/obtenerReservasPorUsuario`, {
+      params:{
+        id,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      console.error('Error al obtener las reservas', error.response?.data || error.message);
+    } else {
+      console.error('Error desconocido', error);
+    }
+    throw error;
+  }
+};
+
+
+
+
+
