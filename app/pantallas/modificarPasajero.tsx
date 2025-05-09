@@ -21,8 +21,16 @@ export default function ModificarPasajero() {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const datos = await obtenerPasajeroPorId(Number(id)); // Debes implementar este servicio
-        setPasajero(datos);
+        const datos = await obtenerPasajeroPorId(Number(id)); 
+        const pasajeroData = datos[0];
+        setPasajero({
+                  nombre: pasajeroData.nombre ?? '',
+                  apellido: pasajeroData.apellido ?? '',
+                  dni: pasajeroData.dni?.toString() ?? '',
+                  ubicacionOrigen: pasajeroData.ubicacionOrigen ?? pasajeroData.reserva?.ubicacionOrigen ?? '',
+                  ubicacionDestino: pasajeroData.ubicacionDestino ?? pasajeroData.reserva?.ubicacionDestino ?? '',
+        });
+         
       } catch (error) {
         Alert.alert('Error', 'No se pudo cargar el pasajero');
       } finally {
@@ -39,7 +47,9 @@ export default function ModificarPasajero() {
 
   const handleGuardar = async () => {
     try {
+     
       await actualizarReserva(Number(id), pasajero); 
+      
       Alert.alert('Éxito', 'Pasajero actualizado correctamente');
       router.back();
     } catch (error) {
@@ -53,46 +63,47 @@ export default function ModificarPasajero() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Modificar Pasajero</Text>
+      <Text style={styles.title}>Actualizar Pasajero</Text>
 
       <TextInput
-        style={styles.input}
-        placeholder="Nombre"
-        value={pasajero.nombre}
-        onChangeText={text => handleChange('nombre', text)}
-      />
+      style={styles.input}
+      placeholder="Nombre"
+      value={pasajero.nombre ?? ''}
+      onChangeText={text => handleChange('nombre', text)}
+    />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Apellido"
-        value={pasajero.apellido}
-        onChangeText={text => handleChange('apellido', text)}
-      />
+    <TextInput
+      style={styles.input}
+      placeholder="Apellido"
+      value={pasajero.apellido ?? ''}
+      onChangeText={text => handleChange('apellido', text)}
+    />
 
-      <TextInput
-        style={styles.input}
-        placeholder="DNI"
-        value={pasajero.dni}
-        onChangeText={text => handleChange('dni', text)}
-        keyboardType="numeric"
-      />
+    <TextInput
+      style={styles.input}
+      placeholder="DNI"
+      value={String(pasajero.dni ?? '')}
+      onChangeText={text => handleChange('dni', text)}
+      keyboardType="numeric"
+    />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Ubicación Origen"
-        value={pasajero.ubicacionOrigen}
-        onChangeText={text => handleChange('ubicacionOrigen', text)}
-      />
+    <TextInput
+      style={styles.input}
+      placeholder="Ubicación Origen. Ej. Jujuy 345"
+      value={pasajero.ubicacionOrigen ?? ''}
+      onChangeText={text => handleChange('ubicacionOrigen', text)}
+    />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Ubicación Destino"
-        value={pasajero.ubicacionDestino}
-        onChangeText={text => handleChange('ubicacionDestino', text)}
-      />
+    <TextInput
+      style={styles.input}
+      placeholder="Ubicación Destino. Ej. Salta 345"
+      value={pasajero.ubicacionDestino ?? ''}
+      onChangeText={text => handleChange('ubicacionDestino', text)}
+    />
 
       <TouchableOpacity style={styles.button} onPress={handleGuardar}>
         <Text style={styles.buttonText}>Guardar Cambios</Text>
+
       </TouchableOpacity>
     </ScrollView>
   );
@@ -103,6 +114,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
+    color:'white',
     fontSize: 24,
     marginBottom: 20,
     fontWeight: 'bold',
@@ -114,6 +126,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     marginBottom: 15,
+    backgroundColor: 'white'
   },
   button: {
     backgroundColor: '#007bff',

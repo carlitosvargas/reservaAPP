@@ -46,10 +46,10 @@ export const obtenerReservas = async (id:number) => {
 
 
 
-  export const actualizarReserva = async (id: number, reservaData: any) => {
+  export const actualizarReserva = async (id: number, pasajeroData: any) => {
     try {
     const token = await AsyncStorage.getItem('token');
-    const response = await axios.put(`${API_URL}/reserva/actualizarReserva/${id}`,reservaData, {
+    const response = await axios.put(`${API_URL}/reserva/actualizarReserva/${id}`,pasajeroData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

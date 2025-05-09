@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator,TouchableOpacity  } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { obtenerPasajerosPorViaje } from '../services/viajeServices'; // Asegúrate de que esta función esté definida
 
 interface Pasajero {
+  id: number;
   nombre: string;
   apellido: string;
   dni: string;
@@ -60,22 +61,29 @@ export default function DetalleReserva() {
 
   return (
     <View style={styles.container}>
-      
       <Text style={styles.subTitle}>Pasajeros:</Text>
       <FlatList
         data={pasajeros}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.pasajeroItem}>
-            <Text>Nombre: {item.nombre} {item.apellido}</Text>
-            <Text>DNI: {item.dni}</Text>
-            <Text>Ubicación Origen: {item.ubicacionOrigen}</Text>
-            <Text>Ubicación Destino: {item.ubicacionDestino}</Text>
+            <View style={{ flex: 1 }}>
+              <Text>Nombre: {item.nombre} {item.apellido}</Text>
+              <Text>DNI: {item.dni}</Text>
+              <Text>Ubicación Origen: {item.ubicacionOrigen}</Text>
+              <Text>Ubicación Destino: {item.ubicacionDestino}</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.botonEditar}
+              onPress={() => router.push({pathname:'/pantallas/modificarPasajero',params:{id:item.id}})}
+            >
+              <Text style={styles.botonTexto}>Editar</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -95,12 +103,28 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 8,
   },
+
   pasajeroItem: {
-    backgroundColor: '#f0f0f0',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 12,
-    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
     borderRadius: 8,
+    marginBottom: 10,
   },
+  botonEditar: {
+    backgroundColor: '#007bff',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+  },
+  botonTexto: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+
 });
 
 
