@@ -5,7 +5,7 @@ import { decodeToken } from '../services/tokenService'
 type AuthContextType = {
   isLoggedIn: boolean;
   isLoading: boolean;
-  login: (token: string, perfil: string) => Promise<void>;
+  login: (token: string) => Promise<void>;
   logout: () => Promise<void>;
   userInfo: any;
 };
@@ -35,16 +35,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkToken();
   }, []);
 
-  const login = async (token: string) => {
-    const tokenDecode = decodeToken(token) 
-    if (tokenDecode) {
-      console.log('perfil descodificado',tokenDecode.perfil )
+ const login = async (token: string) => {
+  const tokenDecode = decodeToken(token);
+
+  if (tokenDecode) {
+    console.log('perfil descodificado', tokenDecode.perfil);
+
     await AsyncStorage.setItem('token', token);
     setUserInfo(tokenDecode);
-    await AsyncStorage.setItem('perfil', tokenDecode.perfil);
-    setIsLoggedIn(true);}
 
-  };
+    const perfil = tokenDecode.perfil;
+    if (typeof perfil === 'string' && perfil.trim() !== '') {
+      await AsyncStorage.setItem('perfil', perfil);
+    } else {
+      console.warn('Perfil no definido o vacío, no se guarda en AsyncStorage');
+    }
+
+    setIsLoggedIn(true);
+  }
+};
+
 
   const logout = async () => {
     await AsyncStorage.removeItem('token');

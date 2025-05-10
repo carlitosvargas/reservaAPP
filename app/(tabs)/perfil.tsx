@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
+import BackButton from '@/components/BackButton';
 
 export default function PerfilesScreen() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function PerfilesScreen() {
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <Text style={styles.title}>Hola {userInfo?.nombre}!</Text>
 
       <View style={styles.profileBox}>

@@ -1,9 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
-import { obtenerViajesId } from '../services/viajeServices';
-import { crearReserva } from '../services/reservaService';
-import { useAuth } from '../context/AuthContext';
+import { obtenerViajesId } from '../../services/viajeServices';
+import { crearReserva } from '../../services/reservaService';
+import { useAuth } from '../../context/AuthContext';
+import BackButton from '../../components/BackButton';
 
 interface Pasajero {
   nombre: string;
@@ -116,6 +117,7 @@ export default function DetalleViaje() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <BackButton />
       <TouchableOpacity onPress={() => router.push('/(tabs)/viajes')} style={styles.volverButton}>
         <Text style={styles.volverText}>{'< Volver'}</Text>
       </TouchableOpacity>

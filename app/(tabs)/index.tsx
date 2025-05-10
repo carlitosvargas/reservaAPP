@@ -1,7 +1,7 @@
 import React from 'react';
 import {View,Text,ImageBackground,StyleSheet,Pressable,ActivityIndicator,Dimensions,} from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import Login from '../login';
 
 const { width, height } = Dimensions.get('window');

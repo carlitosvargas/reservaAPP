@@ -3,8 +3,8 @@ import {View,Text,TextInput,Pressable,StyleSheet,useColorScheme,KeyboardAvoiding
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { useAuth } from './context/AuthContext';
-import { loginUsuario } from './services/authService';
+import { useAuth } from '../context/AuthContext';
+import { loginUsuario } from '../services/authService';
 
 export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => void }) {
 
@@ -22,16 +22,14 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
 
 
      try {
-      const { token, perfil } = await loginUsuario(usuario, contrasenia);
+      const { token} = await loginUsuario(usuario, contrasenia);
         
           //const { token, perfil } = response.data;
-          await login(token, perfil);
+          await login(token);
     
           // Guardar token y perfil en almacenamiento local
           await AsyncStorage.setItem('token', token);
-          await AsyncStorage.setItem('perfil', perfil);
           console.log(token)
-          console.log(perfil);
           if (onLoginSuccess) {
             onLoginSuccess(); // informa al index que se inició sesión
           }

@@ -1,8 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
-import { obtenerUsuarioPorId, actualizarUsuario } from '../services/usuarioService'; 
-import { useAuth } from '../context/AuthContext';
+import { obtenerUsuarioPorId, actualizarUsuario } from '../../services/usuarioService'; 
+import { useAuth } from '../../context/AuthContext';
+import BackButton from '../../components/BackButton';
 
 export default function ModificarUsuario() {
   const { id } = useLocalSearchParams();
@@ -55,6 +56,7 @@ export default function ModificarUsuario() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <BackButton />
       <Text style={styles.title}>Modificar Pasajero</Text>
 
       <TextInput

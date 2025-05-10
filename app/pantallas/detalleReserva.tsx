@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator,TouchableOpacity  } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext';
-import { obtenerPasajerosPorViaje } from '../services/viajeServices'; // Asegúrate de que esta función esté definida
+import { useAuth } from '../../context/AuthContext';
+import { obtenerPasajerosPorViaje } from '../../services/viajeServices'; // Asegúrate de que esta función esté definida
+import BackButton from '../../components/BackButton';
 
 interface Pasajero {
   id: number;
@@ -61,6 +62,7 @@ export default function DetalleReserva() {
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <Text style={styles.subTitle}>Pasajeros:</Text>
       <FlatList
         data={pasajeros}

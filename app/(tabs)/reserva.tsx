@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, Pressable } from 'react-native';
-import { obtenerReservas } from '../services/reservaService';
-import { useAuth } from '../context/AuthContext';
+import { obtenerReservas } from '../../services/reservaService';
+import { useAuth } from '../../context/AuthContext';
 import { router } from 'expo-router';
+import BackButton from '@/components/BackButton';
 
 interface Viaje {
   id: number;
@@ -67,6 +68,7 @@ const MisReservas = () => {
 
   return (
     <View style={styles.container}>
+      <BackButton />
       <FlatList
         data={reservas}
         keyExtractor={(item) => item.id.toString()}

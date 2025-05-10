@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View,Text,TextInput,Pressable,StyleSheet,FlatList,useColorScheme,ScrollView,ActivityIndicator,KeyboardAvoidingView,Platform,} from 'react-native';
-import { listarViajes } from '../services/viajeServices';
+import { listarViajes } from '../../services/viajeServices';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import BackButton from '@/components/BackButton';
 
 
 interface Viaje {
@@ -54,16 +55,13 @@ interface Viaje {
     };
   
     return (
+      
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-
-          {/* Botón "Volver" con icono de flecha en la esquina superior izquierda */}
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Icon name="arrow-left" size={20} color="#333" /> {/* Icono de flecha */}
-        </Pressable>
+         <BackButton />
 
           <Text style={styles.title}>Buscar Viajes</Text>
   
