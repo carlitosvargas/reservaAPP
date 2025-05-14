@@ -19,21 +19,54 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
 
+/*
+useEffect(() => {
+  const checkStorage = async () => {
+    
+    const allKeys = await AsyncStorage.getAllKeys();
+    const allData = await AsyncStorage.multiGet(allKeys);
+    console.log('Contenido de AsyncStorage context:', allData);
 
+  };
+  checkStorage();
+}, []);*/
 
+useEffect(() => {
+  
+  const checkToken = async () => {
+    const allKeys = await AsyncStorage.getAllKeys();
+    const allData = await AsyncStorage.multiGet(allKeys);
+    //console.log('Contenido de AsyncStorage context:', allData);
+    const token = await AsyncStorage.getItem('token');
+    if (token) {
+      const decoded = decodeToken(token);
+      const currentTime = Math.floor(Date.now() / 1000); // tiempo actual en segundos
 
-  useEffect(() => {
-    const checkToken = async () => {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        const decoded = decodeToken(token);
+      const tokenExp = Number(decoded?.exp); 
+
+      if (tokenExp && tokenExp < currentTime) {
+        // Token expirado
+        console.log('entro al if')
+         const allKeys = await AsyncStorage.getAllKeys();
+        const allData = await AsyncStorage.multiGet(allKeys);
+         //console.log('Contenido de AsyncStorage dentro:', allData);
+    
+        await AsyncStorage.removeItem('token');
+         await AsyncStorage.removeItem('perfil');
+        setIsLoggedIn(false);
+        setUserInfo(null);
+      } else {
+        // Token válido
         setUserInfo(decoded);
         setIsLoggedIn(true);
       }
-      setIsLoading(false);
-    };
-    checkToken();
-  }, []);
+    }
+    //console.log('despues del if',allData)
+    setIsLoading(false);
+  };
+
+  checkToken();
+}, []);
 
  const login = async (token: string) => {
   const tokenDecode = decodeToken(token);

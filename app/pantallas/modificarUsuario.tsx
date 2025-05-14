@@ -17,15 +17,19 @@ export default function ModificarUsuario() {
     email: '',
     telefono: '',
     usuario: '',
-    contrasenia: '',
-    perfil_id:'',
   });
 
   useEffect(() => {
     const cargarDatos = async () => {
       try {
         const datos = await obtenerUsuarioPorId(Number(id)); 
-        setUsuario(datos);
+        const usuarioData = datos[0];
+        setUsuario({ nombre: usuarioData.nombre ?? '',
+                  apellido: usuarioData.apellido ?? '',
+                  email: usuarioData.email ?? '',
+                 telefono: usuarioData.telefono.toString() ?? '',
+                 usuario: usuarioData.usuario ?? '',
+                 });
       } catch (error) {
         Alert.alert('Error', 'No se pudo cargar el usuario');
       } finally {
@@ -42,9 +46,10 @@ export default function ModificarUsuario() {
 
   const handleGuardar = async () => {
     try {
+      console.log('ver user antes de guardar',usuario)
       await actualizarUsuario(Number(id), usuario); 
       Alert.alert('Éxito', 'Perfil actualizado correctamente');
-      router.back();
+      router.push('/(tabs)/perfil');
     } catch (error) {
       Alert.alert('Error', 'No se pudo actualizar el Perfil');
     }
@@ -57,26 +62,26 @@ export default function ModificarUsuario() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <BackButton />
-      <Text style={styles.title}>Modificar Pasajero</Text>
+      <Text style={styles.title}>Editar Perfil</Text>
 
       <TextInput
         style={styles.input}
         placeholder="Nombre"
-        value={usuario.nombre}
+        value={usuario.nombre ?? ''}
         onChangeText={text => handleChange('nombre', text)}
       />
 
       <TextInput
         style={styles.input}
         placeholder="Apellido"
-        value={usuario.apellido}
+        value={usuario.apellido ?? ''}
         onChangeText={text => handleChange('apellido', text)}
       />
 
       <TextInput
         style={styles.input}
         placeholder="Emali"
-        value={usuario.email}
+        value={usuario.email ?? ''}
         onChangeText={text => handleChange('email', text)}
         
       />
@@ -84,7 +89,7 @@ export default function ModificarUsuario() {
       <TextInput
         style={styles.input}
         placeholder="Teléfono"
-        value={usuario.telefono}
+        value={usuario.telefono ?? ''}
         onChangeText={text => handleChange('telefono', text)}
         keyboardType="numeric"
       />
@@ -92,16 +97,10 @@ export default function ModificarUsuario() {
       <TextInput
         style={styles.input}
         placeholder="Usuario"
-        value={usuario.usuario}
+        value={usuario.usuario ?? ''}
         onChangeText={text => handleChange('usuario', text)}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        value={usuario.contrasenia}
-        onChangeText={text => handleChange('contrasenia', text)}
-      />
 
      
 
@@ -121,6 +120,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontWeight: 'bold',
     textAlign: 'center',
+    color: 'white'
   },
   input: {
     borderWidth: 1,
@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     marginBottom: 15,
+     backgroundColor: 'white'
   },
   button: {
     backgroundColor: '#007bff',

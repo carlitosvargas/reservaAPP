@@ -118,9 +118,6 @@ export default function DetalleViaje() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <BackButton />
-      <TouchableOpacity onPress={() => router.push('/(tabs)/viajes')} style={styles.volverButton}>
-        <Text style={styles.volverText}>{'< Volver'}</Text>
-      </TouchableOpacity>
 
       <Text style={styles.title}>Detalle del Viaje</Text>
 

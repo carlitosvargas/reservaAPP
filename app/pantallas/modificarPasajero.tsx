@@ -52,7 +52,7 @@ export default function ModificarPasajero() {
       await actualizarReserva(Number(id), pasajero); 
       
       Alert.alert('Éxito', 'Pasajero actualizado correctamente');
-      router.back();
+      router.push('/pantallas/detalleReserva');
     } catch (error) {
       Alert.alert('Error', 'No se pudo actualizar el pasajero');
     }

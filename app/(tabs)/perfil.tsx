@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import BackButton from '@/components/BackButton';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PerfilesScreen() {
   const router = useRouter();
@@ -10,13 +11,16 @@ export default function PerfilesScreen() {
   const handleLogout = async () => {
     await logout();
     router.replace('/login');
+       const allKeys = await AsyncStorage.getAllKeys();
+    const allData = await AsyncStorage.multiGet(allKeys);
+    console.log('Contenido de AsyncStorage perfil:', allData);
   };
 
 
 
   return (
     <View style={styles.container}>
-      <BackButton />
+ 
       <Text style={styles.title}>Hola {userInfo?.nombre}!</Text>
 
       <View style={styles.profileBox}>
@@ -27,7 +31,7 @@ export default function PerfilesScreen() {
         <Text style={styles.value}>{userInfo?.email}</Text>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push({pathname:'/pantallas/modificarUsuario',params:{id:userInfo.id}})}>
         <Text style={styles.buttonText}>Editar Perfil</Text>
       </TouchableOpacity>
 

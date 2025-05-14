@@ -12,17 +12,19 @@ import { API_URL } from '../environment/config';
     });
     return response.data;
   };
+
+
   export const actualizarUsuario = async (id: number, usuarioData: any) => {
     try {
     const token = await AsyncStorage.getItem('token');
     const response = await axios.put(`${API_URL}/usuarios/actualizarUsuario/${id}`,usuarioData, {
-      headers: {
+      headers: {                                      
         Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
      } catch (error: any) {
-       console.error('Error al actualizar la reserva', error.response?.data || error.message);
+       console.error('Error al actualizar el usuario', error.response?.data || error.message);
     throw error;
   }
   };
