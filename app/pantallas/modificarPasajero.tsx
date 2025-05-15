@@ -64,8 +64,6 @@ export default function ModificarPasajero() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <BackButton />
-      <Text style={styles.title}>Actualizar Pasajero</Text>
 
       <TextInput
       style={styles.input}

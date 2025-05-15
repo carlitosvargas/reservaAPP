@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Pressable,
   Animated,
+  TouchableOpacity,
 } from 'react-native';
 import { obtenerReservas } from '../../services/reservaService';
 import { useAuth } from '../../context/AuthContext';
@@ -104,7 +105,7 @@ const MisReservas = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titleCenter}>Mis Reservas</Text>
+     
       <FlatList
         data={reservas}
         keyExtractor={(item) => item.id.toString()}
@@ -114,23 +115,33 @@ const MisReservas = () => {
             <Text style={styles.title}>Destino: {item.viaje.destinoLocalidad}</Text>
 
             <Animated.View style={{ overflow: 'hidden', height: animatedHeight(item.id) }}>
-              <Text>Reserva #{item.id}</Text>
-              <Text>Fecha de Reserva: {item.fechaReserva}</Text>
-              <Text>Fecha del Viaje: {item.viaje.fechaViaje}</Text>
-              <Text>Hora de Salida: {item.viaje.horarioSalida}</Text>
-              <Text>Chofer: {item.viaje.chofer}</Text>
-              <Text>Precio: ${item.viaje.precio}</Text>
+            <Text>Reserva #{item.id}</Text>
+            <Text>Fecha de Reserva: {item.fechaReserva}</Text>
+            <Text>Fecha del Viaje: {item.viaje.fechaViaje}</Text>
+            <Text>Hora de Salida: {item.viaje.horarioSalida}</Text>
+            <Text>Chofer: {item.viaje.chofer}</Text>
+            <Text>Precio: ${item.viaje.precio}</Text>
 
-              <Pressable
-                onPress={() =>
-                  router.push({ pathname: '/pantallas/detalleReserva', params: { id: item.viaje.id } })
-                }
-                style={styles.botonDetalle}
-              >
-                <Ionicons name="add-circle-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
-                <Text style={styles.textoBotonDetalle}>Ver Detalle</Text>
-              </Pressable>
-            </Animated.View>
+  <View style={styles.botonesContainer}>
+    <Pressable
+      onPress={() =>
+        router.push({ pathname: '/pantallas/detalleReserva', params: { id: item.viaje.id } })
+      }
+      style={styles.botonDetalle}
+    >
+      <Ionicons name="add-circle-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+      <Text style={styles.textoBotonDetalle}>Ver Detalle</Text>
+    </Pressable>
+
+    <TouchableOpacity
+      style={styles.botonPagar}
+      onPress={() => router.push({ pathname: '/pantallas/ventaReserva', params: { id: item.id } })}
+    >
+      <Text style={styles.botonTexto}>Pagar</Text>
+    </TouchableOpacity>
+  </View>
+</Animated.View>
+
           </Pressable>
         )}
       />
@@ -161,20 +172,48 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  botonDetalle: {
-    marginTop: 10,
-    backgroundColor: '#007bff',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-  },
   textoBotonDetalle: {
     color: '#fff',
     fontWeight: 'bold',
   },
+ 
+  botonTexto: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  botonesContainer: {
+  flexDirection: 'row',
+  marginTop: 10,
+  gap: 10,
+
+},
+
+botonDetalle: {
+  backgroundColor: '#007bff',
+  paddingVertical: 8,
+  paddingHorizontal: 12,
+  borderRadius: 6,
+  flexDirection: 'row',
+  alignItems: 'center',
+  flex: 0.2,
+  justifyContent: 'center',
+  width: '20%'
+},
+
+botonPagar: {
+  backgroundColor: '#33c951',
+  paddingVertical: 8,
+  paddingHorizontal: 15,
+  borderRadius: 6,
+  paddingLeft: 3,
+  marginLeft: 8,
+  justifyContent: 'center',
+  alignItems:'center',
+  width: '20%',
+  flex: 0.2
+  
+},
+
 });
 
 export default MisReservas;

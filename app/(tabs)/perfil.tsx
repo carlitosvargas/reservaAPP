@@ -27,8 +27,7 @@ export default function PerfilesScreen() {
         <Text style={styles.label}>Nombre:</Text>
         <Text style={styles.value}>{userInfo?.nombre}</Text>
 
-        <Text style={styles.label}>Correo:</Text>
-        <Text style={styles.value}>{userInfo?.email}</Text>
+        
       </View>
 
       <TouchableOpacity style={styles.button} onPress={() => router.push({pathname:'/pantallas/modificarUsuario',params:{id:userInfo.id}})}>

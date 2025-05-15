@@ -87,7 +87,8 @@ export default function DetalleViaje() {
       };
 
       const response = await crearReserva(reservaData);
-      const mensaje = response?.mensaje || 'Tu reserva fue creada correctamente.';
+      const mensaje = response?.mensaje || 'Tu reserva fue creada en Mis Reservas pendiente de pago.';
+      
 
       Alert.alert('Reserva exitosa', mensaje, [
         {
@@ -117,7 +118,7 @@ export default function DetalleViaje() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <BackButton />
+     
 
       <Text style={styles.title}>Detalle del Viaje</Text>
 

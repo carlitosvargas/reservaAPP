@@ -99,7 +99,7 @@ export default function ViajesScreen() {
         }}
       >
        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Buscar Viajes</Text>
+        
 
         <View style={styles.inputContainer}>
           <TextInput

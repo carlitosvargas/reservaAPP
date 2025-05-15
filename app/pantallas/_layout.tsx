@@ -8,7 +8,9 @@ export default function PantallaLayout() {
   return (
     <AuthProvider>
      
-        <Slot />
+        <Stack screenOptions={{
+          headerShown: false, //oculta el nombre de los archivos
+        }}/>
     
     </AuthProvider>
   );

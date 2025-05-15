@@ -62,7 +62,7 @@ export default function DetalleReserva() {
 
   return (
     <View style={styles.container}>
-      <BackButton />
+      
       <Text style={styles.subTitle}>Pasajeros:</Text>
       <FlatList
         data={pasajeros}
@@ -75,12 +75,15 @@ export default function DetalleReserva() {
               <Text>Ubicación Origen: {item.ubicacionOrigen}</Text>
               <Text>Ubicación Destino: {item.ubicacionDestino}</Text>
             </View>
+           
+
             <TouchableOpacity
               style={styles.botonEditar}
               onPress={() => router.push({pathname:'/pantallas/modificarPasajero',params:{id:item.id}})}
             >
               <Text style={styles.botonTexto}>Editar</Text>
             </TouchableOpacity>
+             
           </View>
         )}
       />
@@ -122,6 +125,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 5,
   },
+    
   botonTexto: {
     color: '#fff',
     fontWeight: 'bold',

@@ -74,8 +74,8 @@ useEffect(() => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <BackButton />
-      <Text style={styles.title}>Editar Perfil</Text>
+     
+     
 
       <TextInput
         style={styles.input}

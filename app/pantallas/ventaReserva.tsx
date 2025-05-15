@@ -1,0 +1,106 @@
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import BackButton from '../../components/BackButton';
+import { crearVenta } from '../../services/ventaService';
+
+export default function CrearVenta() {
+ const { id } = useLocalSearchParams();
+  const [formaPago, setFormaPago] = useState('');
+  const [descuento, setDescuento] = useState('0');
+  const router = useRouter();
+  
+
+
+  const guardarVenta = async () => {
+      try {
+
+    if (!formaPago || !descuento) {
+      Alert.alert('Campos requeridos', 'Por favor completa todos los campos');
+      return;
+    }
+
+     const ventaData = {
+            reserva_id: Number(id),
+            formaPago,
+            descuento: Number(descuento),
+            };
+
+        // Aquí podrías enviar la info al backend o a otra pantalla
+        console.log('Forma de pago:', formaPago);
+        console.log('Descuento:', descuento);
+        await crearVenta(ventaData); 
+        Alert.alert('Venta registrada', 'La venta fue registrada correctamente');
+        
+       
+        router.push({pathname: '/pantallas/detalleVenta',params: { id: id?.toString() },
+});
+
+      } catch (error) {
+        Alert.alert('Error', 'No se pudo actualizar el pasajero');
+      }
+    };
+  
+
+  return (
+    <View style={styles.container}>
+     
+
+      <Text style={styles.label}>Forma de pago:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Ej: Efectivo, Tarjeta, Transferencia"
+        value={formaPago}
+        onChangeText={setFormaPago}
+      />
+
+      
+       <Text style={styles.label}>Descuento (%):</Text>
+        <TextInput
+        style={[styles.input, { backgroundColor: '#f0f0f0' }]}
+        value={descuento}
+        editable={false}
+        />
+
+      <TouchableOpacity style={styles.botonConfirmar} onPress={guardarVenta}>
+        <Text style={styles.botonTexto}>Confirmar Venta</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    marginTop: 12,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 10,
+    marginTop: 6,
+  },
+  botonConfirmar: {
+    marginTop: 24,
+    backgroundColor: '#28a745',
+    padding: 14,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  botonTexto: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});
