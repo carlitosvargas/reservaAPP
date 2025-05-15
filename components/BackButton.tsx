@@ -1,21 +1,14 @@
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { router } from 'expo-router';
 
 export default function BackButton() {
-  const navigation = useNavigation();
-
   const handleBack = () => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      // Si no puede ir atrás, puedes decidir redirigir o no hacer nada
-      console.log('No hay pantalla anterior para volver');
-    }
+    router.back(); // Usa el sistema de navegación de Expo Router
   };
 
   return (
-    <TouchableOpacity style={styles.button} onPress={handleBack}>
+    <TouchableOpacity style={styles.button} onPress={() => router.back()}>
       <Ionicons name="arrow-back" size={24} color="white" />
     </TouchableOpacity>
   );

@@ -9,6 +9,8 @@ export default function ModificarUsuario() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { userInfo } = useAuth();
+  const [perfilId, setPerfilId] = useState<any | null>(null);
+  
 
   const [loading, setLoading] = useState(true);
   const [usuario, setUsuario] = useState({
@@ -17,28 +19,40 @@ export default function ModificarUsuario() {
     email: '',
     telefono: '',
     usuario: '',
+    perfil_id:'',
   });
 
-  useEffect(() => {
-    const cargarDatos = async () => {
-      try {
-        const datos = await obtenerUsuarioPorId(Number(id)); 
-        const usuarioData = datos[0];
-        setUsuario({ nombre: usuarioData.nombre ?? '',
-                  apellido: usuarioData.apellido ?? '',
-                  email: usuarioData.email ?? '',
-                 telefono: usuarioData.telefono.toString() ?? '',
-                 usuario: usuarioData.usuario ?? '',
-                 });
-      } catch (error) {
-        Alert.alert('Error', 'No se pudo cargar el usuario');
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    cargarDatos();
-  }, []);
+useEffect(() => {
+  const cargarDatos = async () => {
+    try {
+
+      const datos = await obtenerUsuarioPorId(Number(id)); 
+      const usuarioData = datos[0];
+
+      setPerfilId(usuarioData.perfil_id); 
+    
+      
+
+      setUsuario({
+        nombre: usuarioData.nombre ?? '',
+        apellido: usuarioData.apellido ?? '',
+        email: usuarioData.email ?? '',
+        telefono: usuarioData.telefono?.toString() ?? '',
+        usuario: usuarioData.usuario ?? '',
+        perfil_id: usuarioData.perfil_id?.toString() ?? '',
+      });
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo cargar el usuario');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  cargarDatos();
+}, []);
+
+
 
   const handleChange = (campo: string, valor: string) => {
     setUsuario(prev => ({ ...prev, [campo]: valor }));
@@ -46,7 +60,6 @@ export default function ModificarUsuario() {
 
   const handleGuardar = async () => {
     try {
-      console.log('ver user antes de guardar',usuario)
       await actualizarUsuario(Number(id), usuario); 
       Alert.alert('Éxito', 'Perfil actualizado correctamente');
       router.push('/(tabs)/perfil');
@@ -100,6 +113,17 @@ export default function ModificarUsuario() {
         value={usuario.usuario ?? ''}
         onChangeText={text => handleChange('usuario', text)}
       />
+
+     {perfilId == 1 && (
+     <TextInput
+    style={styles.input}
+    placeholder="Perfil del Usuario"
+    value={usuario.perfil_id}
+    onChangeText={text => handleChange('perfil', text)}
+    keyboardType="numeric"
+     />
+    )}
+
 
 
      

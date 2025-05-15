@@ -1,40 +1,23 @@
-/*import { Slot, Stack } from 'expo-router';
+import { Slot, usePathname } from 'expo-router';
+import { View, Text, StyleSheet } from 'react-native';
 import { AuthProvider } from '../context/AuthContext';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
-import { useSegments } from 'expo-router';
-import { View } from 'react-native';
-import BackButton from '../components/BackButton';
 
 
 export default function RootLayout() {
+  const pathname = usePathname();
 
+  const esLogin = pathname === '/login';
+ 
 
-
-  return (
-    <AuthProvider>
-      <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar style="auto" />
-        <Slot />
-      </SafeAreaView>
-    </AuthProvider>
-  );
-}*/
-// app/_layout.tsx
-import { Slot } from 'expo-router';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { AuthProvider } from '../context/AuthContext';
-import BackButton from '../components/BackButton'; // Si tienes un componente de BackButton
-
-export default function RootLayout() {
   return (
     <AuthProvider>
       <View style={styles.container}>
-        <View style={styles.header}>
-          {/* BackButton solo se muestra si se puede volver */}
-          <BackButton />
-          <Text style={styles.title}>Mi App 🚀</Text>
-        </View>
+        {/* Oculta encabezado si es login */}
+        {!esLogin && (
+          <View style={styles.header}>
+            <Text style={styles.title}>V&V Reservas 🚌</Text>
+          </View>
+        )}
         <View style={styles.content}>
           <Slot />
         </View>
@@ -42,6 +25,7 @@ export default function RootLayout() {
     </AuthProvider>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -63,6 +47,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding:0,
   },
 });
