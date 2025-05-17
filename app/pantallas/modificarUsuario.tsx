@@ -1,8 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { obtenerUsuarioPorId, actualizarUsuario } from '../../services/usuarioService'; 
 import { useAuth } from '../../context/AuthContext';
+import { Picker } from '@react-native-picker/picker';
 import BackButton from '../../components/BackButton';
 
 export default function ModificarUsuario() {
@@ -114,19 +115,27 @@ useEffect(() => {
         onChangeText={text => handleChange('usuario', text)}
       />
 
-     {perfilId == 1 && (
-     <TextInput
-    style={styles.input}
-    placeholder="Perfil del Usuario"
-    value={usuario.perfil_id}
-    onChangeText={text => handleChange('perfil', text)}
-    keyboardType="numeric"
-     />
+          {perfilId == 1 && (
+              <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={usuario.perfil_id}
+            onValueChange={(itemValue) =>
+              setUsuario((prev) => ({ ...prev, perfil_id: itemValue }))
+            }
+            mode="dropdown" // importante para iOS
+            style={styles.picker}
+          >
+            <Picker.Item label="Seleccione un perfil" value="" />
+            <Picker.Item label="Administrador" value="1" />
+            <Picker.Item label="Empresa" value="2" />
+            <Picker.Item label="Mostrador" value="3" />
+            <Picker.Item label="Chofer" value="4" />
+            <Picker.Item label="Cliente" value="5" />
+          </Picker>
+        </View>
+
     )}
 
-
-
-     
 
       <TouchableOpacity style={styles.button} onPress={handleGuardar}>
         <Text style={styles.buttonText}>Guardar Cambios</Text>
@@ -164,4 +173,29 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
+ 
+  inputLike: {
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 5,
+  marginBottom: 15,
+  paddingHorizontal: 8,
+  height: 50,
+  justifyContent: 'center',
+  backgroundColor: '#fff',
+},
+
+pickerContainer: {
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 5,
+  marginBottom: 15,
+  overflow: 'hidden',
+},
+
+picker: {
+  height: 50,
+  width: '100%',
+  color: '#000',
+},
 });

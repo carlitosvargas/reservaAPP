@@ -1,29 +1,36 @@
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { useRouter, usePathname } from 'expo-router';
+import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import React from 'react';
 
 export default function BackButton() {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Mapeo de rutas actuales a rutas de destino personalizadas
+  const rutasPersonalizadas: Record<string, string> = {
+    '/pantallas/detalleReserva': '/reserva',
+    '/pantallas/modificarUsuario': '/perfil',
+    '/pantallas/realizarReserva': '/viajes',
+    '/pantallas/ventaReserva' : '/reserva',
+    '/pantallas/detalleVenta': '/reserva',
+    
+    
+    // más rutas si necesitás
+  };
+
   const handleBack = () => {
-    router.back(); // Usa el sistema de navegación de Expo Router
+    if (rutasPersonalizadas[pathname]) {
+     router.replace(rutasPersonalizadas[pathname] as any);
+ // redirige sin dejar la ruta anterior en el stack
+    } else {
+      router.back(); // comportamiento por defecto
+    }
   };
 
   return (
-    <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+    <Pressable onPress={handleBack}>
       <Ionicons name="arrow-back" size={24} color="white" />
-    </TouchableOpacity>
+    </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    position: 'absolute',
-    top: 10,
-    left: 20,
-    zIndex: 10,
-    padding: 10,
-    borderRadius: 20,
-    backgroundColor: '#007bff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

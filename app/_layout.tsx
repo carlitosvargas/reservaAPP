@@ -1,9 +1,15 @@
 import { Slot, usePathname, useNavigation, router } from 'expo-router';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthProvider } from '../context/AuthContext';
+import BackButton from '@/components/BackButton';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme(); // 'light' | 'dark' | null
+
+  const isDark = colorScheme === 'dark';
   const pathname = usePathname();
   const navigation = useNavigation();
 
@@ -24,13 +30,17 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <StatusBar
+           style={isDark ? 'light' : 'dark'} // texto en blanco para fondo oscuro, negro para fondo claro
+        backgroundColor={isDark ? '#000' : '#fff'} // fondo acorde al tema
+        translucent={false}
+      />
       <View style={styles.container}>
         {!esLogin && (
           <View style={styles.header}>
             {esPantallaSecundaria && (
-              <Pressable onPress={() => router.back()}>
-                <Ionicons name="arrow-back" size={24} color="#fff" />
-              </Pressable>
+              <BackButton />
             )}
             <Text style={[styles.title, esPantallaSecundaria && { marginLeft: 10 }]}>
               {tituloHeader}
@@ -41,6 +51,7 @@ export default function RootLayout() {
           <Slot />
         </View>
       </View>
+       </SafeAreaView>
     </AuthProvider>
   );
 }
@@ -48,6 +59,7 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+   
   },
   header: {
     backgroundColor: '#007AFF',
@@ -65,6 +77,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 0,
-  },
+    padding: 0,
+  },
 });

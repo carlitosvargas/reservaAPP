@@ -13,6 +13,7 @@ import { obtenerReservas } from '../../services/reservaService';
 import { useAuth } from '../../context/AuthContext';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { existeReservaVenta } from '../../services/ventaService';
 
 interface Viaje {
   id: number;
@@ -29,7 +30,11 @@ interface Reserva {
   id: number;
   fechaReserva: string;
   viaje: Viaje;
+  tieneVenta?: boolean;  
 }
+
+
+
 
 const MisReservas = () => {
   const [reservas, setReservas] = useState<Reserva[]>([]);
@@ -49,7 +54,19 @@ const MisReservas = () => {
 
       try {
         const reservasData = await obtenerReservas(userInfo.id);
-        setReservas(reservasData);
+
+        // Para cada reserva consultamos si tiene venta
+        const reservasConVenta = await Promise.all(
+          reservasData.map(async (reserva: Reserva) => {
+            const tieneVenta = await existeReservaVenta(reserva.id);
+            return {
+              ...reserva,
+              tieneVenta,
+            };
+          })
+        );
+
+        setReservas(reservasConVenta);
       } catch (error) {
         setError('Hubo un problema al obtener las reservas');
       } finally {
@@ -105,7 +122,6 @@ const MisReservas = () => {
 
   return (
     <View style={styles.container}>
-     
       <FlatList
         data={reservas}
         keyExtractor={(item) => item.id.toString()}
@@ -115,33 +131,57 @@ const MisReservas = () => {
             <Text style={styles.title}>Destino: {item.viaje.destinoLocalidad}</Text>
 
             <Animated.View style={{ overflow: 'hidden', height: animatedHeight(item.id) }}>
-            <Text>Reserva #{item.id}</Text>
-            <Text>Fecha de Reserva: {item.fechaReserva}</Text>
-            <Text>Fecha del Viaje: {item.viaje.fechaViaje}</Text>
-            <Text>Hora de Salida: {item.viaje.horarioSalida}</Text>
-            <Text>Chofer: {item.viaje.chofer}</Text>
-            <Text>Precio: ${item.viaje.precio}</Text>
+              <Text>Reserva #{item.id}</Text>
+              <Text>Fecha de Reserva: {item.fechaReserva}</Text>
+              <Text>Fecha del Viaje: {item.viaje.fechaViaje}</Text>
+              <Text>Hora de Salida: {item.viaje.horarioSalida}</Text>
+              <Text>Chofer: {item.viaje.chofer}</Text>
+              <Text>Precio: ${item.viaje.precio}</Text>
 
-  <View style={styles.botonesContainer}>
-    <Pressable
-      onPress={() =>
-        router.push({ pathname: '/pantallas/detalleReserva', params: { id: item.viaje.id } })
-      }
-      style={styles.botonDetalle}
-    >
-      <Ionicons name="add-circle-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
-      <Text style={styles.textoBotonDetalle}>Ver Detalle</Text>
-    </Pressable>
+              <View style={styles.botonesContainer}>
+                <Pressable
+                  onPress={() =>
+                    router.push({ pathname: '/pantallas/detalleReserva', params: { id: item.viaje.id } })
+                  }
+                  style={styles.botonDetalle}
+                >
+                  <Ionicons
+                    name="add-circle-outline"
+                    size={20}
+                    color="#fff"
+                    style={{ marginRight: 6 }}
+                  />
+                  <Text style={styles.textoBotonDetalle}>Ver Detalle</Text>
+                </Pressable>
 
-    <TouchableOpacity
-      style={styles.botonPagar}
-      onPress={() => router.push({ pathname: '/pantallas/ventaReserva', params: { id: item.id } })}
-    >
-      <Text style={styles.botonTexto}>Pagar</Text>
-    </TouchableOpacity>
-  </View>
-</Animated.View>
-
+                {!item.tieneVenta ? (
+                  <TouchableOpacity
+                    style={styles.botonPagar}
+                    onPress={() =>
+                      router.push({ pathname: '/pantallas/ventaReserva', params: { id: item.id } })
+                    }
+                  >
+                    <Ionicons name="card-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+                    <Text style={styles.botonTexto}>Pagar</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <Pressable
+                    style={styles.botonVerCompra}
+                    onPress={() =>
+                      router.push({ pathname: '/pantallas/detalleVenta', params: { id: item.id } })
+                    }
+                  >
+                    <Ionicons
+                      name="receipt-outline"
+                      size={20}
+                      color="#fff"
+                      style={{ marginRight: 6 }}
+                    />
+                    <Text style={styles.textoBotonDetalle}>Ver Compra</Text>
+                  </Pressable>
+                )}
+              </View>
+            </Animated.View>
           </Pressable>
         )}
       />
@@ -165,55 +205,46 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  titleCenter: {
-    color: 'black',
-    fontSize: 24,
-    marginBottom: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
   textoBotonDetalle: {
     color: '#fff',
     fontWeight: 'bold',
   },
- 
   botonTexto: {
     color: '#fff',
     fontWeight: 'bold',
   },
   botonesContainer: {
-  flexDirection: 'row',
-  marginTop: 10,
-  gap: 10,
-
-},
-
-botonDetalle: {
-  backgroundColor: '#007bff',
-  paddingVertical: 8,
-  paddingHorizontal: 12,
-  borderRadius: 6,
-  flexDirection: 'row',
-  alignItems: 'center',
-  flex: 0.2,
-  justifyContent: 'center',
-  width: '20%'
-},
-
-botonPagar: {
-  backgroundColor: '#33c951',
-  paddingVertical: 8,
-  paddingHorizontal: 15,
-  borderRadius: 6,
-  paddingLeft: 3,
-  marginLeft: 8,
-  justifyContent: 'center',
-  alignItems:'center',
-  width: '20%',
-  flex: 0.2
-  
-},
-
+    flexDirection: 'row',
+    marginTop: 10,
+    gap: 10,
+  },
+  botonDetalle: {
+    backgroundColor: '#007bff',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 0.2,
+    justifyContent: 'center',
+    width: '20%',
+  },
+  botonPagar: {
+   flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#28a745',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+  },
+  botonVerCompra: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#28a745',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+  },
 });
 
 export default MisReservas;

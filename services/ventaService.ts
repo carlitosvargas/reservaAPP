@@ -31,3 +31,23 @@ import { API_URL } from '../environment/config';
   });
   return response.data;
 };
+
+
+
+export const existeReservaVenta = async (id: number): Promise<boolean> => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/ventas/existeReservaVenta/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Suponiendo que tu backend devuelve { existe: true } o { existe: false }
+    return response.data.existe === true;
+  } catch (error) {
+    console.error('Error al verificar si existe la venta para la reserva:', error);
+    // Si hay un error, asumimos que no existe venta
+    return false;
+  }
+};
