@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList,ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-
-import BackButton from '../../components/BackButton';
 import { obtenerVentaDetalle } from '../../services/ventaService';
+import { generarHTMLComprobante  } from '../utils/imprimirComprobante';
+import { Button, Alert } from 'react-native';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
+
+
+
 
 export default function DetalleVenta() {
   const { id } = useLocalSearchParams();
@@ -90,9 +95,31 @@ interface VentaDetalleGeneral {
   } = data;
  }
 
+
+
+const handleDownload = async () => {
+  if (!data) return;
+
+  const htmlContent = generarHTMLComprobante(data);
+
+
+  try {
+    const { uri } = await Print.printToFileAsync({ html: htmlContent });
+    await Sharing.shareAsync(uri);
+  } catch (error) {
+    Alert.alert('Error', 'No se pudo generar el comprobante.');
+    console.error(error);
+  }
+};
+
+
+
+
+
   return (
 
-   <ScrollView contentContainerStyle={styles.container}>
+   <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent}>
+
   <Text style={styles.successMessage}>✅ ¡Compra realizada con éxito!</Text>
 
   <View style={styles.receipt}>
@@ -138,6 +165,10 @@ interface VentaDetalleGeneral {
 
     <View style={styles.separator} />
     <Text style={styles.footer}>¡Gracias por su compra!</Text>
+  <Button title="📄 Descargar Comprobante" onPress={handleDownload} />
+
+
+
   </View>
 </ScrollView>
 
@@ -151,6 +182,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     alignItems: 'center',
   },
+  scrollContent: {
+  padding: 20,
+  backgroundColor: '#f5f5f5',
+  alignItems: 'center',
+},
   successMessage: {
     fontSize: 18,
     color: '#28a745',

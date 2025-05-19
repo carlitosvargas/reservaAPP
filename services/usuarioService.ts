@@ -28,3 +28,18 @@ import { API_URL } from '../environment/config';
     throw error;
   }
   };
+
+  export const actualizarContraseña = async (id: number, data: any) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.put(`${API_URL}/usuarios/actualizarContrasenia/${id}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al actualizar la contraseña', error.response?.data || error.message);
+    throw error;
+  }
+};

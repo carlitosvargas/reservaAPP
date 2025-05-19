@@ -4,7 +4,6 @@ import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert
 import { obtenerUsuarioPorId, actualizarUsuario } from '../../services/usuarioService'; 
 import { useAuth } from '../../context/AuthContext';
 import { Picker } from '@react-native-picker/picker';
-import BackButton from '../../components/BackButton';
 
 export default function ModificarUsuario() {
   const { id } = useLocalSearchParams();
@@ -20,6 +19,7 @@ export default function ModificarUsuario() {
     email: '',
     telefono: '',
     usuario: '',
+    contrsenia: '',
     perfil_id:'',
   });
 
@@ -41,6 +41,7 @@ useEffect(() => {
         email: usuarioData.email ?? '',
         telefono: usuarioData.telefono?.toString() ?? '',
         usuario: usuarioData.usuario ?? '',
+        contrsenia: usuario.contrsenia ?? '',
         perfil_id: usuarioData.perfil_id?.toString() ?? '',
       });
     } catch (error) {

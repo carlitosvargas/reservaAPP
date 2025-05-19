@@ -34,8 +34,8 @@ export default function PerfilesScreen() {
         <Text style={styles.buttonText}>Editar Perfil</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Ver Viajes Realizados</Text>
+      <TouchableOpacity style={styles.button} onPress={() => router.push({pathname:'/pantallas/actualizarContrasenia',params:{id:userInfo.id}})}>
+        <Text style={styles.buttonText}>Cambiar Contraseña</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
