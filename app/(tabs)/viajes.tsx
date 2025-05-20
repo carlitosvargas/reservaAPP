@@ -53,7 +53,6 @@ export default function ViajesScreen() {
     setLoading(true);
     setMensaje('');
     try {
-      console.log(origen, destino)
       const data = await listarViajes(origen, destino);
       setViajes(data);
       if (data.length === 0) {

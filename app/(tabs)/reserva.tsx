@@ -8,6 +8,7 @@ import {
   Pressable,
   Animated,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { obtenerReservas } from '../../services/reservaService';
 import { useAuth } from '../../context/AuthContext';
@@ -30,14 +31,12 @@ interface Reserva {
   id: number;
   fechaReserva: string;
   viaje: Viaje;
-  tieneVenta?: boolean;  
+  tieneVenta?: boolean;
 }
 
-
-
-
 const MisReservas = () => {
-  const [reservas, setReservas] = useState<Reserva[]>([]);
+  const [reservasPendientes, setReservasPendientes] = useState<Reserva[]>([]);
+  const [reservasPagadas, setReservasPagadas] = useState<Reserva[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -55,18 +54,15 @@ const MisReservas = () => {
       try {
         const reservasData = await obtenerReservas(userInfo.id);
 
-        // Para cada reserva consultamos si tiene venta
         const reservasConVenta = await Promise.all(
           reservasData.map(async (reserva: Reserva) => {
             const tieneVenta = await existeReservaVenta(reserva.id);
-            return {
-              ...reserva,
-              tieneVenta,
-            };
+            return { ...reserva, tieneVenta };
           })
         );
 
-        setReservas(reservasConVenta);
+        setReservasPendientes(reservasConVenta.filter(r => !r.tieneVenta));
+        setReservasPagadas(reservasConVenta.filter(r => r.tieneVenta));
       } catch (error) {
         setError('Hubo un problema al obtener las reservas');
       } finally {
@@ -103,6 +99,57 @@ const MisReservas = () => {
         })
       : 0;
   };
+  
+
+  const renderReserva = (item: Reserva) => (
+    <Pressable key={item.id} onPress={() => toggleExpand(item.id)} style={styles.reservaItem}>
+      <Text style={styles.title}>Origen: {item.viaje.origenLocalidad}</Text>
+      <Text style={styles.title}>Destino: {item.viaje.destinoLocalidad}</Text>
+
+      <Animated.View style={{ overflow: 'hidden', height: animatedHeight(item.id) }}>
+        <Text>Reserva #{item.id}</Text>
+        <Text>Fecha de Reserva: {item.fechaReserva}</Text>
+        <Text>Fecha del Viaje: {item.viaje.fechaViaje}</Text>
+        <Text>Hora de Salida: {item.viaje.horarioSalida}</Text>
+        <Text>Chofer: {item.viaje.chofer}</Text>
+        <Text>Precio: ${item.viaje.precio}</Text>
+
+        <View style={styles.botonesContainer}>
+          <Pressable
+            onPress={() =>
+              router.push({ pathname: '/pantallas/detalleReserva', params: { id: item.viaje.id } })
+            }
+            style={styles.botonDetalle}
+          >
+            <Ionicons name="add-circle-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+            <Text style={styles.textoBotonDetalle}>Ver Detalle</Text>
+          </Pressable>
+
+          {!item.tieneVenta ? (
+            <TouchableOpacity
+              style={styles.botonPagar}
+              onPress={() =>
+                router.push({ pathname: '/pantallas/ventaReserva', params: { id: item.id } })
+              }
+            >
+              <Ionicons name="card-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+              <Text style={styles.botonTexto}>Pagar</Text>
+            </TouchableOpacity>
+          ) : (
+            <Pressable
+              style={styles.botonVerCompra}
+              onPress={() =>
+                router.push({ pathname: '/pantallas/detalleVenta', params: { id: item.id } })
+              }
+            >
+              <Ionicons name="receipt-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+              <Text style={styles.textoBotonDetalle}>Ver Compra</Text>
+            </Pressable>
+          )}
+        </View>
+      </Animated.View>
+    </Pressable>
+  );
 
   if (loading) {
     return (
@@ -121,71 +168,21 @@ const MisReservas = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={reservas}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Pressable onPress={() => toggleExpand(item.id)} style={styles.reservaItem}>
-            <Text style={styles.title}>Origen: {item.viaje.origenLocalidad}</Text>
-            <Text style={styles.title}>Destino: {item.viaje.destinoLocalidad}</Text>
+    <ScrollView style={styles.container}>
+      {reservasPendientes.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Reservas pendientes de pago</Text>
+          {reservasPendientes.map(renderReserva)}
+        </>
+      )}
 
-            <Animated.View style={{ overflow: 'hidden', height: animatedHeight(item.id) }}>
-              <Text>Reserva #{item.id}</Text>
-              <Text>Fecha de Reserva: {item.fechaReserva}</Text>
-              <Text>Fecha del Viaje: {item.viaje.fechaViaje}</Text>
-              <Text>Hora de Salida: {item.viaje.horarioSalida}</Text>
-              <Text>Chofer: {item.viaje.chofer}</Text>
-              <Text>Precio: ${item.viaje.precio}</Text>
-
-              <View style={styles.botonesContainer}>
-                <Pressable
-                  onPress={() =>
-                    router.push({ pathname: '/pantallas/detalleReserva', params: { id: item.viaje.id } })
-                  }
-                  style={styles.botonDetalle}
-                >
-                  <Ionicons
-                    name="add-circle-outline"
-                    size={20}
-                    color="#fff"
-                    style={{ marginRight: 6 }}
-                  />
-                  <Text style={styles.textoBotonDetalle}>Ver Detalle</Text>
-                </Pressable>
-
-                {!item.tieneVenta ? (
-                  <TouchableOpacity
-                    style={styles.botonPagar}
-                    onPress={() =>
-                      router.push({ pathname: '/pantallas/ventaReserva', params: { id: item.id } })
-                    }
-                  >
-                    <Ionicons name="card-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
-                    <Text style={styles.botonTexto}>Pagar</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <Pressable
-                    style={styles.botonVerCompra}
-                    onPress={() =>
-                      router.push({ pathname: '/pantallas/detalleVenta', params: { id: item.id } })
-                    }
-                  >
-                    <Ionicons
-                      name="receipt-outline"
-                      size={20}
-                      color="#fff"
-                      style={{ marginRight: 6 }}
-                    />
-                    <Text style={styles.textoBotonDetalle}>Ver Compra</Text>
-                  </Pressable>
-                )}
-              </View>
-            </Animated.View>
-          </Pressable>
-        )}
-      />
-    </View>
+      {reservasPagadas.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Reservas pagadas</Text>
+          {reservasPagadas.map(renderReserva)}
+        </>
+      )}
+    </ScrollView>
   );
 };
 
@@ -230,7 +227,7 @@ const styles = StyleSheet.create({
     width: '20%',
   },
   botonPagar: {
-   flexDirection: 'row',
+    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#28a745',
     paddingVertical: 8,
@@ -244,6 +241,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 5,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    marginTop: 20,
+    color: '#333',
   },
 });
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, useColorScheme } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, useColorScheme, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import axios from 'axios';
+import { registrarUsuario } from '../services/authService'; 
+
 
 // Definir el tipo para los errores
 type Errores = {
@@ -12,7 +13,6 @@ type Errores = {
   email?: string;
   usuario?: string;
   contrasenia?: string;
-  perfil_id?: string;
 };
 
 export default function RegistroScreen() {
@@ -26,13 +26,12 @@ export default function RegistroScreen() {
   const [email, setEmail] = useState('');
   const [usuario, setUsuario] = useState('');
   const [contrasenia, setContrasenia] = useState('');
-  const [perfil_id, setPerfil_id] = useState('');
   const [errores, setErrores] = useState<Errores>({});  // Especificar el tipo de errores
 
   const isDark = colorScheme === 'dark';
 
   const handleRegistro = async () => {
-    console.log('Registrando usuario:', { nombre, apellido, dni, telefono, email, usuario, contrasenia, perfil_id });
+    console.log('Registrando usuario:', { nombre, apellido, dni, telefono, email, usuario, contrasenia});
     const payload = {
       nombre,
       apellido,
@@ -41,92 +40,99 @@ export default function RegistroScreen() {
       email,
       usuario,
       contrasenia,
-      perfil_id,
     };
 
     try {
-      const response = await axios.post('http://192.168.0.11:3000/usuarios/crearUsuario', payload);
-      const { token, perfil } = response.data;
-      console.log(token);
-      console.log(perfil);
-      router.push('/');
-    } catch (error: any) {
-      console.error('Error al registrarse:', error.response?.data || error.message);
-      const backendErrors = error.response?.data?.errores;
-      if (backendErrors) {
-        setErrores(backendErrors);
-      } else {
-        const mensaje = error.response?.data?.mensaje || 'Error al registrarse';
-        alert(mensaje);
-      }
-    }
+      const response = await registrarUsuario(payload);
+     Alert.alert('Éxito', 'Usuario registrado correctamente');
+     setErrores({});
+     router.replace('/login')
+    }  catch (error: any) {
+  if (Array.isArray(error.errors)) {
+    // Convertimos el array de errores en un objeto { campo: mensaje }
+    const erroresFormateados: Errores = {};
+    error.errors.forEach((err: any) => {
+      erroresFormateados[err.path as keyof Errores] = err.msg;
+    });
+    setErrores(erroresFormateados);
+  } else if (error.mensaje) {
+    Alert.alert('Error', error.mensaje);
+  } else {
+    Alert.alert('Error', 'Ocurrió un error inesperado');
+  }
+}
+
   };
 
-  const styles = StyleSheet.create({
-    wrapper: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: isDark ? '#000' : '#fff',
-      paddingHorizontal: 20,
-    },
-    formContainer: {
-      width: '100%',
-      maxWidth: 380,
-      backgroundColor: isDark ? '#111' : '#f2f2f2',
-      padding: 24,
-      borderRadius: 12,
-      elevation: 3,
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#007AFF',
-      marginBottom: 20,
-      textAlign: 'center',
-    },
-    input: {
-      height: 48,
-      borderColor: '#007AFF',
-      borderWidth: 1,
-      borderRadius: 8,
-      marginBottom: 14,
-      paddingHorizontal: 12,
-      color: isDark ? '#fff' : '#000',
-      backgroundColor: isDark ? '#1a1a1a' : '#fff',
-    },
-    button: {
-      backgroundColor: '#007AFF',
-      paddingVertical: 14,
-      borderRadius: 8,
-      alignItems: 'center',
-      marginTop: 8,
-    },
-    buttonText: {
-      color: '#fff',
-      fontWeight: 'bold',
-    },
-    volverLogin: {
-      marginTop: 16,
-      textAlign: 'center',
-      color: isDark ? '#aaa' : '#444',
-    },
-    volverLink: {
-      color: '#007AFF',
-      fontWeight: 'bold',
-    },
-    errorText: {
-      color: 'red',
-      fontSize: 12,
-      marginTop: 5,
-    },
-  });
+const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: isDark ? '#000' : '#fff',
+    paddingHorizontal: 20,
+    paddingVertical: 40, // para espacio arriba/abajo
+  },
+  formContainer: {
+    width: '100%',
+    maxWidth: 380,
+    backgroundColor: isDark ? '#111' : '#f2f2f2',
+    padding: 24,
+    borderRadius: 12,
+    elevation: 3,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#007AFF',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  input: {
+    height: 48,
+    borderColor: '#007AFF',
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 14,
+    paddingHorizontal: 12,
+    color: isDark ? '#fff' : '#000',
+    backgroundColor: isDark ? '#1a1a1a' : '#fff',
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  volverLogin: {
+    marginTop: 16,
+    textAlign: 'center',
+    color: isDark ? '#aaa' : '#444',
+  },
+  volverLink: {
+    color: '#007AFF',
+    fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 5,
+  },
+});
+
 
   return (
-    <View style={styles.wrapper}>
+    <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+    
       <View style={styles.formContainer}>
         <Text style={styles.title}>Registrarse</Text>
 
+      {errores.nombre && <Text style={styles.errorText}>{errores.nombre}</Text>}
         <TextInput
           style={styles.input}
           placeholder="Nombre"
@@ -134,8 +140,8 @@ export default function RegistroScreen() {
           value={nombre}
           onChangeText={(text) => { setNombre(text); setErrores((prev: Errores) => ({ ...prev, nombre: '' })); }}
         />
-        {errores.nombre && <Text style={styles.errorText}>{errores.nombre}</Text>}
-
+        
+  {errores.apellido && <Text style={styles.errorText}>{errores.apellido}</Text>}
         <TextInput
           style={styles.input}
           placeholder="Apellido"
@@ -143,8 +149,8 @@ export default function RegistroScreen() {
           value={apellido}
           onChangeText={(text) => { setApellido(text); setErrores((prev: Errores) => ({ ...prev, apellido: '' })); }}
         />
-        {errores.apellido && <Text style={styles.errorText}>{errores.apellido}</Text>}
-
+      
+      {errores.dni && <Text style={styles.errorText}>{errores.dni}</Text>}
         <TextInput
           style={styles.input}
           placeholder="DNI"
@@ -152,8 +158,8 @@ export default function RegistroScreen() {
           value={dni}
           onChangeText={(text) => { setDni(text); setErrores((prev: Errores) => ({ ...prev, dni: '' })); }}
         />
-        {errores.dni && <Text style={styles.errorText}>{errores.dni}</Text>}
-
+        
+        {errores.telefono && <Text style={styles.errorText}>{errores.telefono}</Text>}
         <TextInput
           style={styles.input}
           placeholder="Telefono"
@@ -161,8 +167,8 @@ export default function RegistroScreen() {
           value={telefono}
           onChangeText={(text) => { setTelefono(text); setErrores((prev: Errores) => ({ ...prev, telefono: '' })); }}
         />
-        {errores.telefono && <Text style={styles.errorText}>{errores.telefono}</Text>}
-
+        
+  {errores.email && <Text style={styles.errorText}>{errores.email}</Text>}
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -170,8 +176,8 @@ export default function RegistroScreen() {
           value={email}
           onChangeText={(text) => { setEmail(text); setErrores((prev: Errores) => ({ ...prev, email: '' })); }}
         />
-        {errores.email && <Text style={styles.errorText}>{errores.email}</Text>}
-
+        
+    {errores.usuario && <Text style={styles.errorText}>{errores.usuario}</Text>}
         <TextInput
           style={styles.input}
           placeholder="Usuario"
@@ -179,8 +185,8 @@ export default function RegistroScreen() {
           value={usuario}
           onChangeText={(text) => { setUsuario(text); setErrores((prev: Errores) => ({ ...prev, usuario: '' })); }}
         />
-        {errores.usuario && <Text style={styles.errorText}>{errores.usuario}</Text>}
-
+        
+      {errores.contrasenia && <Text style={styles.errorText}>{errores.contrasenia}</Text>}
         <TextInput
           style={styles.input}
           placeholder="Contraseña"
@@ -189,16 +195,8 @@ export default function RegistroScreen() {
           value={contrasenia}
           onChangeText={(text) => { setContrasenia(text); setErrores((prev: Errores) => ({ ...prev, contrasenia: '' })); }}
         />
-        {errores.contrasenia && <Text style={styles.errorText}>{errores.contrasenia}</Text>}
-
-        <TextInput
-          style={styles.input}
-          placeholder="Perfil"
-          placeholderTextColor={isDark ? '#ccc' : '#888'}
-          value={perfil_id}
-          onChangeText={(text) => { setPerfil_id(text); setErrores((prev: Errores) => ({ ...prev, perfil_id: '' })); }}
-        />
-        {errores.perfil_id && <Text style={styles.errorText}>{errores.perfil_id}</Text>}
+        
+     
 
         <Pressable style={styles.button} onPress={handleRegistro}>
           <Text style={styles.buttonText}>Registrarse</Text>
@@ -211,6 +209,7 @@ export default function RegistroScreen() {
           </Text>
         </Text>
       </View>
-    </View>
+  
+    </ScrollView>
   );
 }

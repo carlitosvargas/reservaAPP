@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function TabLayout() {
-  const { isLoggedIn, isLoading } = useAuth();
+  const { isLoggedIn, isLoading, userInfo } = useAuth();
 
   if (isLoading) return null;
   if (!isLoggedIn) return <Redirect href="/login" />;
@@ -36,8 +36,8 @@ export default function TabLayout() {
             case 'perfil':
               iconName = 'person';
               break;
-            case 'home':
-              iconName = 'grid';
+            case 'usuarios':
+              iconName = 'people';
               break;
           }
 
@@ -49,8 +49,16 @@ export default function TabLayout() {
       <Tabs.Screen name="reserva" options={{ title: 'Reservas' }} />
       <Tabs.Screen name="viajes" options={{ title: 'Viajes' }} />
       <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
-      <Tabs.Screen name="home" options={{ title: 'Home' }} />
+
+    
+      <Tabs.Screen
+        name="usuarios"
+        options={{
+          title: 'Usuarios',
+          href: userInfo?.perfil === 'usuarioAdministrador' ? undefined : null,
+          lazy: true,
+        }}
+      />
     </Tabs>
   );
 }
-

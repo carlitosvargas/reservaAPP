@@ -1,61 +1,95 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList,ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, ScrollView, Button, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { obtenerVentaDetalle } from '../../services/ventaService';
-import { generarHTMLComprobante  } from '../utils/imprimirComprobante';
-import { Button, Alert } from 'react-native';
+import { obtenerUsuarioPorId } from '../../services/usuarioService';
+import { generarHTMLComprobante } from '../../utils/imprimirComprobante';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-
-
+import { useAuth } from '@/context/AuthContext';
 
 
 export default function DetalleVenta() {
   const { id } = useLocalSearchParams();
-  const [data, setData] = useState<VentaDetalleGeneral | null>(null);
+  const [data, setData] = useState<DataComprobante | null>(null);
   const [loading, setLoading] = useState(true);
 
+  interface Pasajero {
+    id: number;
+    nombre: string;
+    apellido: string;
+    dni: number;
+    ubicacionOrigen: string;
+    ubicacionDestino: string;
+  }
 
-interface Pasajero {
-  id: number;
-  nombre: string;
-  apellido: string;
-  dni: number;
-  ubicacionOrigen: string;
-  ubicacionDestino: string;
-}
+  interface Usuario {
+    id: number;
+    usuario: string;
+   
+    email?: string;
+  }
 
-interface VentaDetalleGeneral {
-  id: number;
-  origenLocalidad: string;
-  destinoLocalidad: string;
-  horarioSalida: string;
-  fechaViaje: string;
-  precio: number;
-  chofer: string;
-  medioTransporte_id: number;
-  pasajeros: Pasajero[];
-  fecha: string;
-  hora: string;
-  totalVentas: number;
-  reserva_id: number;
-  formaPago: string | null;
-  subTotal: number | null;
-  descuento: number | null;
-  precioFinal: number | null;
-  ventas_id: number;
-}
+  interface VentaDetalleGeneral {
+    id: number;
+    origenLocalidad: string;
+    destinoLocalidad: string;
+    horarioSalida: string;
+    fechaViaje: string;
+    precio: number;
+    chofer: string;
+    medioTransporte_id: number;
+    pasajeros: Pasajero[];
+    fecha: string;
+    hora: string;
+    totalVentas: number;
+    reserva_id: number;
+    formaPago: string | null;
+    subTotal: number | null;
+    descuento: number | null;
+    precioFinal: number | null;
+    ventas_id: number;
+  }
 
-  useEffect(() => {
-    if (id) {
-      obtenerVentaDetalle(Number(id))
-        .then(setData)
-        .catch((error) => {
-          console.error('Error al obtener detalle general:', error);
-        })
-        .finally(() => setLoading(false));
+  interface DataComprobante extends VentaDetalleGeneral {
+    usuario: Usuario;
+  }
+ const { userInfo } = useAuth();
+
+useEffect(() => {
+  if (id && userInfo?.id) {
+    setLoading(true);
+    Promise.all([
+      obtenerVentaDetalle(Number(id)),
+      obtenerUsuarioPorId(userInfo.id)
+    ])
+      .then(([venta, usuarioArray]) => {
+        const usuario = Array.isArray(usuarioArray) ? usuarioArray[0] : usuarioArray;
+        setData({ ...venta, usuario, empresa: venta.empresa });
+
+      })
+  
+      .catch((error) => {
+        console.error('Error al obtener datos:', error);
+      })
+      .finally(() => setLoading(false));
+  }
+}, [id, userInfo]);
+
+
+  const handleDownload = async () => {
+    if (!data) return;
+
+    const htmlContent = generarHTMLComprobante(data);
+
+    try {
+      const { uri } = await Print.printToFileAsync({ html: htmlContent });
+      await Sharing.shareAsync(uri);
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo generar el comprobante.');
+      console.error(error);
     }
-  }, [id]);
+  };
 
   if (loading) {
     return (
@@ -73,105 +107,82 @@ interface VentaDetalleGeneral {
     );
   }
 
- if (data) {
   const {
-    id,
     origenLocalidad,
     destinoLocalidad,
     horarioSalida,
     fechaViaje,
-    precio,
-    chofer,
-    medioTransporte_id,
+    pasajeros,
     fecha,
     hora,
-    totalVentas,
-    reserva_id,
-    formaPago,
     subTotal,
     descuento,
     precioFinal,
-    ventas_id
+    formaPago,
+    usuario
   } = data;
- }
-
-
-
-const handleDownload = async () => {
-  if (!data) return;
-
-  const htmlContent = generarHTMLComprobante(data);
-
-
-  try {
-    const { uri } = await Print.printToFileAsync({ html: htmlContent });
-    await Sharing.shareAsync(uri);
-  } catch (error) {
-    Alert.alert('Error', 'No se pudo generar el comprobante.');
-    console.error(error);
-  }
-};
-
-
-
+  const fechaFormateadaViaje = new Date(fechaViaje).toLocaleDateString('es-AR');
+   const fechaFormateadaDetalle = new Date(fecha).toLocaleDateString('es-AR');
 
 
   return (
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent}>
+      <Text style={styles.successMessage}>✅ ¡Compra realizada con éxito!</Text>
 
-   <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent}>
+      <View style={styles.receipt}>
+        <Text style={styles.receiptTitle}>RECIBO DE COMPRA</Text>
+        <View style={styles.separator} />
 
-  <Text style={styles.successMessage}>✅ ¡Compra realizada con éxito!</Text>
+        {/* DATOS DEL USUARIO */}
+        <Text style={styles.sectionTitle}>🙋 Usuario</Text>
+        <Text style={styles.receiptText}>Nombre: {usuario.usuario} </Text>
+        <Text style={styles.receiptText}>Email: {usuario.email || 'N/A'}</Text>
 
-  <View style={styles.receipt}>
-    <Text style={styles.receiptTitle}>RECIBO DE COMPRA</Text>
-    <View style={styles.separator} />
+        <View style={styles.separator} />
 
-    {/* VIAJE */}
-    <Text style={styles.sectionTitle}>🚌 Viaje</Text>
-    <View style={styles.viajeBox}>
-      <Text style={styles.viajeText}>Origen: {data.origenLocalidad}</Text>
-      <Text style={styles.viajeText}>Destino: {data.destinoLocalidad}</Text>
-      <Text style={styles.viajeText}>Fecha: {data.fechaViaje}</Text>
-      <Text style={styles.viajeText}>Hora: {data.horarioSalida}</Text>
-    </View>
-
-    <View style={styles.separator} />
-
-    {/* PASAJEROS */}
-    <Text style={styles.sectionTitle}>👤 Pasajeros</Text>
-    <FlatList
-      data={data?.pasajeros || []}
-      keyExtractor={(item) => item.id.toString()}
-       scrollEnabled={false}
-      renderItem={({ item }) => (
-        <View style={styles.pasajeroItem}>
-          <Text style={styles.receiptText}>Nombre: {item.nombre} {item.apellido}</Text>
-          <Text style={styles.receiptText}>DNI: {item.dni}</Text>
-          <Text style={styles.receiptText}>Origen: {item.ubicacionOrigen}</Text>
-          <Text style={styles.receiptText}>Destino: {item.ubicacionDestino}</Text>
-          <View style={styles.innerSeparator} />
+        {/* VIAJE */}
+        <Text style={styles.sectionTitle}>🚌 Viaje</Text>
+        <View style={styles.viajeBox}>
+          <Text style={styles.viajeText}>Origen: {origenLocalidad}</Text>
+          <Text style={styles.viajeText}>Destino: {destinoLocalidad}</Text>
+          
+          <Text style={styles.viajeText}>Fecha: {fechaFormateadaViaje}</Text>
+          <Text style={styles.viajeText}>Hora: {horarioSalida}</Text>
         </View>
-      )}
-    />
 
-    {/* DETALLE DE VENTA */}
-    <Text style={styles.sectionTitle}>🧾 Detalle de Venta</Text>
-    <Text style={styles.receiptText}>Fecha Venta: {data.fecha}</Text>
-    <Text style={styles.receiptText}>Hora: {data.hora}</Text>
-    <Text style={styles.subTotal}>Subtotal: ${data.subTotal}</Text>
-    <Text style={styles.receiptText}>Descuento: {data.descuento}%</Text>
-    <Text style={styles.totalFinal}>Total: ${data.precioFinal}</Text>
-    <Text style={styles.receiptText}>Forma de Pago: {data.formaPago ?? 'N/A'}</Text>
+        <View style={styles.separator} />
 
-    <View style={styles.separator} />
-    <Text style={styles.footer}>¡Gracias por su compra!</Text>
-  <Button title="📄 Descargar Comprobante" onPress={handleDownload} />
+        {/* PASAJEROS */}
+        <Text style={styles.sectionTitle}>👤 Pasajeros</Text>
+        <FlatList
+          data={pasajeros || []}
+          keyExtractor={(item) => item.id.toString()}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <View style={styles.pasajeroItem}>
+              <Text style={styles.receiptText}>Nombre: {item.nombre} {item.apellido}</Text>
+              <Text style={styles.receiptText}>DNI: {item.dni}</Text>
+              <Text style={styles.receiptText}>Origen: {item.ubicacionOrigen}</Text>
+              <Text style={styles.receiptText}>Destino: {item.ubicacionDestino}</Text>
+              <View style={styles.innerSeparator} />
+            </View>
+          )}
+        />
 
+        {/* DETALLE DE VENTA */}
+        <Text style={styles.sectionTitle}>🧾 Detalle de Venta</Text>
+        <Text style={styles.receiptText}>Fecha Venta: {fechaFormateadaDetalle}</Text>
+        <Text style={styles.receiptText}>Hora: {hora}</Text>
+        <Text style={styles.subTotal}>Subtotal: ${subTotal}</Text>
+        <Text style={styles.receiptText}>Descuento: {descuento}%</Text>
+        <Text style={styles.totalFinal}>Total: ${precioFinal}</Text>
+        <Text style={styles.receiptText}>Forma de Pago: {formaPago ?? 'N/A'}</Text>
 
-
-  </View>
-</ScrollView>
-
+        <View style={styles.separator} />
+        <Text style={styles.footer}>¡Gracias por su compra!</Text>
+        <Button title="📄 Descargar Comprobante" onPress={handleDownload} />
+      </View>
+    </ScrollView>
   );
 }
 
@@ -183,10 +194,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContent: {
-  padding: 20,
-  backgroundColor: '#f5f5f5',
-  alignItems: 'center',
-},
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+  },
   successMessage: {
     fontSize: 18,
     color: '#28a745',
@@ -238,8 +249,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: '#555',
   },
-
-   viajeBox: {
+  viajeBox: {
     backgroundColor: '#e6f0ff',
     padding: 12,
     borderRadius: 8,
