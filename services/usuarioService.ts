@@ -29,9 +29,6 @@ import { API_URL } from '../environment/config';
   }
   };
 
-<<<<<<< HEAD
-  export const actualizarContraseña = async (id: number, data: any) => {
-=======
   export const obtenerUsuarios = async () => {
     try {
     const token = await AsyncStorage.getItem('token');
@@ -61,7 +58,6 @@ import { API_URL } from '../environment/config';
 };
 
 export const actualizarContraseña = async (id: number, data: any) => {
->>>>>>> 829015d84e489e7e28420ecfec8933a8d58641a2
   try {
     const token = await AsyncStorage.getItem('token');
     const response = await axios.put(`${API_URL}/usuarios/actualizarContrasenia/${id}`, data, {
@@ -72,10 +68,6 @@ export const actualizarContraseña = async (id: number, data: any) => {
     return response.data;
   } catch (error: any) {
     console.error('Error al actualizar la contraseña', error.response?.data || error.message);
-<<<<<<< HEAD
-    throw error;
-=======
     throw error.response?.data || {mensaje:'Error desconocido al actualizar la contraseña'};
->>>>>>> 829015d84e489e7e28420ecfec8933a8d58641a2
   }
 };
