@@ -23,7 +23,7 @@ interface Viaje {
   horarioSalida: string;
   fechaViaje: string;
   precio: number;
-  chofer: string;
+  usuarioEmpresa_id: number;
   medioTransporte_id: number;
 }
 
@@ -111,7 +111,7 @@ const MisReservas = () => {
         <Text>Fecha de Reserva: {item.fechaReserva}</Text>
         <Text>Fecha del Viaje: {item.viaje.fechaViaje}</Text>
         <Text>Hora de Salida: {item.viaje.horarioSalida}</Text>
-        <Text>Chofer: {item.viaje.chofer}</Text>
+        <Text>Chofer: {item.viaje.usuarioEmpresa_id}</Text>
         <Text>Precio: ${item.viaje.precio}</Text>
 
         <View style={styles.botonesContainer}>
@@ -216,15 +216,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   botonDetalle: {
-    backgroundColor: '#007bff',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
+   backgroundColor: '#007bff',
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 0.2,
-    justifyContent: 'center',
-    width: '20%',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 5,
   },
   botonPagar: {
     flexDirection: 'row',

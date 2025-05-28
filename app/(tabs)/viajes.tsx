@@ -14,7 +14,7 @@ interface Viaje {
   horarioSalida: string;
   fechaViaje: Date;
   precio: number;
-  chofer: string;
+  usuarioEmpresa_id: number;
   medioTransporte_id: number;
   eliminado: string;
 }
@@ -84,7 +84,7 @@ export default function ViajesScreen() {
       <Text>Fecha: {new Date(item.fechaViaje).toLocaleDateString()}</Text>
       <Text>Hora de Salida: {item.horarioSalida}</Text>
       <Text>Precio: ${item.precio}</Text>
-      <Text>Chofer: {item.chofer}</Text>
+      <Text>Chofer: {item.usuarioEmpresa_id}</Text>
     </Pressable>
   );
 

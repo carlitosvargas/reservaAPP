@@ -4,6 +4,7 @@ interface TokenPayload {
   nombre: string;
   usuario: string;
   perfil: string;
+  empresa_id:number;
   iat: number;
   exp: string;
 }
