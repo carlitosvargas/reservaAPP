@@ -39,6 +39,9 @@ export default function TabLayout() {
             case 'usuarios':
               iconName = 'people';
               break;
+            case 'choferViajes':
+              iconName = 'bus';
+              break;
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -56,6 +59,14 @@ export default function TabLayout() {
         options={{
           title: 'Usuarios',
           href: userInfo?.perfil === 'usuarioAdministrador' ? undefined : null,
+          lazy: true,
+        }}
+      />
+       <Tabs.Screen
+        name="choferViajes"
+        options={{
+          title: 'Viajes',
+          href: userInfo?.perfil === 'usuarioChofer' ? undefined : null,
           lazy: true,
         }}
       />

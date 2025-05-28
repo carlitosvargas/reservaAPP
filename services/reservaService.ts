@@ -71,3 +71,14 @@ export const obtenerReservas = async (id:number) => {
     });
     return response.data;
   };
+
+
+    export const listarPasajeroPorViaje = async (id: number) => {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/reserva/listarPasajeroPorViaje/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  };

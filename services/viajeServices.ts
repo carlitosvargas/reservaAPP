@@ -71,6 +71,15 @@ export const listarViajes = async (origen: string, destino: string) => {
 };
 
 
+  export const obtenerViajesPorChofer = async (id: number) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await axios.get(`${API_URL}/viajes/obtenerViajesPorChofer/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
 
 
 

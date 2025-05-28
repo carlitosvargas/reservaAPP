@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Button,
+  ScrollView,
 } from 'react-native';
 import ModalSelector from 'react-native-modal-selector';
 import { obtenerUsuarios, actualizarPerfil } from '../../services/usuarioService';
@@ -154,15 +155,34 @@ export default function UsuariosScreen() {
   return (
     <View style={styles.contenedor}>
       <Text style={styles.titulo}>Lista de Usuarios</Text>
+     <View style={{ marginBottom: 15 }}>
+  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+    <View style={styles.filtros}>
+      {[
+        { label: 'Todos', id: null },
+        { label: 'Administrador', id: 1 },
+        { label: 'Empresa', id: 2 },
+        { label: 'Mostrador', id: 3 },
+        { label: 'Chofer', id: 4 },
+        { label: 'Cliente', id: 5 },
+      ].map((item) => {
+        const activo = filtro === item.id;
+        return (
+          <TouchableOpacity
+            key={item.label}
+            style={[styles.filtroBtn, activo && styles.filtroBtnActivo]}
+            onPress={() => filtrarPorPerfil(item.id)}
+          >
+            <Text style={[styles.filtroTexto, activo && styles.filtroTextoActivo]}>
+              {item.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  </ScrollView>
+</View>
 
-      <View style={styles.filtros}>
-        <Button title="Todos" onPress={() => filtrarPorPerfil(null)} />
-        <Button title="Administrador" onPress={() => filtrarPorPerfil(1)} />
-        <Button title="Empresa" onPress={() => filtrarPorPerfil(2)} />
-        <Button title="Mostrador" onPress={() => filtrarPorPerfil(3)} />
-        <Button title="Chofer" onPress={() => filtrarPorPerfil(4)} />
-        <Button title="Cliente" onPress={() => filtrarPorPerfil(5)} />
-      </View>
 
       {cargando ? (
         <Text>Cargando...</Text>
@@ -189,11 +209,33 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
   },
-  filtros: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 15,
-  },
+
+
+ filtros: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 10,
+},
+filtroBtn: {
+  backgroundColor: '#ccc',
+  paddingVertical: 8,
+  paddingHorizontal: 12,
+  borderRadius: 20,
+  marginRight: 8,
+},
+filtroBtnActivo: {
+  backgroundColor: '#007AFF',
+},
+filtroTexto: {
+  color: '#000',
+  fontSize: 14,
+},
+filtroTextoActivo: {
+  color: '#fff',
+  fontWeight: 'bold',
+},
+
+
   usuarioContainer: {
     padding: 15,
     marginBottom: 10,
