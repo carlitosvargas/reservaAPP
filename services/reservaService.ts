@@ -82,3 +82,24 @@ export const obtenerReservas = async (id:number) => {
     });
     return response.data;
   };
+
+  export const obtenerReservasPorEmpresa = async (id: number) => {
+  const token = await AsyncStorage.getItem('token');
+  const response = await axios.get(`${API_URL}/reserva/obtenerReservasPorEmpresa/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  };
+
+  export const listarReservasPorViaje = async (id: number) => {
+  const token = await AsyncStorage.getItem('token');
+  
+  const response = await axios.get(`${API_URL}/reserva/listarReservasPorViaje/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

@@ -42,6 +42,12 @@ export default function TabLayout() {
             case 'choferViajes':
               iconName = 'bus';
               break;
+            case 'listarReservas':
+              iconName = 'calendar';
+              break;
+            case 'listarViajes':
+              iconName = 'bus';
+              break;
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -49,9 +55,23 @@ export default function TabLayout() {
       })}
     >
       <Tabs.Screen name="index" options={{ title: 'Inicio' }} />
-      <Tabs.Screen name="reserva" options={{ title: 'Reservas' }} />
-      <Tabs.Screen name="viajes" options={{ title: 'Viajes' }} />
-      <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
+     
+      <Tabs.Screen 
+       name="reserva" 
+       options={{ 
+        title: 'Reservas',
+        href: (userInfo?.perfil === 'usuarioCliente' || userInfo?.perfil === 'usuarioAdministrador') ? undefined : null,
+        lazy: true,
+        }} />
+      
+      <Tabs.Screen 
+       name="viajes" 
+       options={{
+         title: 'Viajes',
+         href: (userInfo?.perfil === 'usuarioCliente' || userInfo?.perfil === 'usuarioAdministrador') ? undefined : null,
+        lazy: true,
+        }} />
+     
 
     
       <Tabs.Screen
@@ -70,6 +90,24 @@ export default function TabLayout() {
           lazy: true,
         }}
       />
+       <Tabs.Screen
+        name="listarReservas"
+        options={{
+          title: 'Ver Reserva',
+          href: (userInfo?.perfil === 'usuarioEmpresa' || userInfo?.perfil === 'usuarioMostrador') ? undefined : null,
+          lazy: true,
+        }}
+      />
+         <Tabs.Screen
+        name="listarViajes"
+        options={{
+          title: 'Ver Viajes',
+          href: (userInfo?.perfil === 'usuarioEmpresa' || userInfo?.perfil === 'usuarioMostrador') ? undefined : null,
+          lazy: true,
+        }}
+      />
+      
+      <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
     </Tabs>
   );
 }
