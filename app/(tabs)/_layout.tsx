@@ -46,6 +46,9 @@ export default function TabLayout() {
               iconName = 'calendar';
               break;
             case 'listarViajes':
+              iconName = 'map';
+              break;
+            case 'listarTransportes':
               iconName = 'bus';
               break;
           }
@@ -102,6 +105,14 @@ export default function TabLayout() {
         name="listarViajes"
         options={{
           title: 'Ver Viajes',
+          href: (userInfo?.perfil === 'usuarioEmpresa' || userInfo?.perfil === 'usuarioMostrador') ? undefined : null,
+          lazy: true,
+        }}
+      />
+       <Tabs.Screen
+        name="listarTransportes"
+        options={{
+          title: 'Ver Transportes',
           href: (userInfo?.perfil === 'usuarioEmpresa' || userInfo?.perfil === 'usuarioMostrador') ? undefined : null,
           lazy: true,
         }}

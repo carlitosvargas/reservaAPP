@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function PerfilesScreen() {
   const router = useRouter();
   const { isLoggedIn, logout, isLoading, userInfo } = useAuth();
+ 
 
   const handleLogout = async () => {
     await logout();
@@ -38,9 +39,11 @@ export default function PerfilesScreen() {
         <Text style={styles.buttonText}>Cambiar Contraseña</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Ver Mis Reservas</Text>
-      </TouchableOpacity>
+     {userInfo?.perfil == "usuarioEmpresa" && (
+        <TouchableOpacity style={styles.button} onPress={() => router.push({pathname:'/pantallas/modificarEmpresa',params:{id:userInfo.empresa_id}})}>
+        <Text style={styles.buttonText}>Editar Empresa</Text>
+        </TouchableOpacity>
+      )}
 
       <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={handleLogout}>
         <Text style={styles.buttonText}>Cerrar Sesión</Text>
@@ -89,6 +92,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     textAlign: 'center',
-    fontWeight: '600',
-  },
+    fontWeight: '600',
+  },
 });
