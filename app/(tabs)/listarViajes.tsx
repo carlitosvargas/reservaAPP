@@ -54,7 +54,7 @@ const ViajesEmpresa = () => {
           return;
         }
 
-        const data = await obtenerViajesPorEmpresa(userInfo.empresa_id);
+        const data = await obtenerViajesPorEmpresa(userInfo?.empresa_id);
         setViajes(data);
         if (data.length > 0) {
           setNombreEmpresa(data[0].MedioTransporte.Empresa.nombre);
