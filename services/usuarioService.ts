@@ -71,3 +71,35 @@ export const actualizarContraseña = async (id: number, data: any) => {
     throw error.response?.data || {mensaje:'Error desconocido al actualizar la contraseña'};
   }
 };
+
+
+export const obtenerUsuariosPorEmpresa = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/usuarioEmpresa/obtenerUsuariosPorEmpresa/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al obtener usuarios por empresa', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+//eliminar usuario 
+export const eliminarUsuario = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.put(`${API_URL}/usuarios/eliminarUsuario/${id}`,{},{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al eliminar usuario:', error.response?.data || error.message);
+    throw error;
+  }
+};

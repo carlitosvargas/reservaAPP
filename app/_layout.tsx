@@ -18,12 +18,25 @@ export default function RootLayout() {
 
   // Diccionario de rutas → títulos personalizados
   const titulosPorRuta: Record<string, string> = {
+    '/choferViajes': 'viajes',
+    '/listarReservas': 'Reservas',
+    '/listarTransportes': 'Transportes',
+    '/listarViajes': 'Viajes',
     '/perfil': 'Mi perfil',
     '/reserva': 'Mis Reservas',
+    '/usuarios': 'Usuarios',
     '/viajes': 'Buscar Viajes',
+    '/pantallas/actualizarContrasenia': 'Actualizar Contraseña',
+    '/pantallas/choferListaPasajeros': 'Lista de Pasajeros',
+    '/pantallas/crearTransporte': 'Crear Transporte',
     '/pantallas/detalleReserva': 'Detalle de reserva',
+    '/pantallas/detalleVenta': 'Detalle de la Venta',
+    '/pantallas/listarReservasPorViaje': 'Reservas del Viaje',
+    '/pantallas/modificarEmpresa': 'Modificar Empresa',
     '/pantallas/modificarPasajero': 'Modificar Pasajero',
+    '/pantallas/modificarUsuario': 'Modificar Usuario',
     '/pantallas/realizarReserva': 'Nueva reserva',
+    
   };
 
   const tituloHeader = titulosPorRuta[pathname] || 'V&V Reservas 🚌';

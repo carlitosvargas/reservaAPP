@@ -204,9 +204,7 @@ const styles = StyleSheet.create({
 
         <Text style={styles.volverLogin}>
           ¿Ya tenés cuenta?{' '}
-          <Text style={styles.volverLink} onPress={() => router.replace('/login')}>
-            Iniciar sesión
-          </Text>
+          <Text style={styles.volverLink} onPress={() => router.replace('/login')}>Iniciar sesión </Text>
         </Text>
       </View>
   

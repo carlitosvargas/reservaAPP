@@ -139,9 +139,7 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
   
         <Text style={styles.registroLink}>
           ¿No tenés cuenta?{' '}
-          <Text style={styles.linkText} onPress={() => router.push('/registro')}>
-            Registrarse
-          </Text>
+          <Text style={styles.linkText} onPress={() => router.push('/registro')}> Registrarse</Text>
         </Text>
       </View>
     </View>

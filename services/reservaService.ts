@@ -31,7 +31,7 @@ export const obtenerReservas = async (id:number) => {
       },
       headers: {
         Authorization: `Bearer ${token}`,
-      },
+      }, 
     });
 
     return response.data;
@@ -102,4 +102,20 @@ export const obtenerReservas = async (id:number) => {
     },
   });
   return response.data;
+};
+
+
+export const eliminarReserva = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.put(`${API_URL}/reserva/eliminarReserva/${id}`,{}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al eliminar la reserva', error.response?.data || error.message);
+    throw error;
+  }
 };

@@ -39,6 +39,9 @@ export default function TabLayout() {
             case 'usuarios':
               iconName = 'people';
               break;
+              case 'empresaUsuarios':
+              iconName = 'people';
+              break;
             case 'choferViajes':
               iconName = 'bus';
               break;
@@ -96,7 +99,7 @@ export default function TabLayout() {
        <Tabs.Screen
         name="listarReservas"
         options={{
-          title: 'Ver Reserva',
+          title: 'Reservas',
           href: (userInfo?.perfil === 'usuarioEmpresa' || userInfo?.perfil === 'usuarioMostrador') ? undefined : null,
           lazy: true,
         }}
@@ -104,7 +107,7 @@ export default function TabLayout() {
          <Tabs.Screen
         name="listarViajes"
         options={{
-          title: 'Ver Viajes',
+          title: 'Viajes',
           href: (userInfo?.perfil === 'usuarioEmpresa' || userInfo?.perfil === 'usuarioMostrador') ? undefined : null,
           lazy: true,
         }}
@@ -112,12 +115,19 @@ export default function TabLayout() {
        <Tabs.Screen
         name="listarTransportes"
         options={{
-          title: 'Ver Transportes',
+          title: 'Transportes',
           href: (userInfo?.perfil === 'usuarioEmpresa' || userInfo?.perfil === 'usuarioMostrador') ? undefined : null,
           lazy: true,
         }}
       />
-      
+      <Tabs.Screen
+        name="empresaUsuarios"
+        options={{
+          title: 'Usuarios',
+          href: userInfo?.perfil === 'usuarioAdministrador' ? undefined : null,
+          lazy: true,
+        }}
+      />
       <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
     </Tabs>
   );

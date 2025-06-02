@@ -2,15 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  FlatList,
   StyleSheet,
   ActivityIndicator,
   Pressable,
   Animated,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
-import { obtenerReservas } from '../../services/reservaService';
+import { obtenerReservas, eliminarReserva } from '../../services/reservaService';
 import { useAuth } from '../../context/AuthContext';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -99,7 +99,37 @@ const MisReservas = () => {
         })
       : 0;
   };
-  
+
+  const handleEliminarReserva = async (id: number) => {//cuando elimina la reserva tambien avisa que fue eliminada con exito
+  Alert.alert(
+    'Confirmar eliminación',
+    '¿Estás seguro que deseas eliminar esta reserva?',
+    [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Eliminar',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await eliminarReserva(Number(id));
+            setReservasPendientes(prev => {
+              const nuevasReservas = prev.filter(reserva => reserva.id !== id);
+              if (nuevasReservas.length === 0) {
+                Alert.alert('Reserva eliminada con éxito', 'Aún no hay reservas pendientes de pago');
+              } else {
+                Alert.alert('Reserva eliminada con éxito');
+              }
+              return nuevasReservas;
+            });
+          } catch (error) {
+            setError('No se pudo eliminar la reserva');
+          }
+        },
+      },
+    ]
+  );
+};
+
 
   const renderReserva = (item: Reserva) => (
     <Pressable key={item.id} onPress={() => toggleExpand(item.id)} style={styles.reservaItem}>
@@ -126,15 +156,25 @@ const MisReservas = () => {
           </Pressable>
 
           {!item.tieneVenta ? (
-            <TouchableOpacity
-              style={styles.botonPagar}
-              onPress={() =>
-                router.push({ pathname: '/pantallas/ventaReserva', params: { id: item.id } })
-              }
-            >
-              <Ionicons name="card-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
-              <Text style={styles.botonTexto}>Pagar</Text>
-            </TouchableOpacity>
+            <>
+              <TouchableOpacity
+                style={styles.botonPagar}
+                onPress={() =>
+                  router.push({ pathname: '/pantallas/ventaReserva', params: { id: item.id } })
+                }
+              >
+                <Ionicons name="card-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+                <Text style={styles.botonTexto}>Pagar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.botonEliminar}
+                onPress={() => handleEliminarReserva(item.id)}
+              >
+                <Ionicons name="trash-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+                <Text style={styles.botonTexto}>Eliminar</Text>
+              </TouchableOpacity>
+            </>
           ) : (
             <Pressable
               style={styles.botonVerCompra}
@@ -168,12 +208,16 @@ const MisReservas = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      {reservasPendientes.length > 0 && (
+      <ScrollView style={styles.container}>
+      {reservasPendientes.length > 0 ? (
         <>
           <Text style={styles.sectionTitle}>Reservas pendientes de pago</Text>
           {reservasPendientes.map(renderReserva)}
         </>
+      ) : ( 
+        <Text style={{ textAlign: 'center', marginTop: 20, color: '#888' }}>
+          Aún no hay reservas
+        </Text>
       )}
 
       {reservasPagadas.length > 0 && (
@@ -183,7 +227,7 @@ const MisReservas = () => {
         </>
       )}
     </ScrollView>
-  );
+      );
 };
 
 const styles = StyleSheet.create({
@@ -214,9 +258,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 10,
     gap: 10,
+    flexWrap: 'wrap',
   },
   botonDetalle: {
-   backgroundColor: '#007bff',
+    backgroundColor: '#007bff',
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 8,
@@ -235,6 +280,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#28a745',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+  },
+  botonEliminar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#dc3545', // rojo
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 5,
