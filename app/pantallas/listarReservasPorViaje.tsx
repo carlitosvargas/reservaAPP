@@ -42,6 +42,22 @@ const ReservasPorViaje = () => {
     fetchReservas();
   }, [id]);
 
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -66,7 +82,7 @@ const ReservasPorViaje = () => {
       renderItem={({ item }) => (
         <View style={styles.reservaItem}>
           <Text style={styles.reservaTitulo}>Reserva #{item.id}</Text>
-          <Text>Fecha de reserva: {item.fechaReserva}</Text>
+          <Text>Fecha de reserva: {formatDate(item.fechaReserva)}</Text>
 
           {item.Usuario && (
             <Text>Realizada por: {item.Usuario.nombre} {item.Usuario.apellido}</Text>

@@ -18,10 +18,10 @@ export default function ModificarEmpresa() {
     cuit: '',
     telefono: '',
     email: '',
-    localidad_id: '',
+    
   });
 
-  const [localidades, setLocalidades] = useState([]);
+  
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -32,10 +32,10 @@ export default function ModificarEmpresa() {
         setEmpresa({
           nombre: empresaData.nombre ?? '',
           direccion: empresaData.direccion ?? '',
-          cuit: empresaData.cuit ?? '',
+          cuit: empresaData.cuit?.toString() ?? '',
           telefono: empresaData.telefono?.toString() ?? '',
           email: empresaData.email ?? '',
-          localidad_id: empresaData.localidad_id?.toString() ?? '',
+          
         });
 
        
@@ -72,27 +72,40 @@ export default function ModificarEmpresa() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Nombre</Text>
       <TextInput
         style={styles.input}
         placeholder="Nombre"
         value={empresa.nombre ?? ""}
         onChangeText={text => handleChange('nombre', text)}
       />
+      </View>
 
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Dirección</Text>
       <TextInput
         style={styles.input}
         placeholder="Dirección"
         value={empresa.direccion}
         onChangeText={text => handleChange('direccion', text)}
       />
+      </View>
 
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>CUIT</Text>
       <TextInput
         style={[styles.input, { backgroundColor: '#eee' }]}
         placeholder="CUIT"
         value={empresa.cuit}
-        editable={false}
+        
       />
+      </View>
 
+
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Teléfono</Text>
       <TextInput
         style={styles.input}
         placeholder="Teléfono"
@@ -100,7 +113,11 @@ export default function ModificarEmpresa() {
         onChangeText={text => handleChange('telefono', text)}
         keyboardType="phone-pad"
       />
+      </View>
 
+
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Email</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -108,20 +125,8 @@ export default function ModificarEmpresa() {
         onChangeText={text => handleChange('email', text)}
         keyboardType="email-address"
       />
-
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={empresa.localidad_id}
-          onValueChange={(itemValue) => handleChange('localidad_id', itemValue)}
-          mode="dropdown"
-          style={styles.picker}
-        >
-          <Picker.Item label="Seleccione una localidad" value="" />
-          {localidades.map((loc: any) => (
-            <Picker.Item key={loc.id} label={loc.nombre} value={loc.id.toString()} />
-          ))}
-        </Picker>
       </View>
+   
 
       <TouchableOpacity style={styles.button} onPress={handleGuardar} disabled={guardando}>
         <Text style={styles.buttonText}>{guardando ? "Guardando..." : "Guardar Cambios"}</Text>
@@ -164,4 +169,14 @@ const styles = StyleSheet.create({
     width: '100%',
     color: '#000',
   },
+  inputGroup: {
+  marginBottom: 8,
+},
+label: {
+  fontSize: 14,
+  fontWeight: 'bold',
+  marginBottom: 4,
+  color: '#333',
+},
+
 });

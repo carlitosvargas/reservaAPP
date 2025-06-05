@@ -68,6 +68,7 @@ export default function ModificarPasajero() {
       <TextInput
       style={styles.input}
       placeholder="Nombre"
+      placeholderTextColor="#888"
       value={pasajero.nombre ?? ''}
       onChangeText={text => handleChange('nombre', text)}
     />
@@ -75,6 +76,7 @@ export default function ModificarPasajero() {
     <TextInput
       style={styles.input}
       placeholder="Apellido"
+      placeholderTextColor="#888"
       value={pasajero.apellido ?? ''}
       onChangeText={text => handleChange('apellido', text)}
     />
@@ -82,6 +84,7 @@ export default function ModificarPasajero() {
     <TextInput
       style={styles.input}
       placeholder="DNI"
+      placeholderTextColor="#888"
       value={String(pasajero.dni ?? '')}
       onChangeText={text => handleChange('dni', text)}
       keyboardType="numeric"
@@ -90,6 +93,7 @@ export default function ModificarPasajero() {
     <TextInput
       style={styles.input}
       placeholder="Ubicación Origen. Ej. Jujuy 345"
+      placeholderTextColor="#888"
       value={pasajero.ubicacionOrigen ?? ''}
       onChangeText={text => handleChange('ubicacionOrigen', text)}
     />
@@ -97,6 +101,7 @@ export default function ModificarPasajero() {
     <TextInput
       style={styles.input}
       placeholder="Ubicación Destino. Ej. Salta 345"
+      placeholderTextColor="#888"
       value={pasajero.ubicacionDestino ?? ''}
       onChangeText={text => handleChange('ubicacionDestino', text)}
     />

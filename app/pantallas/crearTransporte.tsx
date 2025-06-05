@@ -30,9 +30,18 @@ const CrearTransporte = () => {
       await crearTransporte(nuevoTransporte);
       Alert.alert('Transporte creado correctamente');
       navigation.goBack();
-    } catch (error) {
-      console.error('Error al crear transporte:', error);
-      Alert.alert('Error al crear transporte');
+    } catch (error:any) {
+      const errores = error.response?.data?.errores;
+
+  if (errores && Array.isArray(errores)) {
+    // el middleware me envia un array errores con los mensajes de error
+    const mensajeError = errores.map((err: any) => err.msg).join('\n');
+    Alert.alert('Error en los datos:', mensajeError);
+  } else {
+    const mensajeError = error.response?.data?.error || 'Error al crear el transporte.';
+    
+    Alert.alert('Error:', mensajeError);
+  }
     }
   };
 
@@ -40,35 +49,51 @@ const CrearTransporte = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Crear Nuevo Transporte</Text>
 
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Nombre</Text>
       <TextInput
         style={styles.input}
         placeholder="Nombre"
+        placeholderTextColor="#888"
         value={nombre}
         onChangeText={setNombre}
       />
+      </View>
 
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Patente</Text>
       <TextInput
         style={styles.input}
         placeholder="Patente"
+        placeholderTextColor="#888"
         value={patente}
         onChangeText={setPatente}
       />
+      </View>
 
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Marca</Text>
       <TextInput
         style={styles.input}
         placeholder="Marca"
+        placeholderTextColor="#888"
         value={marca}
         onChangeText={setMarca}
       />
+       </View>
 
+
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Cantidad de Lugares</Text>
       <TextInput
         style={styles.input}
         placeholder="Cantidad de lugares"
+        placeholderTextColor="#888" 
         value={cantLugares}
         onChangeText={setCantLugares}
         keyboardType="numeric"
       />
-
+      </View>
       <TouchableOpacity style={styles.botonGuardar} onPress={handleGuardar}>
         <Text style={styles.botonTexto}>Guardar Transporte</Text>
       </TouchableOpacity>
@@ -94,6 +119,16 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   botonTexto: { color: '#fff', fontWeight: 'bold' },
+  inputGroup: {
+  marginBottom: 8,
+},
+label: {
+  fontSize: 14,
+  fontWeight: 'bold',
+  marginBottom: 4,
+  color: '#333',
+},
+
 });
 
 export default CrearTransporte;

@@ -124,7 +124,7 @@ export default function TabLayout() {
         name="empresaUsuarios"
         options={{
           title: 'Usuarios',
-          href: userInfo?.perfil === 'usuarioAdministrador' ? undefined : null,
+          href: userInfo?.perfil === 'usuarioEmpresa' ? undefined : null,
           lazy: true,
         }}
       />

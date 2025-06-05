@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, useColorScheme, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, useColorScheme, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { registrarUsuario } from '../services/authService'; 
 
@@ -126,88 +126,119 @@ const styles = StyleSheet.create({
 });
 
 
-  return (
-    <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-    
-      <View style={styles.formContainer}>
-        <Text style={styles.title}>Registrarse</Text>
+    return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={[
+          styles.scrollContent,
+          { backgroundColor: isDark ? '#000' : '#fff' }
+        ]}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={[styles.formContainer, { backgroundColor: isDark ? '#111' : '#f2f2f2' }]}>
+          <Text style={styles.title}>Registrarse</Text>
 
-      {errores.nombre && <Text style={styles.errorText}>{errores.nombre}</Text>}
-        <TextInput
-          style={styles.input}
-          placeholder="Nombre"
-          placeholderTextColor={isDark ? '#ccc' : '#888'}
-          value={nombre}
-          onChangeText={(text) => { setNombre(text); setErrores((prev: Errores) => ({ ...prev, nombre: '' })); }}
-        />
-        
-  {errores.apellido && <Text style={styles.errorText}>{errores.apellido}</Text>}
-        <TextInput
-          style={styles.input}
-          placeholder="Apellido"
-          placeholderTextColor={isDark ? '#ccc' : '#888'}
-          value={apellido}
-          onChangeText={(text) => { setApellido(text); setErrores((prev: Errores) => ({ ...prev, apellido: '' })); }}
-        />
-      
-      {errores.dni && <Text style={styles.errorText}>{errores.dni}</Text>}
-        <TextInput
-          style={styles.input}
-          placeholder="DNI"
-          placeholderTextColor={isDark ? '#ccc' : '#888'}
-          value={dni}
-          onChangeText={(text) => { setDni(text); setErrores((prev: Errores) => ({ ...prev, dni: '' })); }}
-        />
-        
-        {errores.telefono && <Text style={styles.errorText}>{errores.telefono}</Text>}
-        <TextInput
-          style={styles.input}
-          placeholder="Telefono"
-          placeholderTextColor={isDark ? '#ccc' : '#888'}
-          value={telefono}
-          onChangeText={(text) => { setTelefono(text); setErrores((prev: Errores) => ({ ...prev, telefono: '' })); }}
-        />
-        
-  {errores.email && <Text style={styles.errorText}>{errores.email}</Text>}
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor={isDark ? '#ccc' : '#888'}
-          value={email}
-          onChangeText={(text) => { setEmail(text); setErrores((prev: Errores) => ({ ...prev, email: '' })); }}
-        />
-        
-    {errores.usuario && <Text style={styles.errorText}>{errores.usuario}</Text>}
-        <TextInput
-          style={styles.input}
-          placeholder="Usuario"
-          placeholderTextColor={isDark ? '#ccc' : '#888'}
-          value={usuario}
-          onChangeText={(text) => { setUsuario(text); setErrores((prev: Errores) => ({ ...prev, usuario: '' })); }}
-        />
-        
-      {errores.contrasenia && <Text style={styles.errorText}>{errores.contrasenia}</Text>}
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          placeholderTextColor={isDark ? '#ccc' : '#888'}
-          secureTextEntry
-          value={contrasenia}
-          onChangeText={(text) => { setContrasenia(text); setErrores((prev: Errores) => ({ ...prev, contrasenia: '' })); }}
-        />
-        
-     
+          {errores.nombre && <Text style={styles.errorText}>{errores.nombre}</Text>}
+          <TextInput
+            style={[styles.input, { color: isDark ? '#fff' : '#000', backgroundColor: isDark ? '#1a1a1a' : '#fff' }]}
+            placeholder="Nombre"
+            placeholderTextColor={isDark ? '#ccc' : '#888'}
+            value={nombre}
+            onChangeText={(text) => {
+              setNombre(text);
+              setErrores((prev) => ({ ...prev, nombre: '' }));
+            }}
+          />
 
-        <Pressable style={styles.button} onPress={handleRegistro}>
-          <Text style={styles.buttonText}>Registrarse</Text>
-        </Pressable>
+          {errores.apellido && <Text style={styles.errorText}>{errores.apellido}</Text>}
+          <TextInput
+            style={[styles.input, { color: isDark ? '#fff' : '#000', backgroundColor: isDark ? '#1a1a1a' : '#fff' }]}
+            placeholder="Apellido"
+            placeholderTextColor={isDark ? '#ccc' : '#888'}
+            value={apellido}
+            onChangeText={(text) => {
+              setApellido(text);
+              setErrores((prev) => ({ ...prev, apellido: '' }));
+            }}
+          />
 
-        <Text style={styles.volverLogin}>
-          ¿Ya tenés cuenta?{' '}
-          <Text style={styles.volverLink} onPress={() => router.replace('/login')}>Iniciar sesión </Text>
-        </Text>
-      </View>
-  
-    </ScrollView>
+          {errores.dni && <Text style={styles.errorText}>{errores.dni}</Text>}
+          <TextInput
+            style={[styles.input, { color: isDark ? '#fff' : '#000', backgroundColor: isDark ? '#1a1a1a' : '#fff' }]}
+            placeholder="DNI"
+            placeholderTextColor={isDark ? '#ccc' : '#888'}
+            value={dni}
+            onChangeText={(text) => {
+              setDni(text);
+              setErrores((prev) => ({ ...prev, dni: '' }));
+            }}
+          />
+
+          {errores.telefono && <Text style={styles.errorText}>{errores.telefono}</Text>}
+          <TextInput
+            style={[styles.input, { color: isDark ? '#fff' : '#000', backgroundColor: isDark ? '#1a1a1a' : '#fff' }]}
+            placeholder="Telefono"
+            placeholderTextColor={isDark ? '#ccc' : '#888'}
+            value={telefono}
+            onChangeText={(text) => {
+              setTelefono(text);
+              setErrores((prev) => ({ ...prev, telefono: '' }));
+            }}
+          />
+
+          {errores.email && <Text style={styles.errorText}>{errores.email}</Text>}
+          <TextInput
+            style={[styles.input, { color: isDark ? '#fff' : '#000', backgroundColor: isDark ? '#1a1a1a' : '#fff' }]}
+            placeholder="Email"
+            placeholderTextColor={isDark ? '#ccc' : '#888'}
+            value={email}
+            onChangeText={(text) => {
+              setEmail(text);
+              setErrores((prev) => ({ ...prev, email: '' }));
+            }}
+          />
+
+          {errores.usuario && <Text style={styles.errorText}>{errores.usuario}</Text>}
+          <TextInput
+            style={[styles.input, { color: isDark ? '#fff' : '#000', backgroundColor: isDark ? '#1a1a1a' : '#fff' }]}
+            placeholder="Usuario"
+            placeholderTextColor={isDark ? '#ccc' : '#888'}
+            value={usuario}
+            onChangeText={(text) => {
+              setUsuario(text);
+              setErrores((prev) => ({ ...prev, usuario: '' }));
+            }}
+          />
+
+          {errores.contrasenia && <Text style={styles.errorText}>{errores.contrasenia}</Text>}
+          <TextInput
+            style={[styles.input, { color: isDark ? '#fff' : '#000', backgroundColor: isDark ? '#1a1a1a' : '#fff' }]}
+            placeholder="Contraseña"
+            placeholderTextColor={isDark ? '#ccc' : '#888'}
+            secureTextEntry
+            value={contrasenia}
+            onChangeText={(text) => {
+              setContrasenia(text);
+              setErrores((prev) => ({ ...prev, contrasenia: '' }));
+            }}
+          />
+
+          <Pressable style={styles.button} onPress={handleRegistro}>
+            <Text style={styles.buttonText}>Registrarse</Text>
+          </Pressable>
+
+          <Text style={styles.volverLogin}>
+            ¿Ya tenés cuenta?{' '}
+            <Text style={styles.volverLink} onPress={() => router.replace('/login')}>
+              Iniciar sesión
+            </Text>
+          </Text>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

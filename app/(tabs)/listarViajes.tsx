@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Pressable,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -46,6 +47,8 @@ const ViajesEmpresa = () => {
   const { userInfo } = useAuth();
   const router = useRouter();
 
+  const esMostrador = userInfo?.perfil === 'usuarioMostrador';
+
   useEffect(() => {
     const fetchViajes = async () => {
       try {
@@ -74,6 +77,10 @@ const ViajesEmpresa = () => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+  };
+
+  const handleAgregar = () => {
+    router.push({pathname:'/pantallas/crearViaje'})
   };
 
   const formatTime = (timeString: string) => {
@@ -124,6 +131,11 @@ const ViajesEmpresa = () => {
 
   return (
     <ScrollView style={styles.container}>
+      {esMostrador && (
+              <TouchableOpacity style={styles.agregarButton} onPress={handleAgregar}>
+                <Text style={styles.agregarButtonText}>+ Agregar Viaje</Text>
+              </TouchableOpacity>
+            )}
       <Text style={styles.sectionTitle}>{nombreEmpresa} - Viajes</Text>
       {viajes.map(renderViaje)}
     </ScrollView>
@@ -136,6 +148,18 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
+   agregarButton: {
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 12,
+    alignSelf: 'flex-start',
+  },
+  agregarButtonText: 
+  { 
+    color: '#fff',
+    fontWeight: 'bold'
+   },
   reservaItem: {
     backgroundColor: '#f0f0f0',
     padding: 16,

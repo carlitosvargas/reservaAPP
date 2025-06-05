@@ -131,10 +131,11 @@ export default function UsuariosScreen() {
           <Text>Teléfono: {item.telefono}</Text>
           <Text>Email: {item.email}</Text>
 
-          <Text style={{ marginTop: 10 }}>Cambiar perfil:</Text>
+          <Text style={styles.cambiarPerfilTexto}>Cambiar Perfil:</Text>
           <ModalSelector
             data={perfiles}
             initValue={obtenerNombrePerfil(item.perfil_id)}
+            initValueTextStyle={{ color: '#007AFF', fontWeight: 'bold' }}
             onChange={(option) => {
               const yaSeleccionado =
                 ultimaSeleccionRef.current &&
@@ -250,4 +251,14 @@ filtroTextoActivo: {
   detalles: {
     marginTop: 10,
   },
+  perfilTexto: {
+  color: '#003366', 
+  fontWeight: 'bold',
+},
+cambiarPerfilTexto: {
+  marginTop: 10,
+  color: 'black', 
+  fontWeight: 'bold',
+},
+
 });

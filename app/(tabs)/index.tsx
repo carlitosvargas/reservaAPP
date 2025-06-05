@@ -1,11 +1,12 @@
 import React from 'react';
-import {View,Text,ImageBackground,StyleSheet,Pressable,ActivityIndicator,Dimensions,} from 'react-native';
+import {View,Text,ImageBackground,StyleSheet,Pressable,ActivityIndicator,Dimensions,useColorScheme} from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import Login from '../login';
 
 const { width, height } = Dimensions.get('window');
-
+ const colorScheme = useColorScheme();
+ 
 export default function Index() {
  
 
@@ -43,17 +44,20 @@ export default function Index() {
     </ImageBackground>
   );
 }
-
+ const isDark = colorScheme === 'dark';
+ 
 const styles = StyleSheet.create({
   loaderContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    
   },
   background: {
     width: width,
     height: height,
     justifyContent: 'center',
+    
   },
   
   overlay: {

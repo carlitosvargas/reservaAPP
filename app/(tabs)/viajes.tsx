@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, TextInput, Pressable, StyleSheet, ScrollView,
-  ActivityIndicator, KeyboardAvoidingView, Platform, FlatList,
- Keyboard, TouchableWithoutFeedback} from 'react-native';
+  ActivityIndicator, KeyboardAvoidingView, Platform,
+  Keyboard, TouchableWithoutFeedback,
+  FlatList
+} from 'react-native';
 import { listarViajes, obtenerLocalidades } from '../../services/viajeServices';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -73,8 +75,9 @@ export default function ViajesScreen() {
     tipo === 'origen' ? setSugerenciasOrigen(sugerencias) : setSugerenciasDestino(sugerencias);
   };
 
-  const renderViaje = ({ item }: { item: Viaje }) => (
+  const renderViaje = (item: Viaje) => (
     <Pressable
+      key={item.id}
       onPress={() => router.push({ pathname: '/pantallas/realizarReserva', params: { id: item.id } })}
       style={styles.card}
     >
@@ -84,122 +87,126 @@ export default function ViajesScreen() {
       <Text>Fecha: {new Date(item.fechaViaje).toLocaleDateString()}</Text>
       <Text>Hora de Salida: {item.horarioSalida}</Text>
       <Text>Precio: ${item.precio}</Text>
-      <Text>Chofer: {item.usuarioEmpresa_id}</Text>
+      
     </Pressable>
-  );
-
-  return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <TouchableWithoutFeedback
-        onPress={() => {
-          Keyboard.dismiss(); // Cierra el teclado
-          setSugerenciasOrigen([]); // Oculta sugerencias de origen
-          setSugerenciasDestino([]); // Oculta sugerencias de destino
-        }}
-      >
-       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Origen"
-            value={origen}
-            onChangeText={(text) => {
-              setOrigen(text);
-              filtrarSugerencias(text, 'origen');
-            }}
-            onBlur={() => setSugerenciasOrigen([])}
-          />
-          {origen.length > 0 && (
-            <Pressable onPress={() => {
-              setOrigen('');
-              setSugerenciasOrigen([]);
-            }}>
-              <Icon name="times-circle" size={20} color="#aaa" style={styles.clearIcon} />
-            </Pressable>
-          )}
-        </View>
-        {sugerenciasOrigen.length > 0 && (
-          <View style={styles.suggestionBox}>
-            {sugerenciasOrigen.map((s, idx) => (
-              <Pressable key={idx} onPress={() => {
-                setOrigen(s);
+  );return (
+  <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={{ flex: 1, padding: 16 }}>
+        {/* Buscador fijo */}
+        <View style={styles.searchSection}>
+          {/* Origen */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Origen"
+              placeholderTextColor="#888"
+              value={origen}
+              onChangeText={(text) => {
+                setOrigen(text);
+                filtrarSugerencias(text, 'origen');
+              }}
+              onBlur={() => setSugerenciasOrigen([])}
+            />
+            {origen.length > 0 && (
+              <Pressable onPress={() => {
+                setOrigen('');
                 setSugerenciasOrigen([]);
               }}>
-                <Text style={styles.suggestion}>{s}</Text>
+                <Icon name="times-circle" size={20} color="#aaa" style={styles.clearIcon} />
               </Pressable>
-            ))}
+            )}
           </View>
-        )}
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Destino"
-            value={destino}
-            onChangeText={(text) => {
-              setDestino(text);
-              filtrarSugerencias(text, 'destino');
-            }}
-            onBlur={() => setSugerenciasDestino([])}
-          />
-          {destino.length > 0 && (
-            <Pressable onPress={() => {
-              setDestino('');
-              setSugerenciasDestino([]);
-            }}>
-              <Icon name="times-circle" size={20} color="#aaa" style={styles.clearIcon} />
-            </Pressable>
+          {sugerenciasOrigen.length > 0 && (
+            <View style={styles.suggestionBox}>
+              {sugerenciasOrigen.map((s, idx) => (
+                <Pressable key={idx} onPress={() => {
+                  setOrigen(s);
+                  setSugerenciasOrigen([]);
+                }}>
+                  <Text style={styles.suggestion}>{s}</Text>
+                </Pressable>
+              ))}
+            </View>
           )}
-        </View>
-        {sugerenciasDestino.length > 0 && (
-          <View style={styles.suggestionBox}>
-            {sugerenciasDestino.map((s, idx) => (
-              <Pressable key={idx} onPress={() => {
-                setDestino(s);
+
+          {/* Destino */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Destino"
+              placeholderTextColor="#888"
+              value={destino}
+              onChangeText={(text) => {
+                setDestino(text);
+                filtrarSugerencias(text, 'destino');
+              }}
+              onBlur={() => setSugerenciasDestino([])}
+            />
+            {destino.length > 0 && (
+              <Pressable onPress={() => {
+                setDestino('');
                 setSugerenciasDestino([]);
               }}>
-                <Text style={styles.suggestion}>{s}</Text>
+                <Icon name="times-circle" size={20} color="#aaa" style={styles.clearIcon} />
               </Pressable>
-            ))}
+            )}
           </View>
-        )}
+          {sugerenciasDestino.length > 0 && (
+            <View style={styles.suggestionBox}>
+              {sugerenciasDestino.map((s, idx) => (
+                <Pressable key={idx} onPress={() => {
+                  setDestino(s);
+                  setSugerenciasDestino([]);
+                }}>
+                  <Text style={styles.suggestion}>{s}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
 
-        <Pressable style={styles.button} onPress={buscarViajes}>
-          <Text style={styles.buttonText}>Buscar</Text>
-        </Pressable>
+          <Pressable style={styles.button} onPress={buscarViajes}>
+            <Text style={styles.buttonText}>Buscar</Text>
+          </Pressable>
 
-        {mensaje ? <Text style={styles.mensaje}>{mensaje}</Text> : null}
+          {mensaje ? <Text style={styles.mensaje}>{mensaje}</Text> : null}
+        </View>
 
-        {loading ? (
-          <ActivityIndicator size="large" color="#007AFF" />
-        ) : (
-          <FlatList
-            data={viajes}
-            renderItem={renderViaje}
-            keyExtractor={(item) => item.id.toString()}
-            style={styles.lista}
-            contentContainerStyle={{ paddingBottom: 20 }}
-            showsVerticalScrollIndicator={false}
-            scrollEnabled={viajes.length > 4}
-            initialNumToRender={4}
-            maxToRenderPerBatch={4}
-            windowSize={5}
-          />
-        )}
-      </ScrollView>
-
-     </TouchableWithoutFeedback>
+        {/* Lista de viajes scrollable */}
+        <View style={{ flex: 1 }}>
+          {loading ? (
+            <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 20 }} />
+          ) : (
+            <FlatList
+              data={viajes}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => renderViaje(item)}
+              contentContainerStyle={{ paddingBottom: 16 }}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
   </KeyboardAvoidingView>
-  );
+);
+
+
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 24,
+  },
   container: {
     padding: 16,
     backgroundColor: '#fff',
   },
+  searchSection: {
+  marginBottom: 16,
+},
+
   title: {
     fontSize: 22,
     fontWeight: 'bold',
@@ -261,8 +268,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 6,
     color: '#007AFF',
-  },
-  lista: {
-    maxHeight: 400,
   },
 });

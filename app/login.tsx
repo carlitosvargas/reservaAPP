@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {View,Text,TextInput,Pressable,StyleSheet,useColorScheme,KeyboardAvoidingView, Platform,} from 'react-native';
+import {View,Text,TextInput,Pressable,StyleSheet,useColorScheme,KeyboardAvoidingView, Platform, ScrollView,} from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -108,41 +108,50 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
     },
   });
   
-
-  return (
-    <View style={styles.wrapper}>
-      <View style={styles.formContainer}>
-        <Text style={styles.title}>Iniciar sesión</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Usuario"
-          placeholderTextColor={isDark ? '#ccc' : '#888'}
-          value={usuario}
-          onChangeText={setUsuario}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          placeholderTextColor={isDark ? '#ccc' : '#888'}
-          secureTextEntry
-          value={contrasenia}
-          onChangeText={setPassword}
-        />
-            {errorMensaje !== '' && (
-          <Text style={{ color: 'red', marginBottom: 10, textAlign: 'center' }}>
-            {errorMensaje}
-          </Text>
-        )}
+ return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={styles.wrapper}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.formContainer}>
+          <Text style={styles.title}>Iniciar sesión</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Usuario"
+            placeholderTextColor={isDark ? '#ccc' : '#888'}
+            value={usuario}
+            onChangeText={setUsuario}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Contraseña"
+            placeholderTextColor={isDark ? '#ccc' : '#888'}
+            secureTextEntry
+            value={contrasenia}
+            onChangeText={setPassword}
+          />
+          {errorMensaje !== '' && (
+            <Text style={{ color: 'red', marginBottom: 10, textAlign: 'center' }}>
+              {errorMensaje}
+            </Text>
+          )}
           <Pressable style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Ingresar</Text>
-        </Pressable>
-  
-        <Text style={styles.registroLink}>
-          ¿No tenés cuenta?{' '}
-          <Text style={styles.linkText} onPress={() => router.push('/registro')}> Registrarse</Text>
-        </Text>
-      </View>
-    </View>
+            <Text style={styles.buttonText}>Ingresar</Text>
+          </Pressable>
+          <Text style={styles.registroLink}>
+            ¿No tenés cuenta?{' '}
+            <Text style={styles.linkText} onPress={() => router.push('/registro')}>
+              Registrarse
+            </Text>
+          </Text>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
   
 }

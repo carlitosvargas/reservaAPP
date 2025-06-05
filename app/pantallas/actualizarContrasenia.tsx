@@ -85,6 +85,7 @@ export default function ModificarContrasenia() {
       <TextInput
         style={styles.input}
         placeholder="Contraseña Actual"
+        placeholderTextColor="#888"
         secureTextEntry
         value={contraseñaActual}
         onChangeText={setContraseñaActual}
@@ -94,6 +95,7 @@ export default function ModificarContrasenia() {
       <TextInput
         style={styles.input}
         placeholder="Nueva Contraseña"
+        placeholderTextColor="#888"
         secureTextEntry
         value={nuevaContraseña}
         onChangeText={setNuevaContraseña}
@@ -103,6 +105,7 @@ export default function ModificarContrasenia() {
       <TextInput
         style={styles.input}
         placeholder="Repetir Nueva Contraseña"
+        placeholderTextColor="#888"
         secureTextEntry
         value={repetirContraseña}
         onChangeText={setRepetirContraseña}

@@ -72,13 +72,18 @@ export const listarViajes = async (origen: string, destino: string) => {
 
 
   export const obtenerViajesPorChofer = async (id: number) => {
+    try{
   const token = await AsyncStorage.getItem('token');
   const response = await axios.get(`${API_URL}/viajes/obtenerViajesPorChofer/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data;
+  return response.data;}
+  catch (error: any) {
+      throw error;
+    }
+
 };
 
 export const obtenerViajesPorEmpresa = async (id: number) => {
@@ -91,6 +96,17 @@ export const obtenerViajesPorEmpresa = async (id: number) => {
   return response.data;
 };
 
+
+export const crearViaje = async (viajeData: any) => {
+    const token = await AsyncStorage.getItem('token');
+   const response = await axios.post(` ${API_URL}/viajes/crearViaje`, viajeData ,{
+      headers: {
+        Authorization: ` Bearer ${token}`,
+      },
+    });
+   
+  return response.data;
+};
 
 
 

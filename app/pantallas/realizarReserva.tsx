@@ -142,7 +142,7 @@ export default function DetalleViaje() {
     <View style={styles.infoBox}>
       <Text style={styles.label}>Horario</Text>
       <Text style={styles.value}>
-        {new Date(viaje.horarioSalida).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        {viaje.horarioSalida}
       </Text>
     </View>
     <View style={styles.infoBox}>
@@ -150,8 +150,7 @@ export default function DetalleViaje() {
       <Text style={styles.value}>${viaje.precio}</Text>
     </View>
     <View style={styles.infoBox}>
-      <Text style={styles.label}>Chofer</Text>
-      <Text style={styles.value}>{viaje.chofer}</Text>
+      
     </View>
   </View>
 </View>

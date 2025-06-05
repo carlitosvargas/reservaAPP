@@ -103,3 +103,19 @@ export const eliminarUsuario = async (id: number) => {
     throw error;
   }
 };
+
+
+export const obtenerUsuariosChoferPorEmpresa = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/usuarios/obtenerUsuarioChoferPorEmpresa/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al obtener los Choferes de la empresa', error.response?.data || error.message);
+    throw error;
+  }
+};

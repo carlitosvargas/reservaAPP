@@ -129,7 +129,18 @@ const MisReservas = () => {
     ]
   );
 };
+ const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
 
   const renderReserva = (item: Reserva) => (
     <Pressable key={item.id} onPress={() => toggleExpand(item.id)} style={styles.reservaItem}>
@@ -138,9 +149,9 @@ const MisReservas = () => {
 
       <Animated.View style={{ overflow: 'hidden', height: animatedHeight(item.id) }}>
         <Text>Reserva #{item.id}</Text>
-        <Text>Fecha de Reserva: {item.fechaReserva}</Text>
-        <Text>Fecha del Viaje: {item.viaje.fechaViaje}</Text>
-        <Text>Hora de Salida: {item.viaje.horarioSalida}</Text>
+        <Text>Fecha de Reserva: {formatDate(item.fechaReserva)}</Text>
+        <Text>Fecha del Viaje: {formatDate(item.viaje.fechaViaje)}</Text>
+        <Text>Hora de Salida: {formatTime(item.viaje.horarioSalida)}</Text>
         <Text>Chofer: {item.viaje.usuarioEmpresa_id}</Text>
         <Text>Precio: ${item.viaje.precio}</Text>
 

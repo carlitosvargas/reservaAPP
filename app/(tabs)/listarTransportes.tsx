@@ -68,8 +68,8 @@ const ListarTransportes = () => {
   };
 
   const handleEditar = (id: number) => {
-   // navigation.navigate('EditarTransporte', { transporteId: id });
-  };
+    router.push({pathname:'/pantallas/editarTransporte',params: { id: id },})
+  };
 
   const handleAgregar = () => {
     router.push({pathname:'/pantallas/crearTransporte'})

@@ -77,66 +77,63 @@ useEffect(() => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
      
-     
-
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Nombre</Text>
       <TextInput
         style={styles.input}
         placeholder="Nombre"
+        placeholderTextColor="#888"
         value={usuario.nombre ?? ''}
         onChangeText={text => handleChange('nombre', text)}
       />
+    </View>
 
+    <View style={styles.inputGroup}>
+      <Text style={styles.label}>Apellido</Text>
       <TextInput
         style={styles.input}
         placeholder="Apellido"
+        placeholderTextColor="#888"
         value={usuario.apellido ?? ''}
         onChangeText={text => handleChange('apellido', text)}
       />
+    </View>
 
+    <View style={styles.inputGroup}>
+      <Text style={styles.label}>Email</Text>
       <TextInput
         style={styles.input}
-        placeholder="Emali"
+        placeholder="Email"
+        placeholderTextColor="#888"
         value={usuario.email ?? ''}
         onChangeText={text => handleChange('email', text)}
-        
+        keyboardType="email-address"
       />
+    </View>
 
+    <View style={styles.inputGroup}>
+      <Text style={styles.label}>Teléfono</Text>
       <TextInput
         style={styles.input}
         placeholder="Teléfono"
+        placeholderTextColor="#888"
         value={usuario.telefono ?? ''}
         onChangeText={text => handleChange('telefono', text)}
         keyboardType="numeric"
       />
+    </View>
 
+    <View style={styles.inputGroup}>
+      <Text style={styles.label}>Usuario</Text>
       <TextInput
         style={styles.input}
         placeholder="Usuario"
+        placeholderTextColor="#888"
         value={usuario.usuario ?? ''}
         onChangeText={text => handleChange('usuario', text)}
       />
-
-          {perfilId == 1 && (
-              <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={usuario.perfil_id}
-            onValueChange={(itemValue) =>
-              setUsuario((prev) => ({ ...prev, perfil_id: itemValue }))
-            }
-            mode="dropdown" // importante para iOS
-            style={styles.picker}
-          >
-            <Picker.Item label="Seleccione un perfil" value="" />
-            <Picker.Item label="Administrador" value="1" />
-            <Picker.Item label="Empresa" value="2" />
-            <Picker.Item label="Mostrador" value="3" />
-            <Picker.Item label="Chofer" value="4" />
-            <Picker.Item label="Cliente" value="5" />
-          </Picker>
-        </View>
-
-    )}
-
+    </View>
+            
 
       <TouchableOpacity style={styles.button} onPress={handleGuardar}>
         <Text style={styles.buttonText}>Guardar Cambios</Text>
@@ -199,4 +196,14 @@ picker: {
   width: '100%',
   color: '#000',
 },
+inputGroup: {
+  marginBottom: 8,
+},
+label: {
+  fontSize: 14,
+  fontWeight: 'bold',
+  marginBottom: 4,
+  color: '#333',
+},
+
 });

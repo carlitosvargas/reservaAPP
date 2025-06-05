@@ -25,13 +25,54 @@ import { API_URL } from '../environment/config';
   return response.data;
 };
 
-  export const crearTransporte = async (transporteData: any) => {
-    const token = await AsyncStorage.getItem('token');
-   const response = await axios.post(`${API_URL}/medioTransporte/crearTransporte`, transporteData ,{
+export const crearTransporte = async (transporteData: any) => {
+    try
+    {const token = await AsyncStorage.getItem('token');
+    const response = await axios.post(` ${API_URL}/medioTransporte/crearTransporte`, transporteData ,{
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: ` Bearer ${token}`,
+      },
+    });
+    return response.data;}
+    catch (error: any) {
+      throw error;
+    }
+  
+};
+
+
+export const editarTransporte = async (id: number, transporteData: any) => {
+    const token = await AsyncStorage.getItem('token');
+   const response = await axios.put(` ${API_URL}/medioTransporte/actualizarTransporte/${id}`, transporteData ,{
+      headers: {
+        Authorization: ` Bearer ${token}`,
       },
     });
    
   return response.data;
 };
+
+  export const obtenerTransporteId = async (id: number) => {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(` ${API_URL}/medioTransporte/obtenerTransporteId/${id}`, {
+      headers: {
+        Authorization: ` Bearer ${token}`,
+      },
+    });
+    return response.data;
+  };
+
+ export const obtenerViajesPorTransporte = async (id: number) => {
+  try{
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/medioTransporte/obtenerViajesPorTransporte/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;}
+    catch (error: any) {
+      throw error;
+    }
+  };
+
