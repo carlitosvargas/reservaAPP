@@ -160,37 +160,58 @@ export default function DetalleViaje() {
 
       {pasajeros.map((pasajero, index) => (
         <View key={index} style={styles.pasajeroCard}>
+          <View style={styles.inputGroup}>
+          <Text style={styles.label1}>Nombre</Text>
           <TextInput
             style={styles.input}
             placeholder="Nombre"
+            placeholderTextColor="#888"
             value={pasajero.nombre}
             onChangeText={(text) => handleChangePasajero(index, 'nombre', text)}
           />
+          </View>
+          <View style={styles.inputGroup}>
+          <Text style={styles.label1}>Apellido</Text>
           <TextInput
             style={styles.input}
             placeholder="Apellido"
+            placeholderTextColor="#888"
             value={pasajero.apellido}
             onChangeText={(text) => handleChangePasajero(index, 'apellido', text)}
           />
+          </View>
+
+          <View style={styles.inputGroup}>
+          <Text style={styles.label1}>DNI</Text>
           <TextInput
             style={styles.input}
             placeholder="DNI"
+            placeholderTextColor="#888"
             keyboardType="numeric"
             value={pasajero.dni}
             onChangeText={(text) => handleChangePasajero(index, 'dni', text)}
           />
+          </View>
+          <View style={styles.inputGroup}>
+          <Text style={styles.label1}>Ubicación de Origen</Text>
           <TextInput
             style={styles.input}
             placeholder="Ubicación de Origen"
+            placeholderTextColor="#888"
             value={pasajero.ubicacionOrigen}
             onChangeText={(text) => handleChangePasajero(index, 'ubicacionOrigen', text)}
           />
+          </View>
+          <View style={styles.inputGroup}>
+          <Text style={styles.label1}>Ubicación de Destino</Text>
           <TextInput
             style={styles.input}
             placeholder="Ubicación de Destino"
+            placeholderTextColor="#888"
             value={pasajero.ubicacionDestino}
             onChangeText={(text) => handleChangePasajero(index, 'ubicacionDestino', text)}
           />
+          </View>
         </View>
       ))}
 
@@ -315,5 +336,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 4,
   },
+    inputGroup: {
+  marginBottom: 8,
+},
+label1: {
+  fontSize: 14,
+  fontWeight: 'bold',
+  marginBottom: 4,
+  color: '#333',
+},
   
 });

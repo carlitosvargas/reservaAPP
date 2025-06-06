@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator,TouchableOpacity  }
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { obtenerPasajerosPorViaje } from '../../services/viajeServices'; // Asegúrate de que esta función esté definida
-import BackButton from '../../components/BackButton';
+
 
 interface Pasajero {
   id: number;
@@ -15,7 +15,7 @@ interface Pasajero {
 }
 
 export default function DetalleReserva() {
-  const { id } = useLocalSearchParams();
+  const { id,updated } = useLocalSearchParams();
  
   const [pasajeros, setPasajeros] = useState<Pasajero[]>([]);
   const [loading, setLoading] = useState(false);
@@ -25,23 +25,26 @@ export default function DetalleReserva() {
   const { userInfo } = useAuth();
   const usuarios_id = userInfo?.id;
 
-  useEffect(() => {
-    if (id) {
-      setLoading(true);  // Inicia el indicador de carga
-      obtenerPasajerosPorViaje(Number(id))
-        .then((data) => {
-          
-          setPasajeros(data); // Guarda la lista de pasajeros
-        })
-        .catch((error) => {
-          setEsError(true);
-          setMensajeReserva('Error al obtener los pasajeros');
-        })
-        .finally(() => {
-          setLoading(false); // Detén el indicador de carga
-        });
-    }
-  }, [id]);
+
+
+
+useEffect(() => {
+  if (id) {
+    setLoading(true);
+    obtenerPasajerosPorViaje(Number(id))
+      .then((data) => {
+        setPasajeros(data);
+      })
+      .catch((error) => {
+        setEsError(true);
+        setMensajeReserva('Error al obtener los pasajeros');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+}, [id, updated]); // 👈 se vuelve a ejecutar si `updated` cambia
+
 
   if (loading) {
     return (
@@ -79,7 +82,7 @@ export default function DetalleReserva() {
 
             <TouchableOpacity
               style={styles.botonEditar}
-              onPress={() => router.push({pathname:'/pantallas/modificarPasajero',params:{id:item.id}})}
+              onPress={() => router.push({pathname:'/pantallas/modificarPasajero',params:{id:item.id, idViaje:id}})}
             >
               <Text style={styles.botonTexto}>Editar</Text>
             </TouchableOpacity>

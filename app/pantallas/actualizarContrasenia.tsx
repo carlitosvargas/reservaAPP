@@ -37,7 +37,7 @@ export default function ModificarContrasenia() {
   }
 
   // Validación de coincidencia
-  if (nuevaContraseña && repetirContraseña && nuevaContraseña !== repetirContraseña) {
+  if (nuevaContraseña !== repetirContraseña) {
     nuevosErrores.repetir = 'Las contraseñas no coinciden';
   }
 
@@ -51,9 +51,10 @@ export default function ModificarContrasenia() {
 
   try {
     const payload = {
-      contraseñaActual,
-      nuevaContraseña,
-    };
+  contraseniaActual: contraseñaActual,
+  nuevaContrasenia: nuevaContraseña,
+};
+
 
     await actualizarContraseña(Number(id), payload);
 
@@ -81,7 +82,11 @@ export default function ModificarContrasenia() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-     {errores.contrasenia && <Text style={styles.errorText}>{errores.contrasenia}</Text>}
+     
+
+     <View style={styles.inputGroup}>
+      <Text style={styles.label}>Contraseña Actual</Text>
+      {errores.contrasenia && <Text style={styles.errorText}>{errores.contrasenia}</Text>}
       <TextInput
         style={styles.input}
         placeholder="Contraseña Actual"
@@ -90,7 +95,10 @@ export default function ModificarContrasenia() {
         value={contraseñaActual}
         onChangeText={setContraseñaActual}
       />
+      </View> 
 
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Nueva Contraseña</Text>
       {errores.nueva && <Text style={styles.errorText}>{errores.nueva}</Text>}
       <TextInput
         style={styles.input}
@@ -100,7 +108,10 @@ export default function ModificarContrasenia() {
         value={nuevaContraseña}
         onChangeText={setNuevaContraseña}
       />
+      </View>
 
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Repetir Nueva Contraseña</Text>
       {errores.repetir && <Text style={styles.errorText}>{errores.repetir}</Text>}
       <TextInput
         style={styles.input}
@@ -110,7 +121,7 @@ export default function ModificarContrasenia() {
         value={repetirContraseña}
         onChangeText={setRepetirContraseña}
       />
-
+      </View>
 
       <TouchableOpacity style={styles.button} onPress={handleGuardar}>
         <Text style={styles.buttonText}>Guardar Cambios</Text>
@@ -146,4 +157,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 5,
   },
+  inputGroup: {
+  marginBottom: 8,
+},
+label: {
+  fontSize: 14,
+  fontWeight: 'bold',
+  marginBottom: 4,
+  color: '#333',
+},
 });

@@ -76,6 +76,20 @@ useEffect(() => {
   }
 }, [id, userInfo]);
 
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return ` ${day}/${month}/${year}`;
+  };
+
+  
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return ` ${hours}:${minutes}`;
+  };
 
   const handleDownload = async () => {
     if (!data) return;
@@ -121,8 +135,7 @@ useEffect(() => {
     formaPago,
     usuario
   } = data;
-  const fechaFormateadaViaje = new Date(fechaViaje).toLocaleDateString('es-AR');
-   const fechaFormateadaDetalle = new Date(fecha).toLocaleDateString('es-AR');
+  
 
 
   return (
@@ -146,8 +159,8 @@ useEffect(() => {
           <Text style={styles.viajeText}>Origen: {origenLocalidad}</Text>
           <Text style={styles.viajeText}>Destino: {destinoLocalidad}</Text>
           
-          <Text style={styles.viajeText}>Fecha: {fechaFormateadaViaje}</Text>
-          <Text style={styles.viajeText}>Hora: {horarioSalida}</Text>
+          <Text style={styles.viajeText}>Fecha: {formatDate(fechaViaje)}</Text>
+          <Text style={styles.viajeText}>Hora: {formatTime(horarioSalida)}</Text>
         </View>
 
         <View style={styles.separator} />
@@ -171,8 +184,8 @@ useEffect(() => {
 
         {/* DETALLE DE VENTA */}
         <Text style={styles.sectionTitle}>🧾 Detalle de Venta</Text>
-        <Text style={styles.receiptText}>Fecha Venta: {fechaFormateadaDetalle}</Text>
-        <Text style={styles.receiptText}>Hora: {hora}</Text>
+        <Text style={styles.receiptText}>Fecha Venta: {formatDate(fecha)}</Text>
+        <Text style={styles.receiptText}>Hora: {formatTime(hora)}</Text>
         <Text style={styles.subTotal}>Subtotal: ${subTotal}</Text>
         <Text style={styles.receiptText}>Descuento: {descuento}%</Text>
         <Text style={styles.totalFinal}>Total: ${precioFinal}</Text>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { obtenerTransportePorEmpresa, eliminarTransporte } from '../../services/transporteService';
 import { useAuth } from '@/context/AuthContext';
@@ -40,7 +40,13 @@ const ListarTransportes = () => {
     fetchTransportes();
   }, []);
 
-  const handleEliminar = (id: number) => {
+const handleEliminar = async (id: number) => {
+  if (Platform.OS === 'web') {
+    const confirmar = window.confirm('¿Estás seguro de que deseas dar de baja este transporte?');
+    if (confirmar) {
+      await eliminar(id); // llamada directa si confirma
+    }
+  } else {
     Alert.alert(
       'Confirmar eliminación',
       '¿Estás seguro de que deseas dar de baja este transporte?',
@@ -49,23 +55,34 @@ const ListarTransportes = () => {
         {
           text: 'Sí, eliminar',
           style: 'destructive',
-          onPress: async () => {
-            try {
-              await eliminarTransporte(id);
-              setTransportes(transportes.filter((t) => t.id !== id));
-              Alert.alert('Transporte eliminado correctamente');
-            } catch (error: any) {
-               console.error('Error al eliminar transporte:', error.response?.data);
-
-            const mensajeError = error.response?.data?.error || 'Error al eliminar el transporte.';
-            
-            Alert.alert('Error', mensajeError);
-            }
-          },
+          onPress: () => eliminar(id), // llamada dentro del onPress
         },
       ]
     );
-  };
+  }
+};
+
+const eliminar = async (id: number) => {
+  try {
+    await eliminarTransporte(id);
+    setTransportes((prev) => prev.filter((t) => t.id !== id));
+
+    if (Platform.OS === 'web') {
+      alert('Transporte eliminado correctamente'); // alert simple en web
+    } else {
+      Alert.alert('Transporte eliminado correctamente'); // alert nativo en celu
+    }
+  } catch (error: any) {
+    console.error('Error al eliminar transporte:', error.response?.data);
+    const mensajeError = error.response?.data?.error || 'Error al eliminar el transporte.';
+
+    if (Platform.OS === 'web') {
+      alert('Error: ' + mensajeError);
+    } else {
+      Alert.alert('Error', mensajeError);
+    }
+  }
+};
 
   const handleEditar = (id: number) => {
     router.push({pathname:'/pantallas/editarTransporte',params: { id: id },})

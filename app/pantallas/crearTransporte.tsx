@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/context/AuthContext';
 import { crearTransporte } from '../../services/transporteService';
@@ -13,37 +13,57 @@ const CrearTransporte = () => {
   const navigation = useNavigation();
 
   const handleGuardar = async () => {
-    if (!nombre || !patente || !marca || !cantLugares) {
-      Alert.alert('Por favor, completa todos los campos');
-      return;
+  if (!nombre || !patente || !marca || !cantLugares) {
+    const mensaje = 'Por favor, completa todos los campos';
+    if (Platform.OS === 'web') {
+      alert(mensaje);
+    } else {
+      Alert.alert(mensaje);
     }
-
-    try {
-      const nuevoTransporte = {
-        nombre,
-        patente,
-        marca,
-        cantLugares: parseInt(cantLugares),
-        empresa_id: userInfo?.empresa_id,
-      };
-    console.log('ver transporte', nuevoTransporte)
-      await crearTransporte(nuevoTransporte);
-      Alert.alert('Transporte creado correctamente');
-      navigation.goBack();
-    } catch (error:any) {
-      const errores = error.response?.data?.errores;
-
-  if (errores && Array.isArray(errores)) {
-    // el middleware me envia un array errores con los mensajes de error
-    const mensajeError = errores.map((err: any) => err.msg).join('\n');
-    Alert.alert('Error en los datos:', mensajeError);
-  } else {
-    const mensajeError = error.response?.data?.error || 'Error al crear el transporte.';
-    
-    Alert.alert('Error:', mensajeError);
+    return;
   }
+
+  try {
+    const nuevoTransporte = {
+      nombre,
+      patente,
+      marca,
+      cantLugares: parseInt(cantLugares),
+      empresa_id: userInfo?.empresa_id,
+    };
+
+    console.log('ver transporte', nuevoTransporte);
+    await crearTransporte(nuevoTransporte);
+
+    const mensaje = 'Transporte creado correctamente';
+    if (Platform.OS === 'web') {
+      alert(mensaje);
+    } else {
+      Alert.alert(mensaje);
     }
-  };
+
+    navigation.goBack();
+  } catch (error: any) {
+    const errores = error?.response?.data?.errores;
+
+    if (errores && Array.isArray(errores)) {
+      const mensajeError = errores.map((err: any) => err.msg).join('\n');
+      if (Platform.OS === 'web') {
+        alert(mensajeError);
+      } else {
+        Alert.alert( mensajeError);
+      }
+    } else {
+      const mensajeError = error?.response?.data?.error || 'Error al crear el transporte.';
+      if (Platform.OS === 'web') {
+        alert('Error: ' + mensajeError);
+      } else {
+        Alert.alert('Error', mensajeError);
+      }
+    }
+  }
+};
+
 
   return (
     <View style={styles.container}>

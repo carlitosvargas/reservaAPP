@@ -6,18 +6,20 @@ import { useAuth } from '../../context/AuthContext';
 import BackButton from '../../components/BackButton';
 
 export default function ModificarPasajero() {
-  const { id } = useLocalSearchParams();
+  const { id, idViaje} = useLocalSearchParams();
   const router = useRouter();
   const { userInfo } = useAuth();
 
   const [loading, setLoading] = useState(true);
-  const [pasajero, setPasajero] = useState({
-    nombre: '',
-    apellido: '',
-    dni: '',
-    ubicacionOrigen: '',
-    ubicacionDestino: '',
-  });
+ const [pasajero, setPasajero] = useState({
+  nombre: '',
+  apellido: '',
+  dni: '',
+  ubicacionOrigen: '',
+  ubicacionDestino: '',
+  reserva_id: null, 
+});
+
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -25,12 +27,14 @@ export default function ModificarPasajero() {
         const datos = await obtenerPasajeroPorId(Number(id)); 
         const pasajeroData = datos[0];
         setPasajero({
-                  nombre: pasajeroData.nombre ?? '',
-                  apellido: pasajeroData.apellido ?? '',
-                  dni: pasajeroData.dni?.toString() ?? '',
-                  ubicacionOrigen: pasajeroData.ubicacionOrigen ?? pasajeroData.reserva?.ubicacionOrigen ?? '',
-                  ubicacionDestino: pasajeroData.ubicacionDestino ?? pasajeroData.reserva?.ubicacionDestino ?? '',
-        });
+        nombre: pasajeroData.nombre ?? '',
+        apellido: pasajeroData.apellido ?? '',
+        dni: pasajeroData.dni?.toString() ?? '',
+        ubicacionOrigen: pasajeroData.ubicacionOrigen ?? pasajeroData.reserva?.ubicacionOrigen ?? '',
+        ubicacionDestino: pasajeroData.ubicacionDestino ?? pasajeroData.reserva?.ubicacionDestino ?? '',
+        reserva_id: pasajeroData.reserva_id ?? pasajeroData.reserva?.id ?? null, 
+});
+
          
       } catch (error) {
         Alert.alert('Error', 'No se pudo cargar el pasajero');
@@ -52,7 +56,8 @@ export default function ModificarPasajero() {
       await actualizarReserva(Number(id), pasajero); 
       
       Alert.alert('Éxito', 'Pasajero actualizado correctamente');
-      router.push('/pantallas/detalleReserva');
+      router.push({ pathname: '/pantallas/detalleReserva', params: { id:idViaje} });
+
     } catch (error) {
       Alert.alert('Error', 'No se pudo actualizar el pasajero');
     }
@@ -65,6 +70,8 @@ export default function ModificarPasajero() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
 
+      <View style={styles.inputGroup}>
+      <Text style={styles.label}>Nombre</Text>
       <TextInput
       style={styles.input}
       placeholder="Nombre"
@@ -72,7 +79,10 @@ export default function ModificarPasajero() {
       value={pasajero.nombre ?? ''}
       onChangeText={text => handleChange('nombre', text)}
     />
+    </View>
 
+    <View style={styles.inputGroup}>
+    <Text style={styles.label}>Apellido</Text>
     <TextInput
       style={styles.input}
       placeholder="Apellido"
@@ -80,7 +90,9 @@ export default function ModificarPasajero() {
       value={pasajero.apellido ?? ''}
       onChangeText={text => handleChange('apellido', text)}
     />
-
+     </View>
+    <View style={styles.inputGroup}>
+    <Text style={styles.label}>DNI</Text>
     <TextInput
       style={styles.input}
       placeholder="DNI"
@@ -89,7 +101,10 @@ export default function ModificarPasajero() {
       onChangeText={text => handleChange('dni', text)}
       keyboardType="numeric"
     />
+    </View>
 
+    <View style={styles.inputGroup}>
+    <Text style={styles.label}>Ubicación Origen</Text>
     <TextInput
       style={styles.input}
       placeholder="Ubicación Origen. Ej. Jujuy 345"
@@ -97,7 +112,10 @@ export default function ModificarPasajero() {
       value={pasajero.ubicacionOrigen ?? ''}
       onChangeText={text => handleChange('ubicacionOrigen', text)}
     />
+    </View>
 
+    <View style={styles.inputGroup}>
+    <Text style={styles.label}>Ubicación Destino</Text>
     <TextInput
       style={styles.input}
       placeholder="Ubicación Destino. Ej. Salta 345"
@@ -105,6 +123,7 @@ export default function ModificarPasajero() {
       value={pasajero.ubicacionDestino ?? ''}
       onChangeText={text => handleChange('ubicacionDestino', text)}
     />
+    </View>
 
       <TouchableOpacity style={styles.button} onPress={handleGuardar}>
         <Text style={styles.buttonText}>Guardar Cambios</Text>
@@ -143,4 +162,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
+   inputGroup: {
+  marginBottom: 8,
+},
+label: {
+  fontSize: 14,
+  fontWeight: 'bold',
+  marginBottom: 4,
+  color: '#333',
+},
 });

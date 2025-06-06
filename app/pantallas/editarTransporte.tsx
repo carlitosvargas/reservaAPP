@@ -65,7 +65,6 @@ const EditarTransporte = () => {
       Alert.alert('Éxito', 'Transporte actualizado correctamente');
       navigation.goBack();
     } catch (error) {
-      console.error('Error al editar transporte:', error);
       Alert.alert('Error', 'No se pudo actualizar el transporte');
     }
   };

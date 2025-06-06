@@ -28,17 +28,36 @@ interface Viaje {
   MedioTransporte: MedioTransporte;
 }
 
+interface Pasajero {
+  nombre: string;
+  apellido: string;
+  dni: number;
+  ubicacionOrigen: string;
+  ubicacionDestino: string;
+}
+
+interface Usuario {
+  id: number;
+  nombre: string;
+  apellido: string;
+  email: string;
+}
+
 interface Reserva {
   id: number;
   fechaReserva: string;
   usuarios_id: number;
   viajes_id: number;
   Viaje: Viaje;
+  Pasajeros: Pasajero[];
+  Usuario: Usuario;
 }
 
 const ListarReservas = () => {
   const [reservas, setReservas] = useState<Reserva[]>([]);
-  const [expanded, setExpanded] = useState<{ [key: number]: { viaje: boolean; transporte: boolean; empresa: boolean } }>({});
+  const [expanded, setExpanded] = useState<{
+    [key: number]: { viaje: boolean; transporte: boolean; empresa: boolean; pasajeros: boolean; usuario: boolean };
+  }>({});
   const { userInfo } = useAuth();
   const router = useRouter();
 
@@ -55,7 +74,10 @@ const ListarReservas = () => {
     fetchReservas();
   }, []);
 
-  const toggleSection = (reservaId: number, section: 'viaje' | 'transporte' | 'empresa') => {
+  const toggleSection = (
+    reservaId: number,
+    section: 'viaje' | 'transporte' | 'empresa' | 'pasajeros' | 'usuario'
+  ) => {
     setExpanded((prev) => ({
       ...prev,
       [reservaId]: {
@@ -80,9 +102,9 @@ const ListarReservas = () => {
 
   return (
     <View style={styles.container}>
-     <Text style={styles.title}>
-        {reservas.length > 0 ? reservas[0].Viaje.MedioTransporte.Empresa.nombre : ''} - Reservas 
-     </Text>
+      <Text style={styles.title}>
+        {reservas.length > 0 ? reservas[0].Viaje.MedioTransporte.Empresa.nombre : ''} - Reservas
+      </Text>
 
       {reservas.length === 0 ? (
         <Text style={styles.empty}>No hay reservas para esta empresa.</Text>
@@ -98,9 +120,41 @@ const ListarReservas = () => {
               <Text style={styles.label}>
                 Fecha Reserva: <Text style={styles.value}>{formatDate(item.fechaReserva)}</Text>
               </Text>
-              <Text style={styles.label}>
-                N.° Usuario: <Text style={styles.value}>{item.usuarios_id}</Text>
-              </Text>
+
+              {/* Sección Datos del Usuario */}
+              <TouchableOpacity onPress={() => toggleSection(item.id, 'usuario')}>
+                <Text style={styles.subTitle}>Datos del Usuario</Text>
+              </TouchableOpacity>
+              {expanded[item.id]?.usuario && (
+                <View style={styles.details}>
+                  <Text style={styles.label}>
+                    Nombre: <Text style={styles.value}>{item.Usuario?.nombre} {item.Usuario?.apellido}</Text>
+                  </Text>
+                  <Text style={styles.label}>
+                    Email: <Text style={styles.value}>{item.Usuario?.email}</Text>
+                  </Text>
+                </View>
+              )}
+
+              {/* Sección Datos de los Pasajeros */}
+              <TouchableOpacity onPress={() => toggleSection(item.id, 'pasajeros')}>
+                <Text style={styles.subTitle}>Datos de Pasajeros</Text>
+              </TouchableOpacity>
+              {expanded[item.id]?.pasajeros && item.Pasajeros?.length > 0 && (
+                <View style={styles.details}>
+                  {item.Pasajeros.map((pasajero, index) => (
+                    <View key={index} style={{ marginBottom: 8 }}>
+                      <Text style={styles.label}>Nombre: <Text style={styles.value}>{pasajero.nombre} {pasajero.apellido}</Text></Text>
+                      <Text style={styles.label}>DNI: <Text style={styles.value}>{pasajero.dni}</Text></Text>
+                      <Text style={styles.label}>Origen: <Text style={styles.value}>{pasajero.ubicacionOrigen}</Text></Text>
+                      <Text style={styles.label}>Destino: <Text style={styles.value}>{pasajero.ubicacionDestino}</Text></Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+              {expanded[item.id]?.pasajeros && (!item.Pasajeros || item.Pasajeros.length === 0) && (
+                <Text style={styles.details}>No hay pasajeros para esta reserva.</Text>
+              )}
 
               {/* Sección Datos del Viaje */}
               <TouchableOpacity onPress={() => toggleSection(item.id, 'viaje')}>
@@ -126,16 +180,6 @@ const ListarReservas = () => {
                   <Text style={styles.label}>Patente: <Text style={styles.value}>{item.Viaje.MedioTransporte.patente}</Text></Text>
                   <Text style={styles.label}>Marca: <Text style={styles.value}>{item.Viaje.MedioTransporte.marca}</Text></Text>
                   <Text style={styles.label}>Lugares: <Text style={styles.value}>{item.Viaje.MedioTransporte.cantLugares}</Text></Text>
-                </View>
-              )}
-
-              {/* Sección Empresa */}
-              <TouchableOpacity onPress={() => toggleSection(item.id, 'empresa')}>
-                <Text style={styles.subTitle}>Empresa</Text>
-              </TouchableOpacity>
-              {expanded[item.id]?.empresa && (
-                <View style={styles.details}>
-                  <Text style={styles.label}>Nombre: <Text style={styles.value}>{item.Viaje.MedioTransporte.Empresa.nombre}</Text></Text>
                 </View>
               )}
             </View>

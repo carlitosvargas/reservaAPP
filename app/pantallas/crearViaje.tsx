@@ -52,6 +52,7 @@ const CrearViaje = () => {
   const [sugerenciasTransporte, setSugerenciasTransporte] = useState<string[]>([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+ 
 
   const { userInfo } = useAuth();
   const navigation = useNavigation();
@@ -112,10 +113,18 @@ const CrearViaje = () => {
     setSugerenciasTransporte(sugerencias);
   };
 
-  const onChangeDate = (_: any, selectedDate?: Date) => {
-    setShowDatePicker(false);
-    if (selectedDate) setFecha(selectedDate);
-  };
+ const onChangeDate = (_: any, selectedDate?: Date) => {
+  setShowDatePicker(false);
+  if (selectedDate) {
+    // Crear una fecha en hora local (sin desfase UTC)
+    const localDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate()
+    );
+    setFecha(localDate);
+  }
+};
 
   const onChangeTime = (_: any, selectedTime?: Date) => {
     setShowTimePicker(false);
@@ -123,32 +132,64 @@ const CrearViaje = () => {
   };
 
   const handleGuardar = async () => {
-    if (!origen || !destino || !hora || !fechaViaje || !precio || !usuarioEmpresa_id || !medioTransporte_id) {
-      Alert.alert('Por favor, completa todos los campos');
-      return;
+  if (!origen || !destino || !hora || !fechaViaje || !precio || !usuarioEmpresa_id || !medioTransporte_id) {
+    const mensaje = 'Por favor, completa todos los campos';
+    if (Platform.OS === 'web') {
+      alert(mensaje);
+    } else {
+      Alert.alert(mensaje);
     }
+    return;
+  }
 
-    const horarioSalida = hora.toTimeString().split(' ')[0]; // hh:mm:ss
+  const horarioSalida = hora.toTimeString().split(' ')[0]; // hh:mm:ss
+  console.log('hora:', horarioSalida);
+  console.log('fecha:', fechaViaje);
 
-    const nuevoViaje = {
-      origenLocalidad: origen,
-      destinoLocalidad: destino,
-      horarioSalida,
-      fechaViaje: fechaViaje.toISOString().substring(0, 10),
-      precio: parseFloat(precio),
-      usuarioEmpresa_id,
-      medioTransporte_id,
-    };
-
-    try {
-      await crearViaje(nuevoViaje);
-      Alert.alert('Viaje creado correctamente');
-      navigation.goBack();
-    } catch (e) {
-      console.error('Error al crear viaje:', e);
-      Alert.alert('Error al crear viaje');
-    }
+  const nuevoViaje = {
+    origenLocalidad: origen,
+    destinoLocalidad: destino,
+    horarioSalida,
+    fechaViaje: fechaViaje.toISOString().substring(0, 10),
+    precio: parseFloat(precio),
+    usuarioEmpresa_id,
+    medioTransporte_id,
   };
+  console.log('fecha:', nuevoViaje);
+
+  try {
+    await crearViaje(nuevoViaje);
+
+    const mensaje = 'Viaje creado correctamente';
+    if (Platform.OS === 'web') {
+      alert(mensaje);
+    } else {
+      Alert.alert(mensaje);
+    }
+
+    navigation.goBack();
+  } catch (e: any) {
+    console.error('Error al crear viaje:', e);
+
+    const errores = e?.response?.data?.errores;
+
+    if (errores && Array.isArray(errores)) {
+      const mensajeError = errores.map((err: any) => err.msg).join('\n');
+      if (Platform.OS === 'web') {
+        alert('Error en los datos:\n' + mensajeError);
+      } else {
+        Alert.alert('Error en los datos:', mensajeError);
+      }
+    } else {
+      const mensajeError = e?.response?.data?.error || 'Error al crear viaje';
+      if (Platform.OS === 'web') {
+        alert('Error: ' + mensajeError);
+      } else {
+        Alert.alert('Error', mensajeError);
+      }
+    }
+  }
+};
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -238,7 +279,7 @@ const CrearViaje = () => {
           ) : (
             <>
               <Pressable style={styles.input} onPress={() => setShowDatePicker(true)}>
-                <Text>{fechaViaje.toISOString().substring(0, 10)}</Text>
+              <Text> {fechaViaje.getFullYear()}-{(fechaViaje.getMonth() + 1).toString().padStart(2, '0')}-{fechaViaje.getDate().toString().padStart(2, '0')}</Text>
               </Pressable>
               {showDatePicker && (
                 <DateTimePicker

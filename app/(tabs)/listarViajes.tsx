@@ -7,10 +7,12 @@ import {
   Pressable,
   ScrollView,
   TouchableOpacity,
+  Platform,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { obtenerViajesPorEmpresa } from '../../services/viajeServices';
+import { obtenerViajesPorEmpresa,eliminarViaje } from '../../services/viajeServices';
 import { useAuth } from '../../context/AuthContext';
 
 interface MedioTransporte {
@@ -93,25 +95,92 @@ const ViajesEmpresa = () => {
     });
   };
 
-  const renderViaje = (viaje: Viaje) => (
-    <View key={viaje.id} style={styles.reservaItem}>
-      <Text style={styles.title}>Origen: {viaje.origenLocalidad}</Text>
-      <Text style={styles.title}>Destino: {viaje.destinoLocalidad}</Text>
-      <Text>Fecha del Viaje: {formatDate(viaje.fechaViaje)}</Text>
-      <Text>Hora de Salida: {formatTime(viaje.horarioSalida)}</Text>
-      <Text>Precio: ${viaje.precio}</Text>
-      <Text>Transporte: {viaje.MedioTransporte.nombre} ({viaje.MedioTransporte.patente})</Text>
-      <Text>Empresa: {viaje.MedioTransporte.Empresa.nombre}</Text>
+  const handleEditar = (id: number) => {
+  //router.push({ pathname: '/pantallas/editarViaje', params: { id } });
+};
 
-      <Pressable
-        onPress={() => handleVerReservas(viaje.id)}
-        style={styles.botonDetalle}
-      >
-        <Ionicons name="eye-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
-        <Text style={styles.textoBotonDetalle}>Ver Reservas</Text>
-      </Pressable>
-    </View>
-  );
+const handleEliminar = (id: number) => {
+  const confirmar = Platform.OS === 'web'
+    ? window.confirm('¿Estás seguro de que deseas eliminar este viaje?')
+    : null;
+
+  const continuar = Platform.OS === 'web' ? confirmar : true;
+
+  if (continuar) {
+    if (Platform.OS !== 'web') {
+      Alert.alert(
+        'Confirmar eliminación',
+        '¿Estás seguro de que deseas eliminar este viaje?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Sí, eliminar',
+            style: 'destructive',
+            onPress: () => eliminarViajes(id),
+          },
+        ]
+      );
+    } else {
+      eliminarViajes(id);
+    }
+  }
+};
+
+const eliminarViajes = async (id: number) => {
+  try {
+    // reemplazá esto por tu servicio real
+    await eliminarViaje(id);
+    setViajes((prev) => prev.filter((v) => v.id !== id));
+
+    Platform.OS === 'web'
+      ? alert('Viaje eliminado correctamente')
+      : Alert.alert('Viaje eliminado correctamente');
+  } catch (error) {
+    console.error('Error al eliminar viaje:', error);
+    Platform.OS === 'web'
+      ? alert('Error al eliminar viaje')
+      : Alert.alert('Error', 'No se pudo eliminar el viaje');
+  }
+};
+
+
+  const renderViaje = (viaje: Viaje) => (
+  <View key={viaje.id} style={styles.reservaItem}>
+    <Text style={styles.title}>Origen: {viaje.origenLocalidad}</Text>
+    <Text style={styles.title}>Destino: {viaje.destinoLocalidad}</Text>
+    <Text>Fecha del Viaje: {formatDate(viaje.fechaViaje)}</Text>
+    <Text>Hora de Salida: {formatTime(viaje.horarioSalida)}</Text>
+    <Text>Precio: ${viaje.precio}</Text>
+    <Text>Transporte: {viaje.MedioTransporte.nombre} ({viaje.MedioTransporte.patente})</Text>
+    <Text>Empresa: {viaje.MedioTransporte.Empresa.nombre}</Text>
+
+    <Pressable
+      onPress={() => handleVerReservas(viaje.id)}
+      style={styles.botonDetalle}
+    >
+      <Ionicons name="eye-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+      <Text style={styles.textoBotonDetalle}>Ver Reservas</Text>
+    </Pressable>
+
+    {esMostrador && (
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => handleEditar(viaje.id)}
+        >
+          <Text style={styles.buttonText}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleEliminar(viaje.id)}
+        >
+          <Text style={styles.buttonText}>Eliminar</Text>
+        </TouchableOpacity>
+      </View>
+    )}
+  </View>
+);
+
 
   if (loading) {
     return (
@@ -190,6 +259,31 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  buttonContainer: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  marginTop: 10,
+},
+editButton: {
+  backgroundColor: '#4CAF50',
+  padding: 8,
+  borderRadius: 5,
+  flex: 1,
+  marginRight: 5,
+},
+deleteButton: {
+  backgroundColor: '#F44336',
+  padding: 8,
+  borderRadius: 5,
+  flex: 1,
+  marginLeft: 5,
+},
+buttonText: {
+  color: '#fff',
+  textAlign: 'center',
+  fontWeight: 'bold',
+},
+
 });
 
 export default ViajesEmpresa;

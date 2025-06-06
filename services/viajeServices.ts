@@ -88,7 +88,7 @@ export const listarViajes = async (origen: string, destino: string) => {
 
 export const obtenerViajesPorEmpresa = async (id: number) => {
   const token = await AsyncStorage.getItem('token');
-  const response = await axios.get(`${API_URL}/viajes/obtenerViajesPorEmpresa/${id}`, {
+  const response = await axios.get(` ${API_URL}/viajes/obtenerViajesPorEmpresa/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -98,8 +98,25 @@ export const obtenerViajesPorEmpresa = async (id: number) => {
 
 
 export const crearViaje = async (viajeData: any) => {
+  try {
     const token = await AsyncStorage.getItem('token');
-   const response = await axios.post(` ${API_URL}/viajes/crearViaje`, viajeData ,{
+    if (!token) throw new Error('No se encontró token');
+
+    const response = await axios.post(`${API_URL}/viajes/crearViaje`, viajeData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error en crearViaje:', error);
+    throw error;
+  }
+};
+
+export const eliminarViaje = async (id: number) => {
+    const token = await AsyncStorage.getItem('token');
+   const response = await axios.put(`${API_URL}/viajes/eliminarViaje/${id}`,{},{
       headers: {
         Authorization: ` Bearer ${token}`,
       },
