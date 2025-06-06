@@ -10,9 +10,7 @@ import {
   Button,
 } from 'react-native';
 import ModalSelector from 'react-native-modal-selector';
-import { obtenerUsuariosPorEmpresa, actualizarPerfil } from '../../services/usuarioService';
-import { eliminarUsuario } from '../../services/usuarioService';
-
+import { obtenerUsuariosPorEmpresa, actualizarPerfil, eliminarUsuario } from '../../services/usuarioService';
 import { useAuth } from '../../context/AuthContext';
 import { Redirect } from 'expo-router';
 
@@ -29,17 +27,14 @@ interface Usuario {
 }
 
 const perfiles = [
-
-  //{ key: 2, label: 'Empresa' },
   { key: 3, label: 'Mostrador' },
   { key: 4, label: 'Chofer' },
- 
 ];
 
 export default function UsuariosScreen() {
   const { userInfo } = useAuth();
 
-  if (userInfo?.perfil !== 'usuarioEmpresa') {
+  if (!userInfo || !['usuarioEmpresa', 'usuarioMostrador'].includes(userInfo.perfil)) {
     return <Redirect href="/login" />;
   }
 
@@ -60,8 +55,14 @@ export default function UsuariosScreen() {
       if (!userInfo?.empresa_id) return;
       const data = await obtenerUsuariosPorEmpresa(userInfo.empresa_id);
 
-      // Mostrar solo perfiles Mostrador (3) y Chofer (4)
-      const filtrados = data.filter((u:any) => u.perfil_id === 3 || u.perfil_id === 4);
+      let filtrados: Usuario[] = [];
+
+      if (userInfo.perfil === 'usuarioEmpresa') {
+        filtrados = data.filter((u: any) => u.perfil_id === 3 || u.perfil_id === 4);
+      } else if (userInfo.perfil === 'usuarioMostrador') {
+        filtrados = data.filter((u: any) => u.perfil_id === 4);
+      }
+
       setUsuarios(filtrados);
       setUsuariosFiltrados(filtrados);
     } catch (error) {
@@ -88,8 +89,6 @@ export default function UsuariosScreen() {
 
   const obtenerNombrePerfil = (id: number): string => {
     switch (id) {
-      
-      //case 2: return 'Empresa';
       case 3: return 'Mostrador';
       case 4: return 'Chofer';
       default: return 'Desconocido';
@@ -113,31 +112,30 @@ export default function UsuariosScreen() {
     }
   };
 
-
-        const handleEliminarUsuario = (id: number) => {
-        Alert.alert(
-            'Confirmar eliminación',
-            '¿Estás seguro que deseas eliminar este usuario?',
-            [
-            { text: 'Cancelar', style: 'cancel' },
-            {
-                text: 'Eliminar',
-                style: 'destructive',
-                onPress: async () => {
-                try {
-                    await eliminarUsuario(id);
-                    const nuevosUsuarios = usuarios.filter((u) => u.id !== id);
-                    setUsuarios(nuevosUsuarios);
-                    setUsuariosFiltrados(nuevosUsuarios.filter(u => filtro === null || u.perfil_id === filtro));
-                    Alert.alert('Usuario eliminado con éxito');
-                } catch (error) {
-                    Alert.alert('Error', 'No se pudo eliminar el usuario');
-                }
-                },
-            },
-            ]
-        );
-        };
+  const handleEliminarUsuario = (id: number) => {
+    Alert.alert(
+      'Confirmar eliminación',
+      '¿Estás seguro que deseas eliminar este usuario?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await eliminarUsuario(id);
+              const nuevosUsuarios = usuarios.filter((u) => u.id !== id);
+              setUsuarios(nuevosUsuarios);
+              setUsuariosFiltrados(nuevosUsuarios.filter(u => filtro === null || u.perfil_id === filtro));
+              Alert.alert('Usuario eliminado con éxito');
+            } catch (error) {
+              Alert.alert('Error', 'No se pudo eliminar el usuario');
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const renderItem = ({ item }: { item: Usuario }) => (
     <TouchableOpacity onPress={() => toggleExpand(item.id)} style={styles.usuarioContainer}>
@@ -150,60 +148,66 @@ export default function UsuariosScreen() {
           <Text>DNI: {item.dni}</Text>
           <Text>Teléfono: {item.telefono}</Text>
           <Text>Email: {item.email}</Text>
-          <Text style={styles.cambiarPerfilTexto}>Cambiar perfil:</Text>
-          <ModalSelector
-          
-            data={perfiles}
-            initValue={obtenerNombrePerfil(item.perfil_id)}
-            initValueTextStyle={{ color: '#007AFF', fontWeight: 'bold' }}
-            onChange={(option) => {
-              const yaSeleccionado =
-                ultimaSeleccionRef.current &&
-                ultimaSeleccionRef.current.usuarioId === item.id &&
-                ultimaSeleccionRef.current.perfilId === option.key;
-              if (!yaSeleccionado) {
-                ultimaSeleccionRef.current = { usuarioId: item.id, perfilId: option.key };
-                cambiarPerfilUsuario(item.id, option.key);
-              }
-            }}
-          />
-            <Button
-        title="Eliminar usuario"
-        color="red"
-        onPress={() => handleEliminarUsuario(item.id)}
-/>
+
+          {userInfo.perfil === 'usuarioEmpresa' && (
+            <>
+              <Text style={styles.cambiarPerfilTexto}>Cambiar perfil:</Text>
+              <ModalSelector
+                data={perfiles}
+                initValue={obtenerNombrePerfil(item.perfil_id)}
+                initValueTextStyle={{ color: '#007AFF', fontWeight: 'bold' }}
+                onChange={(option) => {
+                  const yaSeleccionado =
+                    ultimaSeleccionRef.current &&
+                    ultimaSeleccionRef.current.usuarioId === item.id &&
+                    ultimaSeleccionRef.current.perfilId === option.key;
+                  if (!yaSeleccionado) {
+                    ultimaSeleccionRef.current = { usuarioId: item.id, perfilId: option.key };
+                    cambiarPerfilUsuario(item.id, option.key);
+                  }
+                }}
+              />
+
+              <Button
+                title="Eliminar usuario"
+                color="red"
+                onPress={() => handleEliminarUsuario(item.id)}
+              />
+            </>
+          )}
         </View>
       )}
-          
-
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.contenedor}>
       <Text style={styles.titulo}>Lista de Usuarios</Text>
-      <View style={{ marginBottom: 15 }}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={styles.filtros}>
-            {[{ label: 'Todos', id: null }, { label: 'Mostrador', id: 3 }, { label: 'Chofer', id: 4 }].map(
-              (item) => {
-                const activo = filtro === item.id;
-                return (
-                  <TouchableOpacity
-                    key={item.label}
-                    style={[styles.filtroBtn, activo && styles.filtroBtnActivo]}
-                    onPress={() => filtrarPorPerfil(item.id)}
-                  >
-                    <Text style={[styles.filtroTexto, activo && styles.filtroTextoActivo]}>
-                      {item.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              }
-            )}
-          </View>
-        </ScrollView>
-      </View>
+
+      {userInfo.perfil === 'usuarioEmpresa' && (
+        <View style={{ marginBottom: 15 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.filtros}>
+              {[{ label: 'Todos', id: null }, { label: 'Mostrador', id: 3 }, { label: 'Chofer', id: 4 }].map(
+                (item) => {
+                  const activo = filtro === item.id;
+                  return (
+                    <TouchableOpacity
+                      key={item.label}
+                      style={[styles.filtroBtn, activo && styles.filtroBtnActivo]}
+                      onPress={() => filtrarPorPerfil(item.id)}
+                    >
+                      <Text style={[styles.filtroTexto, activo && styles.filtroTextoActivo]}>
+                        {item.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }
+              )}
+            </View>
+          </ScrollView>
+        </View>
+      )}
 
       {cargando ? (
         <Text>Cargando...</Text>
@@ -268,8 +272,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   cambiarPerfilTexto: {
-  marginTop: 10,
-  color: 'black', 
-  fontWeight: 'bold',
-},
+    marginTop: 10,
+    color: 'black',
+    fontWeight: 'bold',
+  },
 });

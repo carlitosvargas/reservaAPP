@@ -92,6 +92,10 @@ const eliminar = async (id: number) => {
     router.push({pathname:'/pantallas/crearTransporte'})
   };
 
+  const handleListarChoferes = () => {
+    router.push({pathname:'/empresaUsuarios'})
+  };
+
   return (
     <View style={styles.container}>
       {esMostrador && (
@@ -99,6 +103,13 @@ const eliminar = async (id: number) => {
           <Text style={styles.agregarButtonText}>+ Agregar Transporte</Text>
         </TouchableOpacity>
       )}
+
+
+         {esMostrador && (
+        <TouchableOpacity style={styles.agregarButton} onPress={handleListarChoferes}>
+          <Text style={styles.agregarButtonText}>Ver Choferes</Text>
+        </TouchableOpacity>
+       )}
 
       <Text style={styles.title}>
         {transportes.length > 0 ? `${transportes[0].Empresa.nombre} - Transportes` : 'Transportes'}
