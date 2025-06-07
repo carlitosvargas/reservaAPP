@@ -5,11 +5,11 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  Button,
   ScrollView,
 } from 'react-native';
 import ModalSelector from 'react-native-modal-selector';
 import { obtenerUsuarios, actualizarPerfil } from '../../services/usuarioService';
+import { obtenerEmpresas, asociarUsuarioEmpresa, obtenerUsuarioEmpresaAsociado, desasociarUsuarioEmpresa} from '../../services/empresaService';
 import { useAuth } from '../../context/AuthContext';
 import { Redirect } from 'expo-router';
 
@@ -23,6 +23,12 @@ interface Usuario {
   usuario: string;
   contrasenia: string;
   perfil_id: number;
+  empresa_id?: number | null;
+}
+
+interface Empresa {
+  id: number;
+  nombre: string;
 }
 
 const perfiles = [
@@ -34,23 +40,28 @@ const perfiles = [
 ];
 
 export default function UsuariosScreen() {
+  const { userInfo } = useAuth();
 
- const {  userInfo } = useAuth();
- 
-   if (userInfo?.perfil !== 'usuarioAdministrador') {
+  if (userInfo?.perfil !== 'usuarioAdministrador') {
     return <Redirect href="/login" />;
   }
+
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [usuariosFiltrados, setUsuariosFiltrados] = useState<Usuario[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [cargando, setCargando] = useState(true);
   const [seleccionado, setSeleccionado] = useState<number | null>(null);
   const [filtro, setFiltro] = useState<number | null>(null);
+  const [empresaAsociadaMap, setEmpresaAsociadaMap] = useState<{ [key: number]: number | null }>({});
+  const [erroresAsociacion, setErroresAsociacion] = useState<{ [key: number]: string | null }>({});
 
-  // 👉 Ref para evitar doble ejecución
+
+
   const ultimaSeleccionRef = useRef<{ usuarioId: number; perfilId: number } | null>(null);
 
   useEffect(() => {
     obtenerUsuario();
+    obtenerEmpresa();
   }, []);
 
   const obtenerUsuario = async () => {
@@ -65,9 +76,37 @@ export default function UsuariosScreen() {
     }
   };
 
-  const toggleExpand = (id: number) => {
-    setSeleccionado(seleccionado === id ? null : id);
+  const obtenerEmpresa = async () => {
+    try {
+      const data = await obtenerEmpresas();
+      
+      setEmpresas(data);
+    } catch (error) {
+      console.error('Error al obtener empresas:', error);
+    }
   };
+
+
+const obtenerEmpresaAsociadaDelUsuario = async (usuarioId: number) => {
+  try {
+    const empresaId = await obtenerUsuarioEmpresaAsociado(usuarioId);
+    
+    return empresaId;
+  } catch (error) {
+    
+    return null;
+  }
+};
+
+const toggleExpand = async (id: number) => {
+  if (!empresaAsociadaMap[id]) {
+    const empresaId = await obtenerEmpresaAsociadaDelUsuario(id);
+    setEmpresaAsociadaMap((prev) => ({ ...prev, [id]: empresaId }));
+  }
+  setSeleccionado(seleccionado === id ? null : id);
+};
+
+
 
   const filtrarPorPerfil = (perfilId: number | null) => {
     setFiltro(perfilId);
@@ -116,6 +155,56 @@ export default function UsuariosScreen() {
     }
   };
 
+const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
+  try {
+    
+    await asociarUsuarioEmpresa(usuarioId, empresaId);
+
+    const nuevosUsuarios = usuarios.map((u) =>
+      u.id === usuarioId ? { ...u, empresa_id: empresaId } : u
+    );
+    setUsuarios(nuevosUsuarios);
+
+    if (filtro === null) {
+      setUsuariosFiltrados(nuevosUsuarios);
+    } else {
+      setUsuariosFiltrados(nuevosUsuarios.filter((u) => u.perfil_id === filtro));
+    }
+
+    setErroresAsociacion((prev) => ({ ...prev, [usuarioId]: null }));
+    setEmpresaAsociadaMap((prev) => ({ ...prev, [usuarioId]: empresaId })); 
+
+  } catch (error: any) {
+    const mensajeError = error.response?.data?.mensaje || 'Error al asociar empresa';
+    setErroresAsociacion(prev => ({ ...prev, [usuarioId]: mensajeError }));
+    console.error('Error al asociar empresa:', mensajeError);
+  
+  }
+};
+
+
+  const desasociarUsuario = async (usuarioId: number) => {
+  try {
+    await desasociarUsuarioEmpresa(usuarioId); 
+
+    // Actualiza el estado de los usuarios y el mapa de empresas asociadas
+    const nuevosUsuarios = usuarios.map((u) =>
+      u.id === usuarioId ? { ...u, empresa_id: null } : u
+    );
+    setUsuarios(nuevosUsuarios);
+    setEmpresaAsociadaMap((prev) => ({ ...prev, [usuarioId]: null }));
+   setErroresAsociacion((prev) => ({ ...prev, [usuarioId]: null }));
+    if (filtro === null) {
+      setUsuariosFiltrados(nuevosUsuarios);
+    } else {
+      setUsuariosFiltrados(nuevosUsuarios.filter((u) => u.perfil_id === filtro));
+    }
+  } catch (error) {
+    console.error('Error al desasociar empresa:', error);
+  }
+};
+
+
   const renderItem = ({ item }: { item: Usuario }) => (
     <TouchableOpacity
       onPress={() => toggleExpand(item.id)}
@@ -148,6 +237,54 @@ export default function UsuariosScreen() {
               }
             }}
           />
+
+         {[1, 2, 3, 4].includes(item.perfil_id) && (
+          <>
+            <Text style={[styles.cambiarPerfilTexto, { marginTop: 10 }]}>
+              {empresaAsociadaMap[item.id] ? 'Asociado a:' : 'Asociar Empresa:'}
+            </Text>
+
+            <ModalSelector
+              data={empresas
+                .filter((empresa) => empresa.id !== empresaAsociadaMap[item.id]) 
+                .map((empresa) => ({
+                  key: empresa.id,
+                  label: empresa.nombre,
+                }))
+              }
+              initValue={
+                empresaAsociadaMap[item.id]
+                  ? empresas.find((e) => e.id ===  empresaAsociadaMap[item.id])?.nombre || 'Seleccione una empresa'
+                  : 'Seleccione una empresa'
+              }
+              initValueTextStyle={{ color: '#007AFF', fontWeight: 'bold' }}
+              onChange={(option) => {
+                asociarEmpresaUsuario(item.id, option.key);
+                //setEmpresaAsociadaMap((prev) => ({ ...prev, [item.id]: option.key }));
+              }}
+            />
+          </>
+        )}
+        {erroresAsociacion[item.id] && (
+          <Text style={{ color: 'red', marginTop: 5 }}>{erroresAsociacion[item.id]}</Text>
+        )}
+
+         {empresaAsociadaMap[item.id] && (
+          <TouchableOpacity
+            onPress={() => desasociarUsuario(item.id)}
+            style={{
+              marginTop: 10,
+              padding: 10,
+              backgroundColor: '#FF3B30',
+              borderRadius: 5,
+              alignSelf: 'flex-start',
+            }}
+          >
+            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Desasociar Empresa</Text>
+          </TouchableOpacity>
+        )}
+
+
         </View>
       )}
     </TouchableOpacity>
@@ -156,34 +293,33 @@ export default function UsuariosScreen() {
   return (
     <View style={styles.contenedor}>
       <Text style={styles.titulo}>Lista de Usuarios</Text>
-     <View style={{ marginBottom: 15 }}>
-  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-    <View style={styles.filtros}>
-      {[
-        { label: 'Todos', id: null },
-        { label: 'Administrador', id: 1 },
-        { label: 'Empresa', id: 2 },
-        { label: 'Mostrador', id: 3 },
-        { label: 'Chofer', id: 4 },
-        { label: 'Cliente', id: 5 },
-      ].map((item) => {
-        const activo = filtro === item.id;
-        return (
-          <TouchableOpacity
-            key={item.label}
-            style={[styles.filtroBtn, activo && styles.filtroBtnActivo]}
-            onPress={() => filtrarPorPerfil(item.id)}
-          >
-            <Text style={[styles.filtroTexto, activo && styles.filtroTextoActivo]}>
-              {item.label}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  </ScrollView>
-</View>
-
+      <View style={{ marginBottom: 15 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={styles.filtros}>
+            {[
+              { label: 'Todos', id: null },
+              { label: 'Administrador', id: 1 },
+              { label: 'Empresa', id: 2 },
+              { label: 'Mostrador', id: 3 },
+              { label: 'Chofer', id: 4 },
+              { label: 'Cliente', id: 5 },
+            ].map((item) => {
+              const activo = filtro === item.id;
+              return (
+                <TouchableOpacity
+                  key={item.label}
+                  style={[styles.filtroBtn, activo && styles.filtroBtnActivo]}
+                  onPress={() => filtrarPorPerfil(item.id)}
+                >
+                  <Text style={[styles.filtroTexto, activo && styles.filtroTextoActivo]}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </ScrollView>
+      </View>
 
       {cargando ? (
         <Text>Cargando...</Text>
@@ -210,55 +346,46 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
   },
-
-
- filtros: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 10,
-},
-filtroBtn: {
-  backgroundColor: '#ccc',
-  paddingVertical: 8,
-  paddingHorizontal: 12,
-  borderRadius: 20,
-  marginRight: 8,
-},
-filtroBtnActivo: {
-  backgroundColor: '#007AFF',
-},
-filtroTexto: {
-  color: '#000',
-  fontSize: 14,
-},
-filtroTextoActivo: {
-  color: '#fff',
-  fontWeight: 'bold',
-},
-
-
+  filtros: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  filtroBtn: {
+    backgroundColor: '#ccc',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  filtroBtnActivo: {
+    backgroundColor: '#007AFF',
+  },
+  filtroTexto: {
+    color: '#000',
+    fontSize: 14,
+  },
+  filtroTextoActivo: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
   usuarioContainer: {
     padding: 15,
     marginBottom: 10,
     backgroundColor: '#f2f2f2',
-    borderRadius: 8,
+    borderRadius: 10,
   },
   nombre: {
-    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 4,
+    fontSize: 16,
+    marginBottom: 5,
   },
   detalles: {
     marginTop: 10,
   },
-  perfilTexto: {
-  color: '#003366', 
-  fontWeight: 'bold',
-},
-cambiarPerfilTexto: {
-  marginTop: 10,
-  color: 'black', 
-  fontWeight: 'bold',
-},
-
+  cambiarPerfilTexto: {
+    marginTop: 10,
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
 });
