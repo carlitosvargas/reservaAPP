@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     flex: 1,
     textAlign: 'center',
+    fontFamily:'Instagram Sans'
   },
   content: {
     flex: 1,

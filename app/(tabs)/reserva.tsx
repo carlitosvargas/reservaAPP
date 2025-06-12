@@ -162,27 +162,27 @@ const MisReservas = () => {
             }
             style={styles.botonDetalle}
           >
-            <Ionicons name="add-circle-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+           {/* <Ionicons name="add-circle-outline" size={20} color="#fff" style={{ marginRight: 6 }} />*/} 
             <Text style={styles.textoBotonDetalle}>Ver Detalle</Text>
           </Pressable>
 
           {!item.tieneVenta ? (
             <>
               <TouchableOpacity
-                style={styles.botonPagar}
+                style={styles.botonConfirmar}
                 onPress={() =>
                   router.push({ pathname: '/pantallas/ventaReserva', params: { id: item.id } })
                 }
               >
-                <Ionicons name="card-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
-                <Text style={styles.botonTexto}>Pagar</Text>
+               {/* <Ionicons name="card-outline" size={20} color="#fff" style={{ marginRight: 6 }} />*/} 
+                <Text style={styles.botonTexto}>Confirmar</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.botonEliminar}
                 onPress={() => handleEliminarReserva(item.id)}
               >
-                <Ionicons name="trash-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+               {/*<Ionicons name="trash-outline" size={20} color="#fff" style={{ marginRight: 6 }} /> */} 
                 <Text style={styles.botonTexto}>Eliminar</Text>
               </TouchableOpacity>
             </>
@@ -193,7 +193,7 @@ const MisReservas = () => {
                 router.push({ pathname: '/pantallas/detalleVenta', params: { id: item.id } })
               }
             >
-              <Ionicons name="receipt-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+            {/* <Ionicons name="receipt-outline" size={20} color="#fff" style={{ marginRight: 6 }} />*/}  
               <Text style={styles.textoBotonDetalle}>Ver Compra</Text>
             </Pressable>
           )}
@@ -222,7 +222,7 @@ const MisReservas = () => {
       <ScrollView style={styles.container}>
       {reservasPendientes.length > 0 ? (
         <>
-          <Text style={styles.sectionTitle}>Reservas pendientes de pago</Text>
+          <Text style={styles.sectionTitle}>Reservas pendientes de confirmación</Text>
           {reservasPendientes.map(renderReserva)}
         </>
       ) : ( 
@@ -233,7 +233,7 @@ const MisReservas = () => {
 
       {reservasPagadas.length > 0 && (
         <>
-          <Text style={styles.sectionTitle}>Reservas pagadas</Text>
+          <Text style={styles.sectionTitle}>Reservas confirmadas</Text>
           {reservasPagadas.map(renderReserva)}
         </>
       )}
@@ -262,8 +262,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   botonTexto: {
-    color: '#fff',
-    fontWeight: 'bold',
+   color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 14,
+  letterSpacing: 0.5,
   },
   botonesContainer: {
     flexDirection: 'row',
@@ -272,36 +274,56 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   botonDetalle: {
-    backgroundColor: '#007bff',
-    flexDirection: 'row',
+    backgroundColor: '#4c68d7',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  botonPagar: {
-    flexDirection: 'row',
+  botonConfirmar: {
+    backgroundColor: '#4c68d7',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
     alignItems: 'center',
-    backgroundColor: '#28a745',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   botonVerCompra: {
-    flexDirection: 'row',
+    backgroundColor: '#4c68d7',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
     alignItems: 'center',
-    backgroundColor: '#28a745',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   botonEliminar: {
-    flexDirection: 'row',
+    backgroundColor: '#F44336',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
     alignItems: 'center',
-    backgroundColor: '#dc3545', // rojo
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   sectionTitle: {
     fontSize: 18,

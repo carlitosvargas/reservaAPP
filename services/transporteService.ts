@@ -28,7 +28,7 @@ import { API_URL } from '../environment/config';
 export const crearTransporte = async (transporteData: any) => {
     try
     {const token = await AsyncStorage.getItem('token');
-    const response = await axios.post(` ${API_URL}/medioTransporte/crearTransporte`, transporteData ,{
+    const response = await axios.post(`${API_URL}/medioTransporte/crearTransporte`, transporteData ,{
       headers: {
         Authorization: ` Bearer ${token}`,
       },
@@ -43,7 +43,7 @@ export const crearTransporte = async (transporteData: any) => {
 
 export const editarTransporte = async (id: number, transporteData: any) => {
     const token = await AsyncStorage.getItem('token');
-   const response = await axios.put(` ${API_URL}/medioTransporte/actualizarTransporte/${id}`, transporteData ,{
+   const response = await axios.put(`${API_URL}/medioTransporte/actualizarTransporte/${id}`, transporteData ,{
       headers: {
         Authorization: ` Bearer ${token}`,
       },
@@ -54,7 +54,7 @@ export const editarTransporte = async (id: number, transporteData: any) => {
 
   export const obtenerTransporteId = async (id: number) => {
     const token = await AsyncStorage.getItem('token');
-    const response = await axios.get(` ${API_URL}/medioTransporte/obtenerTransporteId/${id}`, {
+    const response = await axios.get(`${API_URL}/medioTransporte/obtenerTransporteId/${id}`, {
       headers: {
         Authorization: ` Bearer ${token}`,
       },

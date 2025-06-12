@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Platform, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { obtenerTransportePorEmpresa, eliminarTransporte } from '../../services/transporteService';
 import { useAuth } from '@/context/AuthContext';
@@ -20,6 +20,7 @@ interface MedioTransporte {
 
 const ListarTransportes = () => {
   const [transportes, setTransportes] = useState<MedioTransporte[]>([]);
+  const [busqueda, setBusqueda] = useState('');
   const { userInfo } = useAuth();
   const navigation = useNavigation();
 
@@ -40,6 +41,8 @@ const ListarTransportes = () => {
     fetchTransportes();
   }, []);
 
+
+  const hayFiltrosActivos = busqueda !== '';
 const handleEliminar = async (id: number) => {
   if (Platform.OS === 'web') {
     const confirmar = window.confirm('¿Estás seguro de que deseas dar de baja este transporte?');
@@ -84,6 +87,22 @@ const eliminar = async (id: number) => {
   }
 };
 
+
+const transporteFiltrados = transportes.filter((transporte) => {
+  const texto = busqueda.toLowerCase();
+
+  return (
+    transporte.nombre.toLowerCase().includes(texto) ||
+    transporte.marca.toLowerCase().includes(texto) ||
+    transporte.patente.toLowerCase().includes(texto)
+  );
+});
+
+
+  const limpiarFiltros = () => {
+    setBusqueda('');
+  };
+
   const handleEditar = (id: number) => {
     router.push({pathname:'/pantallas/editarTransporte',params: { id: id },})
   };
@@ -98,28 +117,43 @@ const eliminar = async (id: number) => {
 
   return (
     <View style={styles.container}>
+       <View style={styles.filaBotones}>
       {esMostrador && (
         <TouchableOpacity style={styles.agregarButton} onPress={handleAgregar}>
           <Text style={styles.agregarButtonText}>+ Agregar Transporte</Text>
         </TouchableOpacity>
       )}
 
-
-         {esMostrador && (
+          {esMostrador && (
         <TouchableOpacity style={styles.agregarButton} onPress={handleListarChoferes}>
           <Text style={styles.agregarButtonText}>Ver Choferes</Text>
         </TouchableOpacity>
        )}
 
+        
+        
+       </View>
+       <View style={styles.filaBotones}>
+       {hayFiltrosActivos &&(<TouchableOpacity style={styles.limpiarFiltrosButton} onPress={limpiarFiltros}>
+       <Text style={styles.limpiarFiltrosText}>Limpiar Filtros</Text>
+       </TouchableOpacity>)}
+      </View>
       <Text style={styles.title}>
         {transportes.length > 0 ? `${transportes[0].Empresa.nombre} - Transportes` : 'Transportes'}
       </Text>
-
-      {transportes.length === 0 ? (
+       {/* Input búsqueda */}
+           <TextInput
+             style={styles.input}
+              placeholder="Buscar por nombre, marca o patente..."
+              placeholderTextColor="#888"
+             value={busqueda}
+             onChangeText={setBusqueda}
+           />
+      {transporteFiltrados.length === 0 ? (
         <Text style={styles.empty}>No hay transportes activos para esta empresa.</Text>
       ) : (
         <FlatList
-          data={transportes}
+          data={transporteFiltrados}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.card}>
@@ -157,13 +191,21 @@ const eliminar = async (id: number) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  agregarButton: {
-    backgroundColor: '#007BFF',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 12,
-    alignSelf: 'flex-start',
-  },
+ agregarButton: {
+  backgroundColor: '#4c68d7',
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  borderRadius: 20,
+  alignItems: 'center',
+  justifyContent: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 5, 
+  transform: [{ scale: 1 }],
+  transitionDuration: '200ms', 
+},
   agregarButtonText: { color: '#fff', fontWeight: 'bold' },
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 12 },
   empty: { fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 },
@@ -171,9 +213,82 @@ const styles = StyleSheet.create({
   label: { fontSize: 14, fontWeight: 'bold' },
   value: { fontWeight: 'normal' },
   buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
-  editButton: { backgroundColor: '#4CAF50', padding: 8, borderRadius: 5 },
-  deleteButton: { backgroundColor: '#F44336', padding: 8, borderRadius: 5 },
+ 
+  editButton: {
+  backgroundColor: '#4c68d7',
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  borderRadius: 20,
+  alignItems: 'center',
+  justifyContent: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 4,
+},
+
+  deleteButton: {
+  backgroundColor: '#F44336',
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  borderRadius: 20,
+  alignItems: 'center',
+  justifyContent: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 4,
+},
   buttonText: { color: '#fff', fontWeight: 'bold' },
+   input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 12,
+  },
+
+  filtrosHeader: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 10,
+  marginTop: 10,
+},
+
+filaBotones: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 12,
+},
+
+dateInputWeb: {
+  padding: 10,
+  width: '100%',
+  borderRadius: 8,
+  fontSize: 14,
+},
+limpiarFiltrosButton: {
+  backgroundColor: '#b2babb',
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  borderRadius: 20,
+  alignItems: 'center',
+  justifyContent: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 4,
+},
+limpiarFiltrosText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 14,
+},
 });
 
 export default ListarTransportes;

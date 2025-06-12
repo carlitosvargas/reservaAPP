@@ -88,7 +88,7 @@ export const listarViajes = async (origen: string, destino: string) => {
 
 export const obtenerViajesPorEmpresa = async (id: number) => {
   const token = await AsyncStorage.getItem('token');
-  const response = await axios.get(` ${API_URL}/viajes/obtenerViajesPorEmpresa/${id}`, {
+  const response = await axios.get(`${API_URL}/viajes/obtenerViajesPorEmpresa/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

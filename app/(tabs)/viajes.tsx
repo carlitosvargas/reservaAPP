@@ -62,7 +62,7 @@ export default function ViajesScreen() {
       }
     } catch (error) {
       console.error('Error al obtener viajes:', error);
-      setMensaje('Ocurrió un error al buscar los viajes.');
+      setMensaje('No se encontraron viajes disponibles !!');
     } finally {
       setLoading(false);
     }
@@ -243,15 +243,27 @@ const styles = StyleSheet.create({
     color: '#007AFF',
   },
   button: {
-    backgroundColor: '#007AFF',
     padding: 14,
-    borderRadius: 8,
-    alignItems: 'center',
     marginBottom: 16,
+    backgroundColor: '#4c68d7',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5, 
+    transform: [{ scale: 1 }],
+    transitionDuration: '200ms', 
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+   color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 16,
+  letterSpacing: 0.5,
   },
   mensaje: {
     textAlign: 'center',

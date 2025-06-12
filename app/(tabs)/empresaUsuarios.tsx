@@ -31,7 +31,7 @@ const perfiles = [
   { key: 4, label: 'Chofer' },
 ];
 
-export default function UsuariosScreen() {
+export default function UsuarioScreen() {
   const { userInfo } = useAuth();
 
   if (!userInfo || !['usuarioEmpresa', 'usuarioMostrador'].includes(userInfo.perfil)) {

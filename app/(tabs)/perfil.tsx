@@ -81,17 +81,41 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: '#4c68d7',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5, 
+    transform: [{ scale: 1 }],
+    transitionDuration: '200ms', 
+     marginVertical: 8,
   },
   logoutButton: {
     backgroundColor: '#dc3545',
   },
   buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: '600',
+   color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 16,
+  letterSpacing: 0.5,
   },
+
+filaBotones: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 12,
+},
+
+ buttonContainer: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  marginTop: 10,
+},
 });

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, TextInput, Platform, Button, ScrollView } from 'react-native';
 import { obtenerReservasPorEmpresa } from '../../services/reservaService';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'expo-router';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 interface Empresa {
   id: number;
   nombre: string;
@@ -58,6 +60,14 @@ const ListarReservas = () => {
   const [expanded, setExpanded] = useState<{
     [key: number]: { viaje: boolean; transporte: boolean; empresa: boolean; pasajeros: boolean; usuario: boolean };
   }>({});
+  const [busqueda, setBusqueda] = useState('');
+
+    // Estados para filtro por fechas
+  const [fechaDesde, setFechaDesde] = useState<Date | null>(null);
+  const [fechaHasta, setFechaHasta] = useState<Date | null>(null);
+
+  const [showPickerDesde, setShowPickerDesde] = useState(false);
+  const [showPickerHasta, setShowPickerHasta] = useState(false);
   const { userInfo } = useAuth();
   const router = useRouter();
 
@@ -73,7 +83,22 @@ const ListarReservas = () => {
 
     fetchReservas();
   }, []);
+useFocusEffect(
+  useCallback(() => {
 
+    setBusqueda('');
+    setFechaDesde(null);
+    setFechaHasta(null);
+  }, [])
+);
+
+const hayFiltrosActivos = busqueda !== '' || fechaDesde !== null || fechaHasta !== null;
+
+const limpiarFiltros = () => {
+    setBusqueda('');
+    setFechaDesde(null);
+    setFechaHasta(null);
+  };
   const toggleSection = (
     reservaId: number,
     section: 'viaje' | 'transporte' | 'empresa' | 'pasajeros' | 'usuario'
@@ -99,18 +124,148 @@ const ListarReservas = () => {
     const [hours, minutes] = timeString.split(':');
     return `${hours}:${minutes}`;
   };
+  
+  // Convierte fecha formateada DD/MM/YYYY a objeto Date para comparar
+  const parseDate = (dateStr: string) => {
+    const [day, month, year] = dateStr.split('/');
+    return new Date(Number(year), Number(month) - 1, Number(day));
+  };
 
+  // Filtrado combinado (busqueda texto + filtro fechas)
+  const reservasFiltradas = reservas.filter((reserva) => {
+    const texto = busqueda.toLowerCase();
+
+    // Busca coincidencia texto
+    const textoCoincide =
+      reserva.id.toString().includes(texto) ||
+      formatDate(reserva.fechaReserva).toLowerCase().includes(texto) ||
+      formatDate(reserva.Viaje.fechaViaje).toLowerCase().includes(texto) ||
+      reserva.Viaje.origenLocalidad.toLowerCase().includes(texto) ||
+      reserva.Viaje.destinoLocalidad.toLowerCase().includes(texto) ||
+      reserva.Usuario.nombre.toLowerCase().includes(texto) ||
+      reserva.Usuario.apellido.toLowerCase().includes(texto) ||
+      reserva.Viaje.MedioTransporte.nombre.toLowerCase().includes(texto) ||
+      reserva.Viaje.MedioTransporte.patente.toLowerCase().includes(texto);
+      (reserva.Pasajeros && reserva.Pasajeros.some(pasajero =>
+      pasajero.nombre.toLowerCase().includes(texto) ||
+      pasajero.apellido.toLowerCase().includes(texto) ||
+      pasajero.dni.toString().toLowerCase().includes(texto)
+
+    ));
+    // Si no coincide texto, lo ignoramos directamente
+    if (!textoCoincide) return false;
+
+    // Ahora filtramos por fechas, si están definidas
+    const fechaReservaDate = new Date(reserva.fechaReserva);
+    const fechaViajeDate = new Date(reserva.Viaje.fechaViaje);
+
+    // Queremos que la fechaReserva O fechaViaje estén dentro del rango de fechaDesde y fechaHasta
+
+    const dentroRangoDesde = fechaDesde ? (fechaReservaDate >= fechaDesde) : true;
+    const dentroRangoHasta = fechaHasta ? (fechaReservaDate <= fechaHasta ) : true;
+
+    return dentroRangoDesde && dentroRangoHasta;
+    
+  });
   return (
-    <View style={styles.container}>
+     <ScrollView style={styles.container}>
+
+      <View style={styles.filaBotones}>
+           {hayFiltrosActivos && (
+            <TouchableOpacity onPress={limpiarFiltros} style={styles.limpiarFiltrosButton}>
+              <Text style={styles.limpiarFiltrosText}>Limpiar filtros</Text>
+            </TouchableOpacity>
+          )}
+          </View>
       <Text style={styles.title}>
         {reservas.length > 0 ? reservas[0].Viaje.MedioTransporte.Empresa.nombre : ''} - Reservas
       </Text>
 
-      {reservas.length === 0 ? (
-        <Text style={styles.empty}>No hay reservas para esta empresa.</Text>
-      ) : (
+      {/* Input búsqueda */}
+      <TextInput
+        style={styles.input}
+        placeholder="Buscar por fecha, origen, destino, usuario, transporte..."
+         placeholderTextColor="#888"
+        value={busqueda}
+        onChangeText={setBusqueda}
+      />
+
+       {/* Filtros de fecha */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
+        {/* Fecha Desde */}
+        <View style={{ flex: 1, marginRight: 8 }}>
+          {Platform.OS === 'web' ? (
+            <>
+              <Text style={styles.fechaLabel}>Fecha Desde:</Text>
+              <input
+                type="date"
+                value={fechaDesde ? fechaDesde.toISOString().split('T')[0] : ""}
+                onChange={(e) => setFechaDesde(new Date(e.target.value))}
+                style={styles.dateInputWeb}
+              />
+            </>
+          ) : (
+            <>
+              <TouchableOpacity style={styles.fechaButton} onPress={() => setShowPickerDesde(true)}>
+                <Text style={styles.fechaButtonText}>
+                  {fechaDesde ? formatDate(fechaDesde.toISOString()) : "Fecha desde"}
+                </Text>
+              </TouchableOpacity>
+              {showPickerDesde && (
+                <DateTimePicker
+                  value={fechaDesde || new Date()}
+                  mode="date"
+                  display="default"
+                  onChange={(_event, selectedDate) => {
+                    setShowPickerDesde(false);
+                    if (selectedDate) setFechaDesde(selectedDate);
+                  }}
+                />
+              )}
+            </>
+          )}
+        </View>
+
+        {/* Fecha Hasta */}
+        <View style={{ flex: 1, marginLeft: 8 }}>
+          {Platform.OS === 'web' ? (
+            <>
+              <Text style={styles.fechaLabel}>Fecha Hasta:</Text>
+              <input
+                type="date"
+                value={fechaHasta ? fechaHasta.toISOString().split('T')[0] : ""}
+                onChange={(e) => setFechaHasta(new Date(e.target.value))}
+                style={styles.dateInputWeb}
+              />
+            </>
+          ) : (
+            <>
+              <TouchableOpacity style={styles.fechaButton} onPress={() => setShowPickerHasta(true)}>
+                <Text style={styles.fechaButtonText}>
+                  {fechaHasta ? formatDate(fechaHasta.toISOString()) : "Fecha hasta"}
+                </Text>
+              </TouchableOpacity>
+              {showPickerHasta && (
+                <DateTimePicker
+                  value={fechaHasta || new Date()}
+                  mode="date"
+                  display="default"
+                  onChange={(_event, selectedDate) => {
+                    setShowPickerHasta(false);
+                    if (selectedDate) setFechaHasta(selectedDate);
+                  }}
+                />
+              )}
+            </>
+          )}
+        </View>
+      </View>
+
+      {reservasFiltradas.length === 0 ? (
+        <Text style={styles.empty}>No hay reservas que coincidan con el filtro.</Text>
+      ) :  (
         <FlatList
-          data={reservas}
+          data={reservasFiltradas}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.card}>
@@ -186,7 +341,8 @@ const ListarReservas = () => {
           )}
         />
       )}
-    </View>
+   
+    </ScrollView>
   );
 };
 
@@ -199,6 +355,80 @@ const styles = StyleSheet.create({
   value: { fontWeight: 'normal' },
   subTitle: { marginTop: 8, fontSize: 16, fontWeight: 'bold', color: '#007bff' },
   details: { marginLeft: 10, marginTop: 4 },
+   input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 12,
+  },
+limpiarFiltrosText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 14,
+},
+filaBotones: {
+ flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 12,
+},
+agregarButton: {
+  backgroundColor: '#007BFF',
+  paddingVertical: 10,
+  paddingHorizontal: 16,
+  borderRadius: 5,
+},
+
+
+fechaButton: {
+  backgroundColor: '#4c68d7',
+  paddingVertical: 10,
+  paddingHorizontal: 16,
+  borderRadius: 20,
+  alignItems: 'center',
+  justifyContent: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 4,
+  marginBottom: 8,
+},
+
+fechaButtonText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 14,
+  letterSpacing: 0.3,
+},
+
+fechaLabel: {
+  fontSize: 14,
+  fontWeight: '600',
+  marginBottom: 4,
+  color: '#333',
+},
+
+dateInputWeb: {
+  padding: 10,
+  width: '100%',
+  borderRadius: 8,
+  fontSize: 14,
+},
+limpiarFiltrosButton: {
+  backgroundColor: '#b2babb',
+  paddingVertical: 12,
+  paddingHorizontal: 20,
+  borderRadius: 20,
+  alignItems: 'center',
+  justifyContent: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 4,
+},
 });
 
 export default ListarReservas;
