@@ -275,12 +275,24 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
             style={{
               marginTop: 10,
               padding: 10,
-              backgroundColor: '#FF3B30',
               borderRadius: 5,
               alignSelf: 'flex-start',
+              backgroundColor: '#F44336',
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
+              elevation: 4,
             }}
           >
-            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Desasociar Empresa</Text>
+            <Text style={{ color: '#fff',
+                          fontWeight: 'bold',
+                          fontSize: 16,
+                          letterSpacing: 0.5, }}>Desasociar Empresa</Text>
           </TouchableOpacity>
         )}
 
@@ -352,18 +364,26 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   filtroBtn: {
-    backgroundColor: '#ccc',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+     backgroundColor: '#4c68d7',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 20,
-    marginRight: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   filtroBtnActivo: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#b2babb',
   },
   filtroTexto: {
-    color: '#000',
-    fontSize: 14,
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    letterSpacing: 0.5,
   },
   filtroTextoActivo: {
     color: '#fff',
@@ -388,4 +408,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
+
+  deleteBotton:{
+     backgroundColor: '#F44336',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  }
 });

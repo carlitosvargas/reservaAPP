@@ -46,7 +46,7 @@ import { API_URL } from '../environment/config';
 
  export const actualizarPerfil = async (id: number, perfil_id: number) => {
   const token = await AsyncStorage.getItem('token');
-  const response = await axios.put( `${API_URL}/usuarios/actualizarPerfil/${id}`, {perfil_id},
+  const response = await axios.put(`${API_URL}/usuarios/actualizarPerfil/${id}`, {perfil_id},
     {
       headers: {
         Authorization: `Bearer ${token}`,

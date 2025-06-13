@@ -31,42 +31,71 @@ export default function ChoferListaPasajeros() {
     }
   }, [id]);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Pasajeros del Viaje {id}</Text>
-      <FlatList
-        data={pasajeros}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text>Nombre: {item.nombre} {item.apellido}</Text>
-            <Text>DNI: {item.dni}</Text>
-            <Text>Origen: {item.ubicacionOrigen}</Text>
-            <Text>Destino: {item.ubicacionDestino}</Text>
-          </View>
-        )}
-        ListEmptyComponent={<Text>No hay pasajeros en este viaje.</Text>}
-      />
-    </View>
-  );
-}
+ return (
+  <View style={styles.container}>
+    <Text style={styles.title}>Pasajeros del Viaje {id}</Text>
+    <FlatList
+      data={pasajeros}
+      keyExtractor={(item) => item.id.toString()}
+      contentContainerStyle={styles.listContent}
+      renderItem={({ item }) => (
+        <View style={styles.card}>
+          <Text style={styles.name}>👤 {item.nombre} {item.apellido}</Text>
+          <Text style={styles.detail}>🆔 DNI: {item.dni}</Text>
+          <Text style={styles.detail}>📍 Origen: {item.ubicacionOrigen}</Text>
+          <Text style={styles.detail}>🎯 Destino: {item.ubicacionDestino}</Text>
+        </View>
+      )}
+      ListEmptyComponent={
+        <Text style={styles.emptyMessage}>No hay pasajeros en este viaje.</Text>
+      }
+    />
+  </View>
+);
 
+}
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    backgroundColor: '#fff',
     flex: 1,
+    backgroundColor: '#f4f4f4',
+    padding: 15,
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 15,
+    color: '#333',
+  },
+  listContent: {
+    paddingBottom: 20,
   },
   card: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#000',
+  },
+  detail: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 4,
+  },
+  emptyMessage: {
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 16,
+    color: '#777',
   },
 });
+

@@ -87,15 +87,25 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
       backgroundColor: isDark ? '#1a1a1a' : '#fff',
     },
     button: {
-      backgroundColor: '#007AFF',
-      paddingVertical: 14,
-      borderRadius: 8,
+      backgroundColor: '#4c68d7',
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      borderRadius: 20,
       alignItems: 'center',
-      marginTop: 8,
+      justifyContent: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 5, 
+      transform: [{ scale: 1 }],
+      transitionDuration: '200ms',
     },
     buttonText: {
-      color: '#fff',
-      fontWeight: 'bold',
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+        letterSpacing: 0.5,
     },
     registroLink: {
       marginTop: 16,
@@ -106,6 +116,7 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
       color: '#007AFF',
       fontWeight: 'bold',
     },
+
   });
   
  return (

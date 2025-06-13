@@ -143,14 +143,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   button: {
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 8,
+     backgroundColor: '#4c68d7',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   buttonText: {
-    color: '#fff',
-    textAlign: 'center',
+     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 16,
+    letterSpacing: 0.5,
   },
   errorText: {
     color: 'red',

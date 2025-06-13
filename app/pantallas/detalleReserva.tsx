@@ -123,15 +123,24 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   botonEditar: {
-    backgroundColor: '#007bff',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 5,
+    backgroundColor: '#4c68d7',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
     
   botonTexto: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 16,
+    letterSpacing: 0.5,
   },
 
 });
