@@ -168,7 +168,7 @@ const limpiarFiltros = () => {
     
   });
   return (
-     <ScrollView style={styles.container}>
+     <View style={styles.container}>
 
       <View style={styles.filaBotones}>
            {hayFiltrosActivos && (
@@ -342,7 +342,7 @@ const limpiarFiltros = () => {
         />
       )}
    
-    </ScrollView>
+    </View>
   );
 };
 
@@ -368,11 +368,12 @@ limpiarFiltrosText: {
   fontSize: 14,
 },
 filaBotones: {
- flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
+  flexDirection: 'row-reverse', 
+  justifyContent: 'flex-start', 
+  gap: 8, 
   marginBottom: 12,
 },
+
 agregarButton: {
   backgroundColor: '#007BFF',
   paddingVertical: 10,
@@ -411,10 +412,14 @@ fechaLabel: {
 },
 
 dateInputWeb: {
-  padding: 10,
   width: '100%',
-  borderRadius: 8,
-  fontSize: 14,
+  padding: 8,
+  fontSize: 16,
+  borderColor: '#ccc',
+  borderWidth: 1,
+  borderRadius: 5,
+  backgroundColor: '#fff',
+  boxSizing: 'border-box', // importante en web para evitar overflow
 },
 limpiarFiltrosButton: {
   backgroundColor: '#b2babb',

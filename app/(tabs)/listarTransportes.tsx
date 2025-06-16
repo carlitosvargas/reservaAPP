@@ -206,7 +206,10 @@ const styles = StyleSheet.create({
   transform: [{ scale: 1 }],
   transitionDuration: '200ms', 
 },
-  agregarButtonText: { color: '#fff', fontWeight: 'bold' },
+  agregarButtonText: {color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 16,
+  letterSpacing: 0.5, },
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 12 },
   empty: { fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 },
   card: { padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#ccc', borderRadius: 8 },
@@ -259,11 +262,12 @@ const styles = StyleSheet.create({
 },
 
 filaBotones: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
+  flexDirection: 'row-reverse', 
+  justifyContent: 'flex-start', 
+  gap: 8, 
   marginBottom: 12,
 },
+
 
 dateInputWeb: {
   padding: 10,

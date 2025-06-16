@@ -287,6 +287,7 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
               shadowOpacity: 0.3,
               shadowRadius: 4,
               elevation: 4,
+              
             }}
           >
             <Text style={{ color: '#fff',
@@ -307,7 +308,7 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
       <Text style={styles.titulo}>Lista de Usuarios</Text>
       <View style={{ marginBottom: 15 }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={styles.filtros}>
+          <View style={styles.filtros }>
             {[
               { label: 'Todos', id: null },
               { label: 'Administrador', id: 1 },
@@ -320,7 +321,7 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
               return (
                 <TouchableOpacity
                   key={item.label}
-                  style={[styles.filtroBtn, activo && styles.filtroBtnActivo]}
+                  style={[styles.filtroBtn, activo && styles.filtroBtnActivo, { marginTop: 16 }]}
                   onPress={() => filtrarPorPerfil(item.id)}
                 >
                   <Text style={[styles.filtroTexto, activo && styles.filtroTextoActivo]}>
@@ -365,7 +366,7 @@ const styles = StyleSheet.create({
   },
   filtroBtn: {
      backgroundColor: '#4c68d7',
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
     alignItems: 'center',
@@ -412,7 +413,7 @@ const styles = StyleSheet.create({
   deleteBotton:{
      backgroundColor: '#F44336',
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',

@@ -53,17 +53,31 @@ const ViajesEmpresa = () => {
 
   const { userInfo } = useAuth();
   const router = useRouter();
-   const [busqueda, setBusqueda] = useState('');
+  const [busqueda, setBusqueda] = useState('');
   
       // Estados para filtro por fechas
-    const [fechaDesde, setFechaDesde] = useState<Date | null>(null);
-    const [fechaHasta, setFechaHasta] = useState<Date | null>(null);
+  const [fechaDesde, setFechaDesde] = useState<Date | null>(null);
+  const [fechaHasta, setFechaHasta] = useState<Date | null>(null);
   
-    const [showPickerDesde, setShowPickerDesde] = useState(false);
-    const [showPickerHasta, setShowPickerHasta] = useState(false);
+  const [showPickerDesde, setShowPickerDesde] = useState(false);
+  const [showPickerHasta, setShowPickerHasta] = useState(false);
+
+  const [mostrarOpcionesReporte, setMostrarOpcionesReporte] = useState(false);
+
+  const toggleOpcionesReporte = () => {
+    setMostrarOpcionesReporte(prev => !prev);
+    }
+
+ const [mostrarMenuCompleto, setMostrarMenuCompleto] = useState(false);
+
+const toggleMenu = () => {
+  setMostrarMenuCompleto(!mostrarMenuCompleto);
+};
+
 
 
   const esMostrador = userInfo?.perfil === 'usuarioMostrador';
+  const esEmpresa = userInfo?.perfil === 'usuarioEmpresa';
 
   useEffect(() => {
     const fetchViajes = async () => {
@@ -108,15 +122,32 @@ const hayFiltrosActivos = busqueda !== '' || fechaDesde !== null || fechaHasta !
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
+   const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
 
   const handleAgregar = () => {
     router.push({pathname:'/pantallas/crearViaje'})
   };
 
-  const formatTime = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':');
-    return `${hours}:${minutes}`;
-  };
+  const handleReportes = (tipo: string) => {
+  switch (tipo) {
+    case 'reservas':
+      router.push({ pathname: '/pantallas/reportes/reportesReservas' });
+      break;
+    case 'usuarios':
+      router.push({ pathname: '/pantallas/reportes/reportesReservas' });
+      break;
+    case 'pasajeros':
+      router.push({ pathname: '/pantallas/reportes/reportesReservas' });
+      break;
+    default:
+      console.warn('Tipo de reporte no reconocido:', tipo);
+  }
+};
+
+ 
   const handleVerReservas = (viajeId: number) => {
     router.push({
       pathname: '/pantallas/listarReservasPorViaje',params: { id: viajeId },
@@ -279,6 +310,61 @@ const eliminarViajes = async (id: number) => {
                 <Text style={styles.limpiarFiltrosText}>Limpiar filtros</Text>
               </TouchableOpacity>
     )}
+
+
+ <>
+  {esEmpresa && (
+    <View style={{ position: 'relative' }}>
+      {Platform.OS === 'web' ? (
+        // 🌐 Web: Menú tipo cascada
+        <>
+          <TouchableOpacity style={styles.agregarButton} onPress={toggleOpcionesReporte}>
+            <Text style={styles.agregarButtonText}>Reportes</Text>
+          </TouchableOpacity>
+
+          {mostrarOpcionesReporte && (
+      <View style={styles.menuOpcionesweb}>
+        <TouchableOpacity style={styles.opcionReporteweb} onPress={() => handleReportes('reservas')}>
+          <Text style={styles.opcionTextoweb}>Reporte de Reservas</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.opcionReporteweb} onPress={() => handleReportes('usuarios')}>
+          <Text style={styles.opcionTextoweb}>Reporte de Usuarios</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.opcionReporteweb} onPress={() => handleReportes('pasajeros')}>
+          <Text style={styles.opcionTextoweb}>Reporte de Pasajeros</Text>
+        </TouchableOpacity>
+      </View>
+    )}
+        </>
+      ) : (
+        // 📱 Dispositivo móvil: Menú desplegable táctil
+        <>
+          <TouchableOpacity style={styles.agregarButton} onPress={toggleOpcionesReporte}>
+            <Text style={styles.agregarButtonText}>Reportes</Text>
+          </TouchableOpacity>
+
+          {mostrarOpcionesReporte && (
+            <View style={styles.menuOpciones}>
+              <TouchableOpacity style={styles.opcionReporte} onPress={() => handleReportes('reservas')}>
+                <Text style={styles.opcionTexto}>Reservas</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.opcionReporte} onPress={() => handleReportes('usuarios')}>
+                <Text style={styles.opcionTexto}>Usuarios</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.opcionReporte} onPress={() => handleReportes('pasajeros')}>
+                <Text style={styles.opcionTexto}>Pasajeros</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </>
+      )}
+    </View>
+  )}
+</>
+
+
+
+
     </View>
       <Text style={styles.sectionTitle}>{nombreEmpresa} - Viajes</Text>
      
@@ -385,11 +471,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    marginTop: 20,
-    color: '#333',
+   fontSize: 22, fontWeight: 'bold', marginBottom: 12
   },
   
 
@@ -428,12 +510,14 @@ limpiarFiltrosText: {
   fontWeight: 'bold',
   fontSize: 14,
 },
+
 filaBotones: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
+  flexDirection: 'row-reverse', 
+  justifyContent: 'flex-start', 
+  gap: 8, 
   marginBottom: 12,
 },
+
 
 agregarButton: {
   backgroundColor: '#4c68d7',
@@ -547,11 +631,61 @@ fechaLabel: {
 },
 
 dateInputWeb: {
-  padding: 10,
   width: '100%',
-  borderRadius: 8,
-  fontSize: 14,
+  padding: 8,
+  fontSize: 16,
+  borderColor: '#ccc',
+  borderWidth: 1,
+  borderRadius: 5,
+  backgroundColor: '#fff',
+  boxSizing: 'border-box', // importante en web para evitar overflow
 },
+menuOpciones: {
+  position: 'absolute',
+  top: '100%', // justo debajo del botón
+  left: 0,
+  right: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.6)', // fondo negro semitransparente
+  padding: 10,
+  borderRadius: 8,
+  zIndex: 999, // que quede encima de todo
+},
+opcionReporte: {
+  paddingVertical: 10,
+  backgroundColor: '#4c68d7', // fondo blanco semiopaco para cada opción
+  marginVertical: 5,
+  borderRadius: 5,
+},
+
+opcionTexto: {
+  fontSize: 14,
+  color: '#fff',
+  fontWeight: 'bold',
+  textAlign: 'center',
+},
+
+
+//-------------
+
+menuOpcionesweb: {
+  backgroundColor: '#f9f9f9',
+  padding: 10,
+  borderRadius: 8,
+  marginTop: 5, // separa del botón "Reportes"
+  elevation: 2, // sombra en Android
+  shadowColor: '#000', // sombra en iOS
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.2,
+  shadowRadius: 4,
+},
+opcionReporteweb: {
+  paddingVertical: 8,
+},
+opcionTextoweb: {
+  fontSize: 16,
+  color: '#333',
+}
+
 
 });
 

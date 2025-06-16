@@ -166,13 +166,18 @@ export default function UsuarioScreen() {
                     cambiarPerfilUsuario(item.id, option.key);
                   }
                 }}
+                
               />
+              <TouchableOpacity
+                      
+                      style={[styles.botonEliminar, { marginTop: 16 }]}
+                      onPress={() => handleEliminarUsuario(item.id)}
+                    >
+                      <Text style={[styles.botonTexto]}>
+                        Eliminar Usuario
+                      </Text>
+                    </TouchableOpacity>
 
-              <Button
-                title="Eliminar usuario"
-                color="red"
-                onPress={() => handleEliminarUsuario(item.id)}
-              />
             </>
           )}
         </View>
@@ -194,7 +199,7 @@ export default function UsuarioScreen() {
                   return (
                     <TouchableOpacity
                       key={item.label}
-                      style={[styles.filtroBtn, activo && styles.filtroBtnActivo]}
+                      style={[styles.filtroBtn, activo && styles.filtroBtnActivo,{ marginTop: 16 }]}
                       onPress={() => filtrarPorPerfil(item.id)}
                     >
                       <Text style={[styles.filtroTexto, activo && styles.filtroTextoActivo]}>
@@ -240,18 +245,26 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   filtroBtn: {
-    backgroundColor: '#ccc',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+     backgroundColor: '#4c68d7',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 20,
-    marginRight: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   filtroBtnActivo: {
-    backgroundColor: '#007AFF',
+   backgroundColor: '#b2babb',
   },
   filtroTexto: {
-    color: '#000',
-    fontSize: 14,
+      color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    letterSpacing: 0.5,
   },
   filtroTextoActivo: {
     color: '#fff',
@@ -275,5 +288,24 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: 'black',
     fontWeight: 'bold',
+  },
+  botonEliminar: {
+    backgroundColor: '#F44336',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+   botonTexto: {
+   color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 14,
+  letterSpacing: 0.5,
   },
 });
