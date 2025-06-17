@@ -18,7 +18,7 @@ export default function RootLayout() {
 
   // Diccionario de rutas → títulos personalizados
   const titulosPorRuta: Record<string, string> = {
-    '/choferViajes': 'viajes',
+    '/choferViajes': 'Viajes',
     '/listarReservas': 'Reservas',
     '/listarTransportes': 'Transportes',
     '/listarViajes': 'Viajes',
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     flex: 1,
     textAlign: 'center',
-    fontFamily:'Instagram Sans'
+    //fontFamily:'Instagram Sans'
   },
   content: {
     flex: 1,

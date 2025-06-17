@@ -33,7 +33,7 @@ export default function ChoferListaPasajeros() {
 
  return (
   <View style={styles.container}>
-    <Text style={styles.title}>Pasajeros del Viaje {id}</Text>
+    <Text style={styles.title}>Pasajeros del Viaje</Text>
     <FlatList
       data={pasajeros}
       keyExtractor={(item) => item.id.toString()}
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   detail: {
     fontSize: 14,
-    color: '#555',
+    //color: '#555',
     marginBottom: 4,
   },
   emptyMessage: {

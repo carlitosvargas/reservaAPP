@@ -3,6 +3,7 @@ import {View,Text,ImageBackground,StyleSheet,Pressable,ActivityIndicator,Dimensi
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import Login from '../login';
+import * as Animatable from 'react-native-animatable';
 
 const { width, height } = Dimensions.get('window');
  const colorScheme = useColorScheme();
@@ -27,19 +28,46 @@ export default function Index() {
 
   return (
     <ImageBackground
-      source={require('../../assets/images/fondo.jpg')} 
+      source={require('../../assets/images/fondo1.jpg')}
       style={styles.background}
       resizeMode="cover"
     >
       <View style={styles.overlay}>
-        <Text style={styles.title}>V&V Reservas</Text>
-        <Text style={styles.subtitle}>Tu viaje comienza aquí</Text>
-        <Pressable
-          style={styles.button}
-          onPress={() => router.push('/(tabs)/viajes')}
+        <Animatable.View
+          animation="fadeInDown"
+          duration={1200}
+          delay={300}
+          style={styles.content}
         >
-          <Text style={styles.buttonText}>Reservar ahora</Text>
-        </Pressable>
+          <Animatable.Image
+            animation="bounceIn"
+            duration={1500}
+            source={require('../../assets/images/bus-icon.png')}
+            style={styles.icon}
+          />
+
+          <Text style={styles.title}>V&V Reservas</Text>
+          <Animatable.Text
+            animation="fadeInUp"
+            delay={600}
+            duration={1000}
+            style={styles.subtitle}
+          >
+            Tu viaje comienza aquí
+          </Animatable.Text>
+
+          <Animatable.View animation="zoomIn" delay={800} duration={1000}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
+              ]}
+              onPress={() => router.push('/(tabs)/viajes')}
+            >
+              <Text style={styles.buttonText}>Reservar ahora</Text>
+            </Pressable>
+          </Animatable.View>
+        </Animatable.View>
       </View>
     </ImageBackground>
   );
@@ -53,13 +81,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     
   },
-  background: {
+  /*background: {
     width: width,
     height: height,
     justifyContent: 'center',
     
   },
-  
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: 24,
@@ -67,7 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
   },
-  title: {
+   title: {
     fontSize: 36,
     fontWeight: 'bold',
     color: '#fff',
@@ -89,5 +116,54 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 18,
+  },
+   */
+
+
+   background: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  content: {
+    alignItems: 'center',
+  },
+  icon: {
+    width: 80,
+    height: 80,
+    marginBottom: 20,
+    tintColor: '#fff',
+  },
+  title: {
+    fontSize: 38,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#dddddd',
+    marginBottom: 30,
+  },
+  button: {
+    backgroundColor: '#00c2ff',
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
   },
 });

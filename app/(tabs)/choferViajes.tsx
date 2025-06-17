@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   detail: {
     fontSize: 14,
-    color: '#555',
+   
     marginBottom: 4,
   },
   emptyMessage: {
