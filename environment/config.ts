@@ -4,7 +4,7 @@ const ENV = 'development';
 
 const config = {
   development: {
-    API_URL: 'http://192.168.1.107:3000',
+    API_URL: 'http://192.168.0.59:3000',
   },
   production: {
     API_URL: 'https://api.midominio.com',

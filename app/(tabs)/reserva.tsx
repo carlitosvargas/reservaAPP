@@ -1,19 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  Pressable,
-  Animated,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import {View,Text,StyleSheet,ActivityIndicator,Pressable,Animated,TouchableOpacity,ScrollView,Alert,} from 'react-native';
 import { obtenerReservas, eliminarReserva } from '../../services/reservaService';
 import { useAuth } from '../../context/AuthContext';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { existeReservaVenta } from '../../services/ventaService';
 
 interface Viaje {
@@ -158,11 +147,12 @@ const MisReservas = () => {
         <View style={styles.botonesContainer}>
           <Pressable
             onPress={() =>
-              router.push({ pathname: '/pantallas/detalleReserva', params: { id: item.viaje.id } })
+             router.push({ pathname: '/pantallas/detalleReserva', params: { id: item.viaje.id, tieneVenta: item.tieneVenta?.toString() } })
+
             }
             style={styles.botonDetalle}
           >
-           {/* <Ionicons name="add-circle-outline" size={20} color="#fff" style={{ marginRight: 6 }} />*/} 
+           
             <Text style={styles.textoBotonDetalle}>Ver Detalle</Text>
           </Pressable>
 
@@ -174,7 +164,7 @@ const MisReservas = () => {
                   router.push({ pathname: '/pantallas/ventaReserva', params: { id: item.id } })
                 }
               >
-               {/* <Ionicons name="card-outline" size={20} color="#fff" style={{ marginRight: 6 }} />*/} 
+              
                 <Text style={styles.botonTexto}>Confirmar</Text>
               </TouchableOpacity>
 
@@ -182,7 +172,6 @@ const MisReservas = () => {
                 style={styles.botonEliminar}
                 onPress={() => handleEliminarReserva(item.id)}
               >
-               {/*<Ionicons name="trash-outline" size={20} color="#fff" style={{ marginRight: 6 }} /> */} 
                 <Text style={styles.botonTexto}>Eliminar</Text>
               </TouchableOpacity>
             </>
@@ -192,8 +181,7 @@ const MisReservas = () => {
               onPress={() =>
                 router.push({ pathname: '/pantallas/detalleVenta', params: { id: item.id } })
               }
-            >
-            {/* <Ionicons name="receipt-outline" size={20} color="#fff" style={{ marginRight: 6 }} />*/}  
+            >  
               <Text style={styles.textoBotonDetalle}>Ver Compra</Text>
             </Pressable>
           )}
@@ -218,27 +206,32 @@ const MisReservas = () => {
     );
   }
 
-  return (
-      <ScrollView style={styles.container}>
-      {reservasPendientes.length > 0 ? (
-        <>
-          <Text style={styles.sectionTitle}>Reservas pendientes de confirmación</Text>
-          {reservasPendientes.map(renderReserva)}
-        </>
-      ) : ( 
-        <Text style={{ textAlign: 'center', marginTop: 20, color: '#888' }}>
-          Aún no hay reservas
-        </Text>
-      )}
+ return (
+  <ScrollView style={styles.container}>
+    {reservasPendientes.length === 0 && reservasPagadas.length === 0 ? (
+      <Text style={{ textAlign: 'center', marginTop: 20, color: '#888' }}>
+        Aún no hay reservas
+      </Text>
+    ) : (
+      <>
+        {reservasPendientes.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>Reservas pendientes de confirmación</Text>
+            {reservasPendientes.map(renderReserva)}
+          </>
+        )}
 
-      {reservasPagadas.length > 0 && (
-        <>
-          <Text style={styles.sectionTitle}>Reservas confirmadas</Text>
-          {reservasPagadas.map(renderReserva)}
-        </>
-      )}
-    </ScrollView>
-      );
+        {reservasPagadas.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>Reservas confirmadas</Text>
+            {reservasPagadas.map(renderReserva)}
+          </>
+        )}
+      </>
+    )}
+  </ScrollView>
+);
+
 };
 
 const styles = StyleSheet.create({

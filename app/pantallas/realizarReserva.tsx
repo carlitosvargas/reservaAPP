@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity, Platform } from 'react-native';
 import { obtenerViajesId } from '../../services/viajeServices';
 import { crearReserva } from '../../services/reservaService';
 import { useAuth } from '../../context/AuthContext';
@@ -31,8 +31,7 @@ export default function DetalleViaje() {
     { nombre: '', apellido: '', dni: '', ubicacionOrigen: '', ubicacionDestino: '' },
   ]);
   const [loading, setLoading] = useState(false);
-  const [mensajeReserva, setMensajeReserva] = useState('');
-  const [esError, setEsError] = useState(false);
+ 
   const router = useRouter();
   const { userInfo } = useAuth();
 
@@ -50,8 +49,7 @@ export default function DetalleViaje() {
     const nuevosPasajeros = [...pasajeros];
     nuevosPasajeros[index][field] = value;
     setPasajeros(nuevosPasajeros);
-    setMensajeReserva('');
-    setEsError(false);
+   
   };
 
   const agregarPasajero = () => {
@@ -71,42 +69,56 @@ export default function DetalleViaje() {
     return true;
   };
 
-  const reservar = async () => {
-    if (!viaje) return;
-    if (!validarPasajeros()) {
-      Alert.alert('Campos incompletos', 'Por favor, completa todos los campos de los pasajeros.');
-      return;
-    }
+ 
 
-    try {
-      setLoading(true);
-      const reservaData = {
-        usuarios_id,
-        viajes_id: viaje.id,
-        personas: pasajeros,
-      };
+const reservar = async () => {
+  if (!viaje) return;
 
-      const response = await crearReserva(reservaData);
-      const mensaje = response?.mensaje || 'Tu reserva fue creada en Mis Reservas pendiente de pago.';
-      
+  if (!validarPasajeros()) {
+    Platform.OS === 'web'
+      ? alert('Campos incompletos: Por favor, completa todos los campos de los pasajeros.')
+      : Alert.alert('Campos incompletos', 'Por favor, completa todos los campos de los pasajeros.');
+    return;
+  }
 
+  try {
+    setLoading(true);
+    const reservaData = {
+      usuarios_id,
+      viajes_id: viaje.id,
+      personas: pasajeros,
+    };
+
+    const response = await crearReserva(reservaData);
+    const mensaje = response?.mensaje || 'Tu reserva fue creada en Mis Reservas pendiente de pago.';
+
+    if (Platform.OS === 'web') {
+      alert('Reserva exitosa: ' + mensaje);
+      router.push('/(tabs)/reserva');
+    } else {
       Alert.alert('Reserva exitosa', mensaje, [
         {
           text: 'OK',
           onPress: () => router.push('/(tabs)/reserva'),
         },
       ]);
-
-      setPasajeros([{ nombre: '', apellido: '', dni: '', ubicacionOrigen: '', ubicacionDestino: '' }]);
-    } catch (error: any) {
-      const mensaje = error?.response?.data?.mensaje || 'Hubo un problema al crear la reserva.';
-      setEsError(true);
-      setMensajeReserva(mensaje);
-      Alert.alert('Error', mensaje);
-    } finally {
-      setLoading(false);
     }
-  };
+
+    setPasajeros([
+      { nombre: '', apellido: '', dni: '', ubicacionOrigen: '', ubicacionDestino: '' },
+    ]);
+  } catch (error: any) {
+    const mensaje = error?.response?.data?.mensaje || 'Hubo un problema al crear la reserva.';
+  
+
+    Platform.OS === 'web'
+      ? alert('Error: ' + mensaje)
+      : Alert.alert('Error', mensaje);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (!viaje) {
     return (
@@ -224,21 +236,9 @@ export default function DetalleViaje() {
         style={[styles.reservarButton, loading && { backgroundColor: '#ccc' }]}
         disabled={loading}
       >
-        <Text style={styles.reservarButtonText}>{loading ? 'Reservando...' : 'Reservar'}</Text>
+        <Text style={styles.reservarButtonText}>{'Reservar'}</Text>
       </TouchableOpacity>
 
-      {mensajeReserva !== '' && (
-        <Text
-          style={{
-            marginTop: 15,
-            textAlign: 'center',
-            color: esError ? 'red' : '#00C851',
-            fontWeight: 'bold',
-          }}
-        >
-          {mensajeReserva}
-        </Text>
-      )}
     </ScrollView>
   );
 }

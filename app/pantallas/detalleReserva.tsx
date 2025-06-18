@@ -15,7 +15,9 @@ interface Pasajero {
 }
 
 export default function DetalleReserva() {
-  const { id,updated } = useLocalSearchParams();
+ const { id, updated, tieneVenta } = useLocalSearchParams();
+const reservaConfirmada = tieneVenta === 'true';
+
  
   const [pasajeros, setPasajeros] = useState<Pasajero[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,7 +45,7 @@ useEffect(() => {
         setLoading(false);
       });
   }
-}, [id, updated]); // 👈 se vuelve a ejecutar si `updated` cambia
+}, [id, updated]); // se vuelve a ejecutar si `updated` cambia
 
 
   if (loading) {
@@ -80,12 +82,15 @@ useEffect(() => {
             </View>
            
 
-            <TouchableOpacity
-              style={styles.botonEditar}
-              onPress={() => router.push({pathname:'/pantallas/modificarPasajero',params:{id:item.id, idViaje:id}})}
-            >
-              <Text style={styles.botonTexto}>Editar</Text>
-            </TouchableOpacity>
+           {!reservaConfirmada && (
+          <TouchableOpacity
+            style={styles.botonEditar}
+            onPress={() => router.push({ pathname: '/pantallas/modificarPasajero', params: { id: item.id, idViaje: id } })}
+          >
+            <Text style={styles.botonTexto}>Editar</Text>
+          </TouchableOpacity>
+        )}
+
              
           </View>
         )}

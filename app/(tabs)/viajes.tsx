@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef  } from 'react';
 import {
   View, Text, TextInput, Pressable, StyleSheet, ScrollView,
   ActivityIndicator, KeyboardAvoidingView, Platform,
@@ -32,7 +32,10 @@ export default function ViajesScreen() {
   const [localidades, setLocalidades] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState('');
+  const origenRef = useRef<HTMLDivElement | null>(null);
+  const destinoRef = useRef<HTMLDivElement | null>(null);
 
+  
   useEffect(() => {
     const cargarLocalidades = async () => {
       try {
@@ -44,7 +47,22 @@ export default function ViajesScreen() {
       }
     };
     cargarLocalidades();
-  }, []);
+ 
+   if (Platform.OS !== 'web') return;
+
+  const handleClickOutside = (event: { target: any; }) => {
+    if (origenRef.current && !origenRef.current.contains(event.target)) {
+      setSugerenciasOrigen([]);
+    }
+    if (destinoRef.current && !destinoRef.current.contains(event.target)) {
+      setSugerenciasDestino([]);
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  }; }, []);
 
   const buscarViajes = async () => {
     if (!origen || !destino) {
@@ -89,11 +107,110 @@ export default function ViajesScreen() {
       <Text>Precio: ${item.precio}</Text>
       
     </Pressable>
-  );return (
-  <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{ flex: 1, padding: 16 }}>
-        {/* Buscador fijo */}
+  );
+  return (
+  <>
+    {Platform.OS === 'web' ? (
+      // ✅ Web version (pantalla más amplia)
+      <View  style={stylesWeb.container}>
+        <Text style={stylesWeb.title}>Buscar pasajes</Text>
+        <View style={stylesWeb.inputsRow}>
+          {/* Origen */}
+          <div ref={origenRef} style={stylesWeb.inputContainer}>
+            <TextInput
+              style={stylesWeb.input}
+              placeholder="Origen"
+              value={origen}
+              onChangeText={(text) => {
+                setOrigen(text);
+                filtrarSugerencias(text, 'origen');
+              }}
+           
+            />
+            {origen.length > 0 && (
+              <Pressable onPress={() => {
+                setOrigen('');
+                setSugerenciasOrigen([]);
+              }}>
+                <Icon name="times-circle" size={20} color="#aaa" />
+              </Pressable>
+            )}
+            {sugerenciasOrigen.length > 0 && (
+              <View style={stylesWeb.suggestionBox}>
+                {sugerenciasOrigen.map((s, idx) => (
+                  <Pressable key={idx} onPress={() => {
+                    setOrigen(s);
+                    setSugerenciasOrigen([]);
+                  }}>
+                    <Text style={stylesWeb.suggestion}>{s}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            )}
+          </div>
+
+          {/* Destino */}
+          <div ref={destinoRef} style={stylesWeb.inputContainer}>
+            <TextInput
+              style={stylesWeb.input}
+              placeholder="Destino"
+              value={destino}
+              onChangeText={(text) => {
+                setDestino(text);
+                filtrarSugerencias(text, 'destino');
+              }}
+            
+
+            />
+            {destino.length > 0 && (
+              <Pressable onPress={() => {
+                setDestino('');
+                setSugerenciasDestino([]);
+              }}>
+                <Icon name="times-circle" size={20} color="#aaa" />
+              </Pressable>
+            )}
+            {sugerenciasDestino.length > 0 && (
+              <View style={stylesWeb.suggestionBox}>
+                {sugerenciasDestino.map((s, idx) => (
+                  <Pressable key={idx} onPress={() => {
+                    setDestino(s);
+                    setSugerenciasDestino([]);
+                  }}>
+                    <Text style={stylesWeb.suggestion}>{s}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            )}
+          </div>
+
+          <Pressable style={stylesWeb.button} onPress={buscarViajes}>
+            <Text style={stylesWeb.buttonText}>Buscar</Text>
+          </Pressable>
+        </View>
+
+        {mensaje ? <Text style={stylesWeb.mensaje}>{mensaje}</Text> : null}
+
+        <View style={{ flex: 1, width: '100%', marginTop: 20 }}>
+          {loading ? (
+            <ActivityIndicator size="large" color="#007AFF" />
+          ) : (
+            <FlatList
+              data={viajes}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => renderViaje(item)}
+              contentContainerStyle={{ paddingBottom: 16 }}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
+        </View>
+      </View>
+    ) : (
+      // ✅ Mobile version (tu código original)
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={{ flex: 1, padding: 16 }}>
+              {/* Buscador fijo */}
         <View style={styles.searchSection}>
           {/* Origen */}
           <View style={styles.inputContainer}>
@@ -115,6 +232,7 @@ export default function ViajesScreen() {
               }}>
                 <Icon name="times-circle" size={20} color="#aaa" style={styles.clearIcon} />
               </Pressable>
+
             )}
           </View>
           {sugerenciasOrigen.length > 0 && (
@@ -186,11 +304,12 @@ export default function ViajesScreen() {
             />
           )}
         </View>
-      </View>
-    </TouchableWithoutFeedback>
-  </KeyboardAvoidingView>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    )}
+  </>
 );
-
 
 }
 
@@ -280,5 +399,71 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 6,
     color: '#007AFF',
+  },
+});
+
+const stylesWeb = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 40,
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 30,
+  },
+  inputsRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
+    flexWrap: 'wrap',
+  },
+  inputContainer: {
+    
+    width: 250,
+    position: 'relative',
+  },
+  input: {
+    height: 45,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    width: '100%',
+  },
+  suggestionBox: {
+    position: 'absolute',
+    top: 48,
+    width: '100%',
+    backgroundColor: '#fff',
+    zIndex: 10,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 6,
+  },
+  suggestion: {
+    padding: 8,
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  mensaje: {
+    marginTop: 16,
+    color: 'red',
+    fontWeight: '500',
   },
 });

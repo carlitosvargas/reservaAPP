@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef  } from 'react';
 import {
   View, Text, TextInput, StyleSheet, TouchableOpacity,
   Alert, ActivityIndicator, ScrollView, Platform, Pressable,
@@ -53,7 +53,8 @@ const CrearViaje = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
  
-
+  const origenRef = useRef<HTMLDivElement | null>(null);
+  const destinoRef = useRef<HTMLDivElement | null>(null);
   const { userInfo } = useAuth();
   const navigation = useNavigation();
   const router = useRouter();
@@ -90,6 +91,19 @@ const CrearViaje = () => {
       }
     };
     cargarDatos();
+
+     if (Platform.OS === 'web') {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (origenRef.current && !origenRef.current.contains(event.target as Node)) {
+          setSugerenciasOrigen([]);
+        }
+        if (destinoRef.current && !destinoRef.current.contains(event.target as Node)) {
+          setSugerenciasDestino([]);
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
   }, [userInfo?.empresa_id]);
 
   const filtrarSugerencias = (texto: string, tipo: 'origen' | 'destino') => {
@@ -198,6 +212,36 @@ const CrearViaje = () => {
           <Text style={styles.title}>Crear Nuevo Viaje</Text>
 
           <Text style={styles.label}>Origen</Text>
+          {Platform.OS === 'web' ? (
+            <div ref={origenRef} style={styles.inputContainerWeb}>
+              <input
+                style={styles.inputWeb}
+                placeholder="Origen"
+                value={origen}
+                onChange={(e) => {
+                  setOrigen(e.target.value);
+                  filtrarSugerencias(e.target.value, 'origen');
+                }}
+              />
+              {origen.length > 0 && (
+                <button onClick={() => {
+                  setOrigen('');
+                  setSugerenciasOrigen([]);
+                }} style={styles.clearButton}>✕</button>
+              )}
+              {sugerenciasOrigen.length > 0 && (
+                <div style={styles.suggestionBox}>
+                  {sugerenciasOrigen.map((s, idx) => (
+                    <div key={idx} onClick={() => {
+                      setOrigen(s);
+                      setSugerenciasOrigen([]);
+                    }} style={styles.suggestion}>{s}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
           <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
@@ -230,11 +274,44 @@ const CrearViaje = () => {
                         </Pressable>
                       ))}
                     </View>
+                      )}
+                 </>
                   )}
+                  
 
 
             
           <Text style={styles.label}>Destino</Text>
+           {Platform.OS === 'web' ? (
+            <div ref={destinoRef} style={styles.inputContainerWeb}>
+              <input
+                style={styles.inputWeb}
+                placeholder="Destino"
+                value={destino}
+                onChange={(e) => {
+                  setDestino(e.target.value);
+                  filtrarSugerencias(e.target.value, 'destino');
+                }}
+              />
+              {destino.length > 0 && (
+                <button onClick={() => {
+                  setDestino('');
+                  setSugerenciasDestino([]);
+                }} style={styles.clearButton}>✕</button>
+              )}
+              {sugerenciasDestino.length > 0 && (
+                <div style={styles.suggestionBox}>
+                  {sugerenciasDestino.map((s, idx) => (
+                    <div key={idx} onClick={() => {
+                      setDestino(s);
+                      setSugerenciasDestino([]);
+                    }} style={styles.suggestion}>{s}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
            <View style={styles.inputContainer}>
                     <TextInput
                       style={styles.input}
@@ -268,6 +345,8 @@ const CrearViaje = () => {
                       ))}
                     </View>
                   )}
+                    </>
+          )}
           <Text style={styles.label}>Fecha</Text>
           {Platform.OS === 'web' ? (
             <input
@@ -325,7 +404,27 @@ const CrearViaje = () => {
           )}
 
           <Text style={styles.label}>Precio</Text>
+          {Platform.OS === 'web' ? (
+            <input
+              type="number"
+              placeholder="Precio"
+              value={precio}
+              onChange={(e) => setPrecio(e.target.value)}
+              style={{
+                padding: 10,
+                fontSize: 16,
+                width: '100%',
+                borderWidth: 1,
+                borderColor: '#ccc',
+                borderRadius: 5,
+                marginBottom: 10,
+                fontFamily: 'sans-serif'
+              }}
+            />
+          ) : (
+
           <TextInput style={styles.input} placeholder="Precio" value={precio} onChangeText={setPrecio} keyboardType="numeric" />
+          )}
 
           <Text style={styles.label}>Chofer</Text>
           <TextInput
@@ -484,7 +583,7 @@ const styles = StyleSheet.create({
     padding: 10, marginBottom: 8, borderWidth: 1, borderRadius: 8, width: '100%',
   },
   suggestion: {
-    backgroundColor: '#f0f0f0', padding: 10, borderBottomWidth: 1, borderColor: '#ccc',
+    backgroundColor: '#f0f0f0', padding: 10, borderBottomWidth: 1, borderColor: '#ccc',fontFamily: 'Arial',
   },
    button: {
   backgroundColor: '#4c68d7',
@@ -524,6 +623,29 @@ buttonText: {
     backgroundColor: '#f0f0f0',
     borderRadius: 8,
     marginBottom: 12,
+    
+
   },
+
+ inputContainerWeb: {
+    position: 'relative',
+    marginBottom: 12,
+  },
+  inputWeb: {
+    width: '100%',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    fontSize: 16,
+  },
+  clearButton: {
+    position: 'absolute',
+    right: 10,
+    top: 5,
+    backgroundColor: 'transparent',
+    cursor: 'pointer',
+    fontSize: 18,
+  },
 
 });

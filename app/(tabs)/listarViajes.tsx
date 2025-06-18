@@ -194,11 +194,12 @@ const eliminarViajes = async (id: number) => {
     Platform.OS === 'web'
       ? alert('Viaje eliminado correctamente')
       : Alert.alert('Viaje eliminado correctamente');
-  } catch (error) {
+  } catch (error: any) {
+     const mensajeError = error.response?.data?.error || 'Error al eliminar el transporte.';
     console.error('Error al eliminar viaje:', error);
     Platform.OS === 'web'
-      ? alert('Error al eliminar viaje')
-      : Alert.alert('Error', 'No se pudo eliminar el viaje');
+      ? alert('Error: ' + mensajeError)
+      : Alert.alert('Error', mensajeError);
   }
 };
 
