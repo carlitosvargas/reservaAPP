@@ -112,7 +112,7 @@ const limpiarFiltros = () => {
     }));
   };
 
-  const formatDate = (fechaISO: string) => {
+    const formatDate = (fechaISO: string) => {
   const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
   return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
 };

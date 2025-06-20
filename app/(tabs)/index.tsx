@@ -13,6 +13,9 @@ export default function Index() {
 
   const { isLoggedIn, isLoading } = useAuth();
   const router = useRouter();
+  const { userInfo } = useAuth();
+  const esEmpresa = userInfo?.perfil === 'usuarioEmpresa';
+  
 
   if (isLoading) {
     return (
@@ -57,15 +60,27 @@ export default function Index() {
           </Animatable.Text>
 
           <Animatable.View animation="zoomIn" delay={800} duration={1000}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
-              ]}
-              onPress={() => router.push('/(tabs)/viajes')}
-            >
-              <Text style={styles.buttonText}>Reservar ahora</Text>
-            </Pressable>
+         {esEmpresa ? (
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.button,
+                    pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
+                  ]}
+                  onPress={() => router.push('/pantallas/reportes/reportesLista')} 
+                >
+                  <Text style={styles.buttonText}>Ver reportes</Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.button,
+                    pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
+                  ]}
+                  onPress={() => router.push('/(tabs)/viajes')}
+                >
+                  <Text style={styles.buttonText}>Reservar ahora</Text>
+                </Pressable>
+              )}
           </Animatable.View>
         </Animatable.View>
       </View>

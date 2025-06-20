@@ -65,3 +65,68 @@ export const obtenerPasajerosPorEmpresa = async (id: number) => {
   }
 };
 
+
+export const obtenerClientesConMasReservasPorEmpresa = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/reportes/obtenerClientesConMasReservasPorEmpresa/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al obtener pasajeros con mas reservas por empresa', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+export const obtenerClientesConVentasConfirmadasPorEmpresa = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/reportes/obtenerClientesConVentasConfirmadasPorEmpresa/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al obtener pasajeros con ventas confirmada por empresa', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const obtenerGananciaTotalPorEmpresa = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/reportes/obtenerGananciaTotalPorEmpresa/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al obtener ganancia total por empresa', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+
+export const obtenerGananciasPorViajePorEmpresa = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/reportes/obtenerGananciasPorViajePorEmpresa/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al obtener ganancia total por viaje por empresa', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
