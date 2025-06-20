@@ -15,7 +15,7 @@ interface Pasajero {
 }
 
 export default function DetalleReserva() {
- const { id, updated, tieneVenta } = useLocalSearchParams();
+ const { id, updated, tieneVenta, idReserva } = useLocalSearchParams();
 const reservaConfirmada = tieneVenta === 'true';
 
  
@@ -33,7 +33,7 @@ const reservaConfirmada = tieneVenta === 'true';
 useEffect(() => {
   if (id) {
     setLoading(true);
-    obtenerPasajerosPorViaje(Number(id))
+    obtenerPasajerosPorViaje(Number(idReserva))
       .then((data) => {
         setPasajeros(data);
       })
