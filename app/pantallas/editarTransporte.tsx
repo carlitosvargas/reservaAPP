@@ -16,7 +16,7 @@ const EditarTransporte = () => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
-  const { userInfo } = useAuth(); // Aunque no se usa, lo dejo por si lo necesitás
+  const { userInfo } = useAuth();
 
   useEffect(() => {
     const cargarDatos = async () => {

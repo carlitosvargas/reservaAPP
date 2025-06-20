@@ -18,9 +18,7 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
 
 
   const handleLogin = async() => {
-    // Tu lógica de login va acá
-
-
+  
      try {
       const { token} = await loginUsuario(usuario, contrasenia);
         

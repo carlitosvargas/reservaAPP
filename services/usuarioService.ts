@@ -119,3 +119,22 @@ export const obtenerUsuariosChoferPorEmpresa = async (id: number) => {
     throw error;
   }
 };
+
+export const obtenerUsuarioEmpresaPorId = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) throw new Error('No se encontró el token');
+
+    const response = await axios.get(`${API_URL}/usuarioEmpresa/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data; 
+
+  } catch (error: any) {
+    console.error('Error al obtener usuarioEmpresa:', error);
+    throw error;
+  }
+};

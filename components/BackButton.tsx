@@ -9,11 +9,25 @@ export default function BackButton() {
 
   // Mapeo de rutas actuales a rutas de destino personalizadas
   const rutasPersonalizadas: Record<string, string> = {
+
+    //rutas personalizadas para hacer el back
+
+    //cliente
+    '/pantallas/actualizarContrasenia': '/perfil',
+    '/pantallas/choferListaPasajeros': '/index',
+    '/pantallas/crearTransporte': '/listarTransportes',
+    '/pantallas/crearViaje': '/listarViajes',
     '/pantallas/detalleReserva': '/reserva',
+    '/pantallas/detalleVenta': '/reserva',
+    '/pantallas/editarTransporte': '/listarTransportes',
+    '/pantallas/editarViaje': '/listarViajes',
+    '/pantallas/listarReservasPorViaje': '/listarViajes',
+    '/pantallas/modificarEmpresa': '/perfil',
+    '/pantallas/modificarPasajero': '/detalleReserva',
     '/pantallas/modificarUsuario': '/perfil',
     '/pantallas/realizarReserva': '/viajes',
     '/pantallas/ventaReserva' : '/reserva',
-    '/pantallas/detalleVenta': '/reserva',
+    
     
     
     // más rutas si necesitás

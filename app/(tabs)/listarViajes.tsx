@@ -115,13 +115,11 @@ const toggleMenu = () => {
 const hayFiltrosActivos = busqueda !== '' || fechaDesde !== null || fechaHasta !== null;
 
 
- const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
+ const formatDate = (fechaISO: string) => {
+  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+};
+
    const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
     return `${hours}:${minutes}`;
@@ -154,8 +152,8 @@ const hayFiltrosActivos = busqueda !== '' || fechaDesde !== null || fechaHasta !
     });
   };
 
-  const handleEditar = (id: number) => {
-  //router.push({ pathname: '/pantallas/editarViaje', params: { id } });
+  const handleEditar = (viajeId: number) => {
+  router.push({ pathname: '/pantallas/editarViaje', params: { id: viajeId } });
 };
 
 const handleEliminar = (id: number) => {

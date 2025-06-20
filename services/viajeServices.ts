@@ -125,5 +125,23 @@ export const eliminarViaje = async (id: number) => {
   return response.data;
 };
 
+export const actualizarViaje = async (id: number, viajeData: any) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) throw new Error('No se encontró token');
+
+    const response = await axios.put(`${API_URL}/viajes/actualizarViaje/${id}`, viajeData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error en actualizarViaje:', error);
+    throw error;
+  }
+};
+
+
 
 

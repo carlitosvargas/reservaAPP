@@ -414,6 +414,7 @@ const stylesWeb = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 30,
   },
+  
   inputsRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',

@@ -209,7 +209,7 @@ const CrearViaje = () => {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-          <Text style={styles.title}>Crear Nuevo Viaje</Text>
+         
 
           <Text style={styles.label}>Origen</Text>
           {Platform.OS === 'web' ? (
@@ -243,26 +243,30 @@ const CrearViaje = () => {
           ) : (
             <>
           <View style={styles.inputContainer}>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Origen"
-                      placeholderTextColor="#888"
-                      value={origen}
-                      onChangeText={(text) => {
-                        setOrigen(text);
-                        filtrarSugerencias(text, 'origen');
-                      }}
-                      onBlur={() => setSugerenciasOrigen([])}
-                    />
-                    {origen.length > 0 && (
-                      <Pressable onPress={() => {
-                        setOrigen('');
-                        setSugerenciasOrigen([]);
-                      }}>
-                        <Icon name="times-circle" size={20} color="#aaa" style={styles.clearIcon} />
-                      </Pressable>
-                    )}
-                  </View>
+            <TextInput
+              style={styles.inputWithIcon}
+              placeholder="Origen"
+              placeholderTextColor="#888"
+              value={origen}
+              onChangeText={(text) => {
+                setOrigen(text);
+                filtrarSugerencias(text, 'origen');
+              }}
+              onBlur={() => setSugerenciasOrigen([])}
+            />
+            {origen.length > 0 && (
+              <Pressable
+                onPress={() => {
+                  setOrigen('');
+                  setSugerenciasOrigen([]);
+                }}
+                style={styles.clearIconContainer}
+              >
+                <Icon name="times-circle" size={20} color="#aaa" />
+              </Pressable>
+            )}
+          </View>
+
                   {sugerenciasOrigen.length > 0 && (
                     <View style={styles.suggestionBox}>
                       {sugerenciasOrigen.map((s, idx) => (
@@ -313,26 +317,30 @@ const CrearViaje = () => {
           ) : (
             <>
            <View style={styles.inputContainer}>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Destino"
-                      placeholderTextColor="#888"
-                      value={destino}
-                      onChangeText={(text) => {
-                        setDestino(text);
-                        filtrarSugerencias(text, 'destino');
-                      }}
-                      onBlur={() => setSugerenciasDestino([])}
-                    />
-                    {destino.length > 0 && (
-                      <Pressable onPress={() => {
-                        setDestino('');
-                        setSugerenciasDestino([]);
-                      }}>
-                        <Icon name="times-circle" size={20} color="#aaa" style={styles.clearIcon} />
-                      </Pressable>
-                    )}
-                  </View>
+            <TextInput
+              style={styles.inputWithIcon}
+              placeholder="Destino"
+              placeholderTextColor="#888"
+              value={destino}
+              onChangeText={(text) => {
+                setDestino(text);
+                filtrarSugerencias(text, 'destino');
+              }}
+              onBlur={() => setSugerenciasDestino([])}
+            />
+            {destino.length > 0 && (
+              <Pressable
+                onPress={() => {
+                  setDestino('');
+                  setSugerenciasDestino([]);
+                }}
+                style={styles.clearIconContainer}
+              >
+                <Icon name="times-circle" size={20} color="#aaa" />
+              </Pressable>
+            )}
+          </View>
+
                   {sugerenciasDestino.length > 0 && (
                     <View style={styles.suggestionBox}>
                       {sugerenciasDestino.map((s, idx) => (
@@ -449,44 +457,61 @@ const CrearViaje = () => {
  
                 // Llamar al servicio para obtener los viajes del chofer
                try {
-                      console.log('ver choferes.id', chofer.id);
-                      const dataChofer = await obtenerViajesPorChofer(chofer.id);
+                console.log('ver choferes.id', chofer.id);
+                const dataChofer = await obtenerViajesPorChofer(chofer.id);
 
-                      // Mostramos el mensaje del backend
-                      console.log('ver informacion de la respuesta', dataChofer);
+                console.log('ver informacion de la respuesta', dataChofer);
 
-                       Alert.alert(
-                      "Información del Chofer",
-                      dataChofer.message || 'Viajes cargados correctamente',
-                      [
-                        {
-                          text: "Ver viajes",
-                          onPress: () => {
-                            console.log('Viajes:', dataChofer.viajes);
-                                router.push({
-                        pathname: '/pantallas/viajesChofer',
-                        params: {
-                          viajes: JSON.stringify(dataChofer.viajes)
-                        }
-                      });
-                          }
-                        },
-                        {
-                          text: "Cerrar",
-                          style: "cancel"
-                        }
-                      ]
-                    );
-
-
-                    } catch (error: any) {
-                      console.error('Error:', error);
-
-                      const mensajeError =
-                        error.response?.data?.error || 'Error al obtener los viajes del chofer.';
-
-                      Alert.alert('Error', mensajeError, [{ text: "Cerrar" }]);
+                if (Platform.OS === 'web') {
+                const confirmar = window.confirm(
+                  (dataChofer.message || 'Viajes cargados correctamente.') + '\n\n¿Querés ver los viajes?'
+                );
+                if (confirmar) {
+                  console.log('Viajes:', dataChofer.viajes);
+                  router.push({
+                    pathname: '/pantallas/viajesChofer',
+                    params: {
+                      viajes: JSON.stringify(dataChofer.viajes)
                     }
+                  });
+                }
+              } else {
+                  Alert.alert(
+                    "Información del Chofer",
+                    dataChofer.message || 'Viajes cargados correctamente',
+                    [
+                      {
+                        text: "Ver viajes",
+                        onPress: () => {
+                          console.log('Viajes:', dataChofer.viajes);
+                          router.push({
+                            pathname: '/pantallas/viajesChofer',
+                            params: {
+                              viajes: JSON.stringify(dataChofer.viajes)
+                            }
+                          });
+                        }
+                      },
+                      {
+                        text: "Cerrar",
+                        style: "cancel"
+                      }
+                    ]
+                  );
+                }
+
+              } catch (error: any) {
+                console.error('Error:', error);
+
+                const mensajeError =
+                  error.response?.data?.error || 'Error al obtener los viajes del chofer.';
+
+                if (Platform.OS === 'web') {
+                  window.alert(mensajeError);
+                } else {
+                  Alert.alert('Error', mensajeError, [{ text: "Cerrar" }]);
+                }
+              }
 
               }
             }}
@@ -515,45 +540,62 @@ const CrearViaje = () => {
                 setSugerenciasTransporte([]);
 
 
-               try {
-                      console.log('ver transporte.id', transporte.id);
-                      const dataTransporte = await obtenerViajesPorTransporte(transporte.id);
+                        try {
+            console.log('ver transporte.id', transporte.id);
+            const dataTransporte = await obtenerViajesPorTransporte(transporte.id);
 
-                      // Mostramos el mensaje del backend
-                      console.log('ver informacion de la respuesta', dataTransporte);
+            console.log('ver informacion de la respuesta', dataTransporte);
 
-                       Alert.alert(
-                      "Información del Transporte",
-                      dataTransporte.message || 'Viajes cargados correctamente',
-                      [
-                        {
-                          text: "Ver viajes",
-                          onPress: () => {
-                            console.log('Viajes:', dataTransporte.viajes);
-                                router.push({
+            if (Platform.OS === 'web') {
+              const confirmar = window.confirm(
+                (dataTransporte.message || 'Viajes cargados correctamente.') + '\n\n¿Querés ver los viajes?'
+              );
+              if (confirmar) {
+                console.log('Viajes:', dataTransporte.viajes);
+                router.push({
+                  pathname: '/pantallas/viajesChofer',
+                  params: {
+                    viajes: JSON.stringify(dataTransporte.viajes)
+                  }
+                });
+              }
+            } else {
+              Alert.alert(
+                "Información del Transporte",
+                dataTransporte.message || 'Viajes cargados correctamente',
+                [
+                  {
+                    text: "Ver viajes",
+                    onPress: () => {
+                      console.log('Viajes:', dataTransporte.viajes);
+                      router.push({
                         pathname: '/pantallas/viajesChofer',
                         params: {
                           viajes: JSON.stringify(dataTransporte.viajes)
                         }
                       });
-                          }
-                        },
-                        {
-                          text: "Cerrar",
-                          style: "cancel"
-                        }
-                      ]
-                    );
-
-
-                    } catch (error: any) {
-                      console.error('Error:', error);
-
-                      const mensajeError =
-                        error.response?.data?.error || 'Error al obtener los viajes del chofer.';
-
-                      Alert.alert('Error', mensajeError, [{ text: "Cerrar" }]);
                     }
+                  },
+                  {
+                    text: "Cerrar",
+                    style: "cancel"
+                  }
+                ]
+              );
+            }
+
+          } catch (error: any) {
+            console.error('Error:', error);
+
+            const mensajeError =
+              error.response?.data?.error || 'Error al obtener los viajes del transporte.';
+
+            if (Platform.OS === 'web') {
+              window.alert(mensajeError);
+            } else {
+              Alert.alert('Error', mensajeError, [{ text: "Cerrar" }]);
+            }
+          }
 
               }
             }}>
@@ -606,16 +648,7 @@ buttonText: {
   fontSize: 16,
   letterSpacing: 0.5,
 },
-    inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    marginBottom: 12,
-    backgroundColor: '#fff',
-  },
+  
    clearIcon: {
     marginLeft: 8,
   },
@@ -647,5 +680,31 @@ buttonText: {
     cursor: 'pointer',
     fontSize: 18,
   },
+
+  inputContainer: {
+  position: 'relative',
+  marginBottom: 12,
+  },
+
+inputWithIcon: {
+  borderWidth: 1,
+  borderColor: '#ccc',
+  paddingVertical: 10,
+   paddingLeft: 10,
+  paddingRight: 36, // espacio para el ícono
+  borderRadius: 8,
+  backgroundColor: '#fff',
+  fontSize: 16,
+},
+
+clearIconContainer: {
+  position: 'absolute',
+  right: 10,
+  top: '50%',
+  transform: [{ translateY: -10 }],
+  padding: 1,
+  zIndex: 1,
+},
+
 
 });

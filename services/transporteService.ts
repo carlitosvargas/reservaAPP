@@ -56,7 +56,7 @@ export const editarTransporte = async (id: number, transporteData: any) => {
     const token = await AsyncStorage.getItem('token');
     const response = await axios.get(`${API_URL}/medioTransporte/obtenerTransporteId/${id}`, {
       headers: {
-        Authorization: ` Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
