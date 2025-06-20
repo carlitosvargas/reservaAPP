@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function ReportesScreen() {
@@ -6,6 +6,7 @@ export default function ReportesScreen() {
 
   return (
     <View style={styles.container}>
+    <ScrollView >
       <Text style={styles.title}>Seleccioná un tipo de reporte</Text>
 
       <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/reportesReservas')}>
@@ -24,9 +25,26 @@ export default function ReportesScreen() {
         <Text style={styles.buttonText}>Viajes más Reservados</Text> 
       </TouchableOpacity>
 
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/clienteMasReservas') }>
+        <Text style={styles.buttonText}>Cliente con más Reservas</Text> 
+      </TouchableOpacity>
+
+       <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/clientesVentasConfirmadas') }>
+        <Text style={styles.buttonText}>Clientes con Ventas Confirmadas</Text> 
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/gananciaTotal') }>
+        <Text style={styles.buttonText}>Ganancia Total</Text> 
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/gananciaPorViaje') }>
+        <Text style={styles.buttonText}>Ganancia Total por Viaje</Text> 
+      </TouchableOpacity>
+
       <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={() => router.back()}>
         <Text style={styles.buttonText}>Volver</Text>
       </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 }

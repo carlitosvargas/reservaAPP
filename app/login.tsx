@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
-import {View,Text,TextInput,Pressable,StyleSheet,useColorScheme,KeyboardAvoidingView, Platform, ScrollView,} from 'react-native';
+import React, { useState, useRef } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  useColorScheme,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { loginUsuario } from '../services/authService';
+import { Ionicons } from '@expo/vector-icons'; // 👈 Importación del ícono
 
-export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => void }) {
-
+export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
   const { login } = useAuth();
   const colorScheme = useColorScheme();
   const router = useRouter();
@@ -15,38 +24,38 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
   const [usuario, setUsuario] = useState('');
   const [contrasenia, setPassword] = useState('');
   const [errorMensaje, setErrorMensaje] = useState('');
+  const [mostrarPassword, setMostrarPassword] = useState(false); // 👈 Nuevo estado
 
+  const passwordInputRef = useRef<TextInput>(null);
 
-  const handleLogin = async() => {
-  
-     try {
-      const { token} = await loginUsuario(usuario, contrasenia);
-        
-          //const { token, perfil } = response.data;
-          await login(token);
-    
-          // Guardar token y perfil en almacenamiento local
-          await AsyncStorage.setItem('token', token);
-          console.log(token)
-          if (onLoginSuccess) {
-            onLoginSuccess(); // informa al index que se inició sesión
-          }
-          
-    
-          // Redirigir a pantalla principal
-          router.replace('/(tabs)'); 
-        }
-    
-          catch (error: any) {
-            console.error('Error al iniciar sesión:', error.response?.data || error.message);
-            const mensaje = error.response?.data?.mensaje || 'Usuario o contraseña incorrectos';
-            setErrorMensaje(mensaje);
-          }
-          
-          
+  const handleLogin = async () => {
+    try {
+      const { token } = await loginUsuario(usuario, contrasenia);
+      await login(token);
+      await AsyncStorage.setItem('token', token);
+      console.log(token);
+
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
+
+      router.replace('/(tabs)');
+    } catch (error: any) {
+      console.error('Error al iniciar sesión:', error.response?.data || error.message);
+      const mensaje = error.response?.data?.mensaje || 'Usuario o contraseña incorrectos';
+      setErrorMensaje(mensaje);
+    }
   };
 
+  const handleUsuarioChange = (text: string) => {
+    setUsuario(text);
+    if (errorMensaje !== '') setErrorMensaje('');
+  };
 
+  const handlePasswordChange = (text: string) => {
+    setPassword(text);
+    if (errorMensaje !== '') setErrorMensaje('');
+  };
 
   const isDark = colorScheme === 'dark';
 
@@ -58,7 +67,6 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
       backgroundColor: isDark ? '#000' : '#fff',
       paddingHorizontal: 20,
     },
-    
     formContainer: {
       width: '100%',
       maxWidth: 360,
@@ -95,15 +103,14 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.3,
       shadowRadius: 4,
-      elevation: 5, 
+      elevation: 5,
       transform: [{ scale: 1 }],
-      transitionDuration: '200ms',
     },
     buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 16,
-        letterSpacing: 0.5,
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: 16,
+      letterSpacing: 0.5,
     },
     registroLink: {
       marginTop: 16,
@@ -114,44 +121,66 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
       color: '#007AFF',
       fontWeight: 'bold',
     },
-
   });
-  
- return (
+
+  return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
     >
-      <ScrollView
-        contentContainerStyle={styles.wrapper}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView contentContainerStyle={styles.wrapper} keyboardShouldPersistTaps="handled">
         <View style={styles.formContainer}>
           <Text style={styles.title}>Iniciar sesión</Text>
+
           <TextInput
             style={styles.input}
             placeholder="Usuario"
             placeholderTextColor={isDark ? '#ccc' : '#888'}
             value={usuario}
-            onChangeText={setUsuario}
+            onChangeText={handleUsuarioChange}
+            returnKeyType="next"
+            onSubmitEditing={() => passwordInputRef.current?.focus()}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            placeholderTextColor={isDark ? '#ccc' : '#888'}
-            secureTextEntry
-            value={contrasenia}
-            onChangeText={setPassword}
-          />
+
+          <View style={{ position: 'relative' }}>
+            <TextInput
+              ref={passwordInputRef}
+              style={[styles.input, { paddingRight: 40 }]} // espacio para el ícono
+              placeholder="Contraseña"
+              placeholderTextColor={isDark ? '#ccc' : '#888'}
+              secureTextEntry={!mostrarPassword}
+              value={contrasenia}
+              onChangeText={handlePasswordChange}
+              onSubmitEditing={handleLogin}
+              returnKeyType="done"
+            />
+            <Pressable
+              onPress={() => setMostrarPassword(!mostrarPassword)}
+              style={{
+                position: 'absolute',
+                right: 10,
+                top: 12,
+              }}
+            >
+              <Ionicons
+                name={mostrarPassword ? 'eye-off' : 'eye'}
+                size={22}
+                color={isDark ? '#ccc' : '#555'}
+              />
+            </Pressable>
+          </View>
+
           {errorMensaje !== '' && (
             <Text style={{ color: 'red', marginBottom: 10, textAlign: 'center' }}>
               {errorMensaje}
             </Text>
           )}
+
           <Pressable style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Ingresar</Text>
           </Pressable>
+
           <Text style={styles.registroLink}>
             ¿No tenés cuenta?{' '}
             <Text style={styles.linkText} onPress={() => router.push('/registro')}>
@@ -162,5 +191,4 @@ export default function LoginScreen({onLoginSuccess }: { onLoginSuccess?: () => 
       </ScrollView>
     </KeyboardAvoidingView>
   );
-  
 }
