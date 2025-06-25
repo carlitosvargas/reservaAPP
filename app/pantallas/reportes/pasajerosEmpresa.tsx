@@ -48,6 +48,15 @@ export default function PasajerosPorEmpresaScreen() {
     cargarPasajeros();
   }, []);
 
+   const formatDate = (fechaISO: string) => {
+  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+};
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
   if (loading) {
     return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
   }
@@ -76,8 +85,8 @@ export default function PasajerosPorEmpresaScreen() {
                 <Text style={styles.label}>🚍 Viaje:</Text>
                 <Text>Origen: {item.reserva.origenLocalidad}</Text>
                 <Text>Destino: {item.reserva.destinoLocalidad}</Text>
-                <Text>Fecha: {new Date(item.reserva.fechaViaje).toLocaleDateString()}</Text>
-                <Text>Hora: {item.reserva.horarioSalida}</Text>
+                <Text>Fecha: {formatDate(item.reserva.fechaViaje)}</Text>
+                <Text>Hora: {formatTime(item.reserva.horarioSalida)}</Text>
               </View>
             )}
           </View>

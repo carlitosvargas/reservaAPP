@@ -39,6 +39,15 @@ export default function ViajesMasReservadosScreen() {
     
   }, [userInfo?.empresa_id]);
 
+   const formatDate = (fechaISO: string) => {
+  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+};
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
   if (loading) {
   
     return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
@@ -60,8 +69,8 @@ export default function ViajesMasReservadosScreen() {
           <View style={styles.card}>
             <Text><Text style={styles.label}>Origen:</Text> {item.origenLocalidad}</Text>
             <Text><Text style={styles.label}>Destino:</Text> {item.destinoLocalidad}</Text>
-            <Text><Text style={styles.label}>Fecha:</Text> {new Date(item.fechaViaje).toLocaleDateString()}</Text>
-            <Text><Text style={styles.label}>Hora de salida:</Text> {item.horarioSalida}</Text>
+            <Text><Text style={styles.label}>Fecha:</Text> {formatDate(item.fechaViaje)}</Text>
+            <Text><Text style={styles.label}>Hora de salida:</Text> {formatTime(item.horarioSalida)}</Text>
             <Text><Text style={styles.label}>Reservas:</Text> {item.cantidadReservas}</Text>
           </View>
         )}

@@ -312,7 +312,7 @@ const eliminarViajes = async (id: number) => {
 
 
  <>
-  {esEmpresa && (
+ {/* {esEmpresa && (
     <View style={{ position: 'relative' }}>
       {Platform.OS === 'web' ? (
         // 🌐 Web: Menú tipo cascada
@@ -359,6 +359,7 @@ const eliminarViajes = async (id: number) => {
       )}
     </View>
   )}
+  */}
 </>
 
 

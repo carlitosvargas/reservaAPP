@@ -43,6 +43,15 @@ export default function ViajesPorTransporteScreen() {
     cargarDatos();
   }, []);
 
+   const formatDate = (fechaISO: string) => {
+  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+};
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
   if (loading) {
     return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
   }
@@ -64,8 +73,8 @@ export default function ViajesPorTransporteScreen() {
             <View key={viaje.id} style={styles.viajeCard}>
               <Text>🧭 Origen: {viaje.origen}</Text>
               <Text>🏁 Destino: {viaje.destino}</Text>
-              <Text>📅 Fecha: {new Date(viaje.fechaViaje).toLocaleDateString()}</Text>
-              <Text>🕒 Hora: {viaje.horarioSalida}</Text>
+              <Text>📅 Fecha: {formatDate(viaje.fechaViaje)}</Text>
+              <Text>🕒 Hora: {formatTime(viaje.horarioSalida)}</Text>
             </View>
           ))}
         </View>

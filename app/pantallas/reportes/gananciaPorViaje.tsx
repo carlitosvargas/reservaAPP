@@ -31,7 +31,15 @@ export interface ResultadoGananciaViaje {
   ventas: VentaResumen[];
   totalGanancia: number;
 }
+ const formatDate = (fechaISO: string) => {
+  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+};
 
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
 export default function GananciasPorViajeScreen() {
   const { userInfo } = useAuth();
   const [viajes, setViajes] = useState<ResultadoGananciaViaje[]>([]);
@@ -42,7 +50,7 @@ export default function GananciasPorViajeScreen() {
     const cargarDatos = async () => {
       try {
         const data = await obtenerGananciasPorViajePorEmpresa(userInfo?.empresa_id);
-        console.log("data ***", data);
+        console.log("data *", data);
         setViajes(data.resultados);
       } catch (err: any) {
         setError(err?.response?.data?.error || 'Error al obtener datos de ganancias');
@@ -67,8 +75,8 @@ export default function GananciasPorViajeScreen() {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.viajeTitulo}>{item.viaje.origenLocalidad} → {item.viaje.destinoLocalidad}</Text>
-            <Text>Fecha: {new Date(item.viaje.fechaViaje).toLocaleDateString()}</Text>
-            <Text>Hora: {item.viaje.horarioSalida}</Text>
+            <Text>Fecha: {formatDate(item.viaje.fechaViaje)}</Text>
+            <Text>Hora: {formatTime(item.viaje.horarioSalida)}</Text>
             <Text>Precio del viaje: ${item.viaje.precio}</Text>
             <Text>Transporte: {item.viaje.medioTransporte.nombre} ({item.viaje.medioTransporte.patente})</Text>
             <Text style={styles.totalGanancia}>Ganancia total: ${item.totalGanancia.toFixed(2)}</Text>

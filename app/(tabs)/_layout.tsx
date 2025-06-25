@@ -54,6 +54,9 @@ export default function TabLayout() {
             case 'listarTransportes':
               iconName = 'bus';
               break;
+            case 'crearEmpresa':
+              iconName = 'bus';
+              break;
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -66,7 +69,7 @@ export default function TabLayout() {
        name="reserva" 
        options={{ 
         title: 'Reservas',
-        href: (userInfo?.perfil === 'usuarioCliente' || userInfo?.perfil === 'usuarioAdministrador') ? undefined : null,
+        href: (userInfo?.perfil === 'usuarioCliente') ? undefined : null,
         lazy: true,
         }} />
       
@@ -74,7 +77,15 @@ export default function TabLayout() {
        name="viajes" 
        options={{
          title: 'Viajes',
-         href: (userInfo?.perfil === 'usuarioCliente' || userInfo?.perfil === 'usuarioAdministrador') ? undefined : null,
+         href: (userInfo?.perfil === 'usuarioCliente') ? undefined : null,
+        lazy: true,
+        }} />
+
+        <Tabs.Screen 
+       name="crearEmpresa" 
+       options={{ 
+        title: 'Empresa',
+        href: (userInfo?.perfil === 'usuarioAdministrador') ? undefined : null,
         lazy: true,
         }} />
      
@@ -88,6 +99,7 @@ export default function TabLayout() {
           lazy: true,
         }}
       />
+
        <Tabs.Screen
         name="choferViajes"
         options={{

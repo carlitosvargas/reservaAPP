@@ -12,6 +12,21 @@ export const obtenerEmpresaPorId = async (id: number) => {
   return response.data;
 };
 
+export const crearEmpresa = async ( empresaData: any) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.post(`${API_URL}/empresa/crearEmpresa/`, empresaData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al crear la empresa', error.response?.data || error.message);
+    throw error;
+  }
+};
+
 export const actualizarEmpresa = async (id: number, empresaData: any) => {
   try {
     const token = await AsyncStorage.getItem('token');

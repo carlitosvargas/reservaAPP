@@ -45,6 +45,16 @@ export default function DetalleViaje() {
     }
   }, [id]);
 
+   const formatDate = (fechaISO: string) => {
+  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+};
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
+
   const handleChangePasajero = (index: number, field: keyof Pasajero, value: string) => {
     const nuevosPasajeros = [...pasajeros];
     nuevosPasajeros[index][field] = value;
@@ -146,7 +156,7 @@ const reservar = async () => {
     </View>
     <View style={styles.infoBox}>
       <Text style={styles.label}>Fecha</Text>
-      <Text style={styles.value}>{new Date(viaje.fechaViaje).toLocaleDateString()}</Text>
+      <Text style={styles.value}>{formatDate(viaje.fechaViaje)}</Text>
     </View>
   </View>
 
@@ -154,7 +164,7 @@ const reservar = async () => {
     <View style={styles.infoBox}>
       <Text style={styles.label}>Horario</Text>
       <Text style={styles.value}>
-        {viaje.horarioSalida}
+        {formatTime(viaje.horarioSalida)}
       </Text>
     </View>
     <View style={styles.infoBox}>

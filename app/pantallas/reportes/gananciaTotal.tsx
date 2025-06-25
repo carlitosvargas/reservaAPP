@@ -69,7 +69,15 @@ export default function GananciaTotalScreen() {
 
     cargarDatos();
   }, []);
+ const formatDate = (fechaISO: string) => {
+  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+};
 
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
   if (loading) return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
   if (error) return <Text style={styles.error}>{error}</Text>;
 
@@ -91,7 +99,7 @@ export default function GananciaTotalScreen() {
                 {reserva.Ventas.map((venta) => (
                   <View key={venta.id} style={styles.ventaBox}>
                     <Text>Pasajes: {venta.totalVentas}</Text>
-                    <Text>Fecha: {venta.fecha} - Hora: {venta.hora}</Text>
+                    <Text>Fecha: {formatDate(venta.fecha)} - Hora: {formatTime(venta.hora)}</Text>
                     {venta.DetalleVenta.map((detalle) => (
                       <View key={detalle.id} style={styles.detalleBox}>
                         <Text>Forma de pago: {detalle.formaPago}</Text>

@@ -14,7 +14,7 @@ interface Viaje {
   origenLocalidad: string;
   destinoLocalidad: string;
   horarioSalida: string;
-  fechaViaje: Date;
+  fechaViaje: string;
   precio: number;
   usuarioEmpresa_id: number;
   medioTransporte_id: number;
@@ -64,6 +64,16 @@ export default function ViajesScreen() {
     document.removeEventListener('mousedown', handleClickOutside);
   }; }, []);
 
+ const formatDate = (fechaISO: string) => {
+  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+};
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
+
   const buscarViajes = async () => {
     if (!origen || !destino) {
       setMensaje('Por favor ingresá ambos campos.');
@@ -102,8 +112,8 @@ export default function ViajesScreen() {
       <Text style={styles.cardTitle}>Viaje #{item.id}</Text>
       <Text>Origen: {item.origenLocalidad}</Text>
       <Text>Destino: {item.destinoLocalidad}</Text>
-      <Text>Fecha: {new Date(item.fechaViaje).toLocaleDateString()}</Text>
-      <Text>Hora de Salida: {item.horarioSalida}</Text>
+      <Text>Fecha: {formatDate(item.fechaViaje)}</Text>
+      <Text>Hora de Salida: {formatTime(item.horarioSalida)}</Text>
       <Text>Precio: ${item.precio}</Text>
       
     </Pressable>

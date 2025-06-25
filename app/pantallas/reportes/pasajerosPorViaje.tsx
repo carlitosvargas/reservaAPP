@@ -53,6 +53,15 @@ export default function PasajerosPorViajeScreen() {
     }
   }, [id]);
 
+   const formatDate = (fechaISO: string) => {
+  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+};
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
   if (loading) {
     return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
   }
@@ -68,8 +77,8 @@ export default function PasajerosPorViajeScreen() {
         <View style={styles.card}>
           <Text><Text style={styles.label}>Origen:</Text> {viaje.origenLocalidad}</Text>
           <Text><Text style={styles.label}>Destino:</Text> {viaje.destinoLocalidad}</Text>
-          <Text><Text style={styles.label}>Fecha:</Text> {new Date(viaje.fechaViaje).toLocaleDateString()}</Text>
-          <Text><Text style={styles.label}>Hora de salida:</Text> {viaje.horarioSalida}</Text>
+          <Text><Text style={styles.label}>Fecha:</Text> {formatDate(viaje.fechaViaje)}</Text>
+          <Text><Text style={styles.label}>Hora de salida:</Text> {formatTime(viaje.horarioSalida)}</Text>
           <Text><Text style={styles.label}>Cantidad de pasajeros:</Text> {cantidad}</Text>
         </View>
       )}
