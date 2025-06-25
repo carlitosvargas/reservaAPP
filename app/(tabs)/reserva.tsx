@@ -155,15 +155,7 @@ const MisReservas = () => {
 
           {!item.tieneVenta ? (
             <>
-              <TouchableOpacity
-                style={styles.botonConfirmar}
-                onPress={() =>
-                  router.push({ pathname: '/pantallas/ventaReserva', params: { id: item.id } })
-                }
-              >
-              
-                <Text style={styles.botonTexto}>Confirmar</Text>
-              </TouchableOpacity>
+             
 
               <TouchableOpacity
                 style={styles.botonEliminar}

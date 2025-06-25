@@ -119,3 +119,23 @@ export const eliminarReserva = async (id: number) => {
     throw error;
   }
 };
+
+
+
+
+export const listarReservasYPasajerosPorViaje = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/reserva/listarReservasYPasajerosPorViaje/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al listar las reserva y pasajeros segun viaje', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+

@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import BackButton from '../../components/BackButton';
 import { crearVenta } from '../../services/ventaService';
+import { useAuth } from '../../context/AuthContext';
+
 
 export default function CrearVenta() {
  const { id } = useLocalSearchParams();
   const [formaPago, setFormaPago] = useState('');
   const [descuento, setDescuento] = useState('0');
   const router = useRouter();
-  
+  const { userInfo } = useAuth();
 
 
   const guardarVenta = async () => {
@@ -31,10 +32,12 @@ export default function CrearVenta() {
         console.log('Descuento:', descuento);
         await crearVenta(ventaData); 
         Alert.alert('Venta registrada', 'La venta fue registrada correctamente');
-        
-       
-        router.push({pathname: '/pantallas/detalleVenta',params: { id: id?.toString() },
-});
+            
+    if (userInfo?.perfil === 'usuarioCliente') {
+        router.push({ pathname: '/pantallas/detalleVenta', params: { id: id.toString() } });
+      } else {
+        router.replace({ pathname: '/choferReserva'});
+      }
 
       } catch (error) {
         Alert.alert('Error', 'No se pudo actualizar el pasajero');

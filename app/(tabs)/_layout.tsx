@@ -45,6 +45,9 @@ export default function TabLayout() {
             case 'choferViajes':
               iconName = 'bus';
               break;
+              case 'choferReserva':
+              iconName = 'calendar';
+              break;
             case 'listarReservas':
               iconName = 'calendar';
               break;
@@ -104,6 +107,14 @@ export default function TabLayout() {
         name="choferViajes"
         options={{
           title: 'Viajes',
+          href: userInfo?.perfil === 'usuarioChofer' ? undefined : null,
+          lazy: true,
+        }}
+      />
+      <Tabs.Screen
+        name="choferReserva"
+        options={{
+          title: 'Reservas',
           href: userInfo?.perfil === 'usuarioChofer' ? undefined : null,
           lazy: true,
         }}
