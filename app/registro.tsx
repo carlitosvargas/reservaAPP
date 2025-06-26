@@ -44,9 +44,17 @@ export default function RegistroScreen() {
 
     try {
       const response = await registrarUsuario(payload);
-     Alert.alert('Éxito', 'Usuario registrado correctamente');
-     setErrores({});
-     router.replace('/login')
+  Alert.alert(
+    'Verificación requerida',
+    'Te enviamos un correo con un enlace para verificar tu cuenta. Revisá tu bandeja de entrada (y también la de spam).',
+    [
+      {
+        text: 'OK',
+        onPress: () => router.replace('/login'),
+      },
+    ]
+  );
+  setErrores({});
     }  catch (error: any) {
   if (Array.isArray(error.errors)) {
     // Convertimos el array de errores en un objeto { campo: mensaje }
