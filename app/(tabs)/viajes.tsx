@@ -135,79 +135,70 @@ const formatDate = (fechaISO: string) => {
         <Text style={stylesWeb.title}>Buscar pasajes</Text>
         <View style={stylesWeb.inputsRow}>
           {/* Origen */}
-          <div ref={origenRef} style={stylesWeb.inputContainer}>
-            <TextInput
-              style={stylesWeb.input}
-              placeholder="Origen"
-              value={origen}
-              onChangeText={(text) => {
-                setOrigen(text);
-                setMensaje('');
-                filtrarSugerencias(text, 'origen');
-              }}
-           
-            />
-            {origen.length > 0 && (
-              <Pressable onPress={() => {
-                setOrigen('');
-                setSugerenciasOrigen([]);
-                
-                
-              }}>
-                <Icon name="times-circle" size={20} color="#aaa" />
-                 setMensaje('');
-              </Pressable>
-            )}
-            {sugerenciasOrigen.length > 0 && (
-              <View style={stylesWeb.suggestionBox}>
-                {sugerenciasOrigen.map((s, idx) => (
-                  <Pressable key={idx} onPress={() => {
-                    setOrigen(s);
-                    setSugerenciasOrigen([]);
-                  }}>
-                    <Text style={stylesWeb.suggestion}>{s}</Text>
-                  </Pressable>
-                ))}
-              </View>
-            )}
-          </div>
+         <div ref={origenRef} style={stylesWeb.inputContainerWeb}>
+              <input
+                style={stylesWeb.inputWeb}
+                placeholder="Origen"
+                value={origen}
+                onChange={(e) => {
+                  setOrigen(e.target.value);
+                   setMensaje('');
+                   setViajes([]);
+                  filtrarSugerencias(e.target.value, 'origen');
+                }}
+              />
+              {origen.length > 0 && (
+                <button onClick={() => {
+                  setOrigen('');
+                   setMensaje('');
+                   setViajes([]);
+                  setSugerenciasOrigen([]);
+                }} style={stylesWeb.clearButton}>✕</button>
+              )}
+              {sugerenciasOrigen.length > 0 && (
+                <div style={styles.suggestionBox}>
+                  {sugerenciasOrigen.map((s, idx) => (
+                    <div key={idx} onClick={() => {
+                      setOrigen(s);
+                      setSugerenciasOrigen([]);
+                    }} style={styles.suggestion}>{s}</div>
+                  ))}
+                </div>
+              )}
+            </div>
 
           {/* Destino */}
-          <div ref={destinoRef} style={stylesWeb.inputContainer}>
-            <TextInput
-              style={stylesWeb.input}
-              placeholder="Destino"
-              value={destino}
-              onChangeText={(text) => {
-                setDestino(text);
-                setMensaje('');
-                filtrarSugerencias(text, 'destino');
-              }}
-            
-
-            />
-            {destino.length > 0 && (
-              <Pressable onPress={() => {
-                setDestino('');
-                setSugerenciasDestino([]);
-              }}>
-                <Icon name="times-circle" size={20} color="#aaa" />
-                 setMensaje('');
-              </Pressable>
-            )}
-            {sugerenciasDestino.length > 0 && (
-              <View style={stylesWeb.suggestionBox}>
-                {sugerenciasDestino.map((s, idx) => (
-                  <Pressable key={idx} onPress={() => {
-                    setDestino(s);
-                    setSugerenciasDestino([]);
-                  }}>
-                    <Text style={stylesWeb.suggestion}>{s}</Text>
-                  </Pressable>
-                ))}
-              </View>
-            )}
-          </div>
+           <div ref={destinoRef} style={stylesWeb.inputContainerWeb}>
+              <input
+                style={stylesWeb.inputWeb}
+                placeholder="Destino"
+                value={destino}
+                onChange={(e) => {
+                  setDestino(e.target.value);
+                   setMensaje('');
+                  setViajes([]);
+                  filtrarSugerencias(e.target.value, 'destino');
+                }}
+              />
+              {destino.length > 0 && (
+                <button onClick={() => {
+                  setDestino('');
+                   setMensaje('');
+                  setViajes([]);
+                  setSugerenciasDestino([]);
+                }} style={stylesWeb.clearButton}>✕</button>
+              )}
+              {sugerenciasDestino.length > 0 && (
+                <div style={styles.suggestionBox}>
+                  {sugerenciasDestino.map((s, idx) => (
+                    <div key={idx} onClick={() => {
+                      setDestino(s);
+                      setSugerenciasDestino([]);
+                    }} style={styles.suggestion}>{s}</div>
+                  ))}
+                </div>
+              )}
+            </div>
 
           <Pressable style={stylesWeb.button} onPress={buscarViajes}>
             <Text style={stylesWeb.buttonText}>Buscar</Text>
@@ -247,6 +238,7 @@ const formatDate = (fechaISO: string) => {
               onChangeText={(text) => {
                 setOrigen(text);
                 setMensaje('');
+                setViajes([]);
                 filtrarSugerencias(text, 'origen');
               }}
               onBlur={() => setSugerenciasOrigen([])}
@@ -254,10 +246,12 @@ const formatDate = (fechaISO: string) => {
             {origen.length > 0 && (
               <Pressable onPress={() => {
                 setOrigen('');
+                setMensaje('');
+                 setViajes([]);
                 setSugerenciasOrigen([]);
               }}>
                 <Icon name="times-circle" size={20} color="#aaa" style={styles.clearIcon} />
-                  setMensaje('');
+                
               </Pressable>
 
             )}
@@ -285,6 +279,7 @@ const formatDate = (fechaISO: string) => {
               onChangeText={(text) => {
                 setDestino(text);
                 setMensaje('');
+                setViajes([]);
                 filtrarSugerencias(text, 'destino');
               }}
               onBlur={() => setSugerenciasDestino([])}
@@ -293,6 +288,7 @@ const formatDate = (fechaISO: string) => {
               <Pressable onPress={() => {
                 setDestino('');
                 setMensaje('');
+                setViajes([]);
                 setSugerenciasDestino([]);
               }}>
                 <Icon name="times-circle" size={20} color="#aaa" style={styles.clearIcon} />
@@ -465,7 +461,7 @@ const stylesWeb = StyleSheet.create({
     flexWrap: 'wrap',
   },
   inputContainer: {
-    
+    zIndex: 0,
     width: 250,
     position: 'relative',
   },
@@ -487,6 +483,7 @@ const stylesWeb = StyleSheet.create({
     borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 6,
+    
   },
   suggestion: {
     padding: 8,
@@ -509,5 +506,27 @@ const stylesWeb = StyleSheet.create({
     marginTop: 16,
     color: 'red',
     fontWeight: '500',
+  },
+
+  inputContainerWeb: {
+    position: 'relative',
+    marginBottom: 12,
+    cursor:'pointer'
+  },
+  inputWeb: {
+    width: '100%',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    fontSize: 16,
+  },
+  clearButton: {
+    position: 'absolute',
+    right: 10,
+    top: 5,
+    backgroundColor: 'transparent',
+    cursor: 'pointer',
+    fontSize: 18,
   },
 });
