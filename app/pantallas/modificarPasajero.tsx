@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import BackButton from '../../components/BackButton';
 
 export default function ModificarPasajero() {
-  const { id, idViaje} = useLocalSearchParams();
+  const { id, idReserva, idViaje} = useLocalSearchParams();
   const router = useRouter();
   const { userInfo } = useAuth();
 
@@ -56,7 +56,7 @@ export default function ModificarPasajero() {
       await actualizarReserva(Number(id), pasajero); 
       
       Alert.alert('Éxito', 'Pasajero actualizado correctamente');
-      router.push({ pathname: '/pantallas/detalleReserva', params: { id:idViaje} });
+      router.push({ pathname: '/pantallas/detalleReserva', params: { idReserva:idReserva, id:idViaje } });
 
     } catch (error) {
       Alert.alert('Error', 'No se pudo actualizar el pasajero');

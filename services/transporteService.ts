@@ -40,16 +40,21 @@ export const crearTransporte = async (transporteData: any) => {
   
 };
 
-
 export const editarTransporte = async (id: number, transporteData: any) => {
+
+  try{
     const token = await AsyncStorage.getItem('token');
    const response = await axios.put(`${API_URL}/medioTransporte/actualizarTransporte/${id}`, transporteData ,{
       headers: {
-        Authorization: ` Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
    
-  return response.data;
+      return response.data;
+      } catch(error: any) {
+       console.error('Error al actualizar el transporte', error.response?.data || error.message);
+       throw error;
+  }
 };
 
   export const obtenerTransporteId = async (id: number) => {

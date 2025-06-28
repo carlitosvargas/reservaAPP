@@ -221,6 +221,7 @@ const EditarViaje = () => {
 
   const onChangeTime = (_: any, selectedTime?: Date) => {
     setShowTimePicker(false);
+    console.log('ver selectime', selectedTime)
     if (selectedTime) setHora(new Date(selectedTime.setSeconds(0)));
   };
 
@@ -248,7 +249,7 @@ const EditarViaje = () => {
     usuarioEmpresa_id,
     medioTransporte_id,
   };
-  console.log('fecha:', actualizarViaje);
+  console.log('datos:', viajeActualizado);
 
   try {
     await actualizarViaje(Number(id), viajeActualizado);

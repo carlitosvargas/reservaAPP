@@ -13,6 +13,8 @@ import { obtenerTransportePorEmpresa, obtenerViajesPorTransporte } from '../../s
 import { obtenerLocalidades, obtenerViajesPorChofer } from '../../services/viajeServices';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useRouter } from 'expo-router';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 
 
@@ -169,7 +171,7 @@ const CrearViaje = () => {
     usuarioEmpresa_id,
     medioTransporte_id,
   };
-  console.log('fecha:', nuevoViaje);
+  console.log('datos:', nuevoViaje);
 
   try {
     await crearViaje(nuevoViaje);
@@ -206,9 +208,14 @@ const CrearViaje = () => {
 };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+        <KeyboardAwareScrollView
+              style={styles.container}
+              contentContainerStyle={{ paddingBottom: 30 }}
+              keyboardShouldPersistTaps="handled"
+              enableOnAndroid={true}
+              extraScrollHeight={120} 
+            >
          
 
           <Text style={styles.label}>Origen</Text>
@@ -431,7 +438,8 @@ const CrearViaje = () => {
             />
           ) : (
 
-          <TextInput style={styles.input} placeholder="Precio" value={precio} onChangeText={setPrecio} keyboardType="numeric" />
+          <TextInput style={styles.input} placeholder="Precio" 
+            placeholderTextColor="#888" value={precio} onChangeText={setPrecio} keyboardType="numeric" />
           )}
 
           <Text style={styles.label}>Chofer</Text>
@@ -606,9 +614,9 @@ const CrearViaje = () => {
           <TouchableOpacity style={styles.button} onPress={handleGuardar}>
             <Text style={styles.buttonText}>Guardar Viaje</Text>
           </TouchableOpacity>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+   
   );
 };
 

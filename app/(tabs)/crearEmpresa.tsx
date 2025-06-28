@@ -9,10 +9,12 @@ import {
   Platform,
   ScrollView,
   Pressable,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { crearEmpresa } from '@/services/empresaService';
 import { obtenerLocalidades } from '../../services/viajeServices';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type Localidad = {
   id: number;
@@ -65,7 +67,7 @@ const CrearEmpresa = () => {
   };
 
   const handleGuardar = async () => {
-    setErroresCampo({}); // Limpiar errores previos
+    setErroresCampo({});
 
     if (!nombre || !direccion || !cuit || !telefono || !email || !localidadId) {
       const mensaje = 'Por favor, completa todos los campos';
@@ -89,27 +91,24 @@ const CrearEmpresa = () => {
       Platform.OS === 'web' ? alert(mensaje) : Alert.alert(mensaje);
 
       setNombre('');
-        setDireccion('');
-        setCuit('');
-        setTelefono('');
-        setEmail('');
-        setLocalidadInput('');
-        setLocalidadId(null);
-        setSugerencias([]);
-        setErroresCampo({});
+      setDireccion('');
+      setCuit('');
+      setTelefono('');
+      setEmail('');
+      setLocalidadInput('');
+      setLocalidadId(null);
+      setSugerencias([]);
+      setErroresCampo({});
       router.back();
     } catch (error: any) {
-      // Si el backend retorna errores de validación para campos
       const errores = error?.response?.data?.errores;
       if (errores && Array.isArray(errores)) {
         const erroresPorCampo: Record<string, string> = {};
         errores.forEach((err: any) => {
-  erroresPorCampo[err.path] = err.msg;
-});
+          erroresPorCampo[err.path] = err.msg;
+        });
 
         setErroresCampo(erroresPorCampo);
-
-        // Solo mostrar alerta genérica de error, no lista detallada
         const mensajeError = 'Por favor, corrige los errores en el formulario.';
         Platform.OS === 'web' ? alert(mensajeError) : Alert.alert(mensajeError);
       } else {
@@ -123,177 +122,186 @@ const CrearEmpresa = () => {
   };
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-      <Text style={styles.title}>Crear Nueva Empresa</Text>
+     <KeyboardAwareScrollView
+    style={styles.container}
+    contentContainerStyle={{ flexGrow: 1 }}
+    keyboardShouldPersistTaps="handled"
+    enableOnAndroid={true}
+    extraScrollHeight={120} // espacio adicional para evitar superposición
+  >
+     <Text style={styles.title}>Crear Nueva Empresa</Text>
 
-      <Text style={styles.label}>Nombre</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre"
-        value={nombre}
-        onChangeText={(text) => {
-          setNombre(text);
-          setErroresCampo((prev) => ({ ...prev, nombre: '' }));
-        }}
-      />
-      {erroresCampo.nombre && <Text style={styles.errorTexto}>{erroresCampo.nombre}</Text>}
+        <Text style={styles.label}>Nombre</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre"
+          value={nombre}
+          onChangeText={(text) => {
+            setNombre(text);
+            setErroresCampo((prev) => ({ ...prev, nombre: '' }));
+          }}
+        />
+        {erroresCampo.nombre && <Text style={styles.errorTexto}>{erroresCampo.nombre}</Text>}
 
-      <Text style={styles.label}>Dirección</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Dirección"
-        value={direccion}
-        onChangeText={(text) => {
-          setDireccion(text);
-          setErroresCampo((prev) => ({ ...prev, direccion: '' }));
-        }}
-      />
-      {erroresCampo.direccion && <Text style={styles.errorTexto}>{erroresCampo.direccion}</Text>}
+        <Text style={styles.label}>Dirección</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Dirección"
+          value={direccion}
+          onChangeText={(text) => {
+            setDireccion(text);
+            setErroresCampo((prev) => ({ ...prev, direccion: '' }));
+          }}
+        />
+        {erroresCampo.direccion && <Text style={styles.errorTexto}>{erroresCampo.direccion}</Text>}
 
-      <Text style={styles.label}>CUIT</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="CUIT"
-        keyboardType="numeric"
-        value={cuit}
-        onChangeText={(text) => {
-          setCuit(text);
-          setErroresCampo((prev) => ({ ...prev, cuit: '' }));
-        }}
-      />
-      {erroresCampo.cuit && <Text style={styles.errorTexto}>{erroresCampo.cuit}</Text>}
+        <Text style={styles.label}>CUIT</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="CUIT"
+          keyboardType="numeric"
+          value={cuit}
+          onChangeText={(text) => {
+            setCuit(text);
+            setErroresCampo((prev) => ({ ...prev, cuit: '' }));
+          }}
+        />
+        {erroresCampo.cuit && <Text style={styles.errorTexto}>{erroresCampo.cuit}</Text>}
 
-      <Text style={styles.label}>Teléfono</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Teléfono"
-        keyboardType="phone-pad"
-        value={telefono}
-        onChangeText={(text) => {
-          setTelefono(text);
-          setErroresCampo((prev) => ({ ...prev, telefono: '' }));
-        }}
-      />
-      {erroresCampo.telefono && <Text style={styles.errorTexto}>{erroresCampo.telefono}</Text>}
+        <Text style={styles.label}>Teléfono</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Teléfono"
+          keyboardType="phone-pad"
+          value={telefono}
+          onChangeText={(text) => {
+            setTelefono(text);
+            setErroresCampo((prev) => ({ ...prev, telefono: '' }));
+          }}
+        />
+        {erroresCampo.telefono && <Text style={styles.errorTexto}>{erroresCampo.telefono}</Text>}
 
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={(text) => {
-          setEmail(text);
-          setErroresCampo((prev) => ({ ...prev, email: '' }));
-        }}
-      />
-      {erroresCampo.email && <Text style={styles.errorTexto}>{erroresCampo.email}</Text>}
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={(text) => {
+            setEmail(text);
+            setErroresCampo((prev) => ({ ...prev, email: '' }));
+          }}
+        />
+        {erroresCampo.email && <Text style={styles.errorTexto}>{erroresCampo.email}</Text>}
 
-      <Text style={styles.label}>Localidad</Text>
-      {Platform.OS === 'web' ? (
-        <div ref={inputRef} style={inputContainerWeb}>
-          <input
-            style={inputStyleWeb}
-            placeholder="Buscar localidad"
-            value={localidadInput}
-            onChange={(e) => {
-              setLocalidadInput(e.target.value);
-              filtrarLocalidades(e.target.value);
-              setLocalidadId(null);
-              setErroresCampo((prev) => ({ ...prev, localidad_id: '' }));
-            }}
-          />
-          {localidadInput && (
-            <button
-              onClick={() => {
-                setLocalidadInput('');
-                setLocalidadId(null);
-                setSugerencias([]);
-                setErroresCampo((prev) => ({ ...prev, localidad_id: '' }));
-              }}
-              style={clearButtonWeb}
-            >
-              ✕
-            </button>
-          )}
-          {sugerencias.length > 0 && (
-            <div style={suggestionBoxWeb}>
-              {sugerencias.map((l) => (
-                <div
-                  key={l.id}
-                  onClick={() => {
-                    setLocalidadInput(l.nombre);
-                    setLocalidadId(l.id);
-                    setSugerencias([]);
-                    setErroresCampo((prev) => ({ ...prev, localidad_id: '' }));
-                  }}
-                  style={suggestionWeb}
-                >
-                  {l.nombre}
-                </div>
-              ))}
-            </div>
-          )}
-          {erroresCampo.localidad_id && (
-            <Text style={styles.errorTexto}>{erroresCampo.localidad_id}</Text>
-          )}
-        </div>
-      ) : (
-        <>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
+        <Text style={styles.label}>Localidad</Text>
+        {Platform.OS === 'web' ? (
+          <div ref={inputRef} style={inputContainerWeb}>
+            <input
+              style={inputStyleWeb}
               placeholder="Buscar localidad"
               value={localidadInput}
-              onChangeText={(text) => {
-                setLocalidadInput(text);
-                filtrarLocalidades(text);
+              onChange={(e) => {
+                setLocalidadInput(e.target.value);
+                filtrarLocalidades(e.target.value);
                 setLocalidadId(null);
                 setErroresCampo((prev) => ({ ...prev, localidad_id: '' }));
               }}
-              onBlur={() => setSugerencias([])}
             />
-            {localidadInput.length > 0 && (
-              <Pressable
-                onPress={() => {
+            {localidadInput && (
+              <button
+                onClick={() => {
                   setLocalidadInput('');
                   setLocalidadId(null);
                   setSugerencias([]);
                   setErroresCampo((prev) => ({ ...prev, localidad_id: '' }));
                 }}
-                style={styles.clearIconContainer}
+                style={clearButtonWeb}
               >
-                <Text style={{ fontSize: 18, color: '#aaa' }}>✕</Text>
-              </Pressable>
+                ✕
+              </button>
             )}
-          </View>
-          {erroresCampo.localidad_id && (
-            <Text style={styles.errorTexto}>{erroresCampo.localidad_id}</Text>
-          )}
-          {sugerencias.length > 0 && (
-            <View style={styles.suggestionBox}>
-              {sugerencias.map((l) => (
+            {sugerencias.length > 0 && (
+              <div style={suggestionBoxWeb}>
+                {sugerencias.map((l) => (
+                  <div
+                    key={l.id}
+                    onClick={() => {
+                      setLocalidadInput(l.nombre);
+                      setLocalidadId(l.id);
+                      setSugerencias([]);
+                      setErroresCampo((prev) => ({ ...prev, localidad_id: '' }));
+                    }}
+                    style={suggestionWeb}
+                  >
+                    {l.nombre}
+                  </div>
+                ))}
+              </div>
+            )}
+            {erroresCampo.localidad_id && (
+              <Text style={styles.errorTexto}>{erroresCampo.localidad_id}</Text>
+            )}
+          </div>
+        ) : (
+          <>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Buscar localidad"
+                value={localidadInput}
+                onChangeText={(text) => {
+                  setLocalidadInput(text);
+                  filtrarLocalidades(text);
+                  setLocalidadId(null);
+                  setErroresCampo((prev) => ({ ...prev, localidad_id: '' }));
+                }}
+                onBlur={() => setSugerencias([])}
+              />
+              {localidadInput.length > 0 && (
                 <Pressable
-                  key={l.id}
                   onPress={() => {
-                    setLocalidadInput(l.nombre);
-                    setLocalidadId(l.id);
+                    setLocalidadInput('');
+                    setLocalidadId(null);
                     setSugerencias([]);
                     setErroresCampo((prev) => ({ ...prev, localidad_id: '' }));
                   }}
+                  style={styles.clearIconContainer}
                 >
-                  <Text style={styles.suggestion}>{l.nombre}</Text>
+                  <Text style={{ fontSize: 18, color: '#aaa' }}>✕</Text>
                 </Pressable>
-              ))}
+              )}
             </View>
-          )}
-        </>
-      )}
+            {erroresCampo.localidad_id && (
+              <Text style={styles.errorTexto}>{erroresCampo.localidad_id}</Text>
+            )}
+            {sugerencias.length > 0 && (
+              <View style={styles.suggestionBox}>
+                {sugerencias.map((l) => (
+                  <Pressable
+                    key={l.id}
+                    onPress={() => {
+                      setLocalidadInput(l.nombre);
+                      setLocalidadId(l.id);
+                      setSugerencias([]);
+                      setErroresCampo((prev) => ({ ...prev, localidad_id: '' }));
+                    }}
+                  >
+                    <Text style={styles.suggestion}>{l.nombre}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            )}
+          </>
+        )}
 
-      <TouchableOpacity style={styles.botonGuardar} onPress={handleGuardar}>
-        <Text style={styles.botonTexto}>Guardar Empresa</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <TouchableOpacity style={styles.botonGuardar} onPress={handleGuardar}>
+          <Text style={styles.botonTexto}>Guardar Empresa</Text>
+        </TouchableOpacity>
+
+        <View style={{ height: 100 }} />
+      
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -360,7 +368,7 @@ const styles = StyleSheet.create({
   },
 });
 
-// Estilos para Web con tipado React.CSSProperties para evitar error TypeScript
+// Estilos Web
 const inputStyleWeb: React.CSSProperties = {
   width: '100%',
   padding: 10,
@@ -391,7 +399,7 @@ const suggestionWeb: React.CSSProperties = {
   padding: 10,
   borderBottom: '1px solid #eee',
   cursor: 'pointer',
- fontFamily: 'Arial'
+  fontFamily: 'Arial',
 };
 
 const clearButtonWeb: React.CSSProperties = {

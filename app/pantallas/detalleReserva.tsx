@@ -85,7 +85,7 @@ useEffect(() => {
            {!reservaConfirmada && (
           <TouchableOpacity
             style={styles.botonEditar}
-            onPress={() => router.push({ pathname: '/pantallas/modificarPasajero', params: { id: item.id, idViaje: id } })}
+            onPress={() => router.push({ pathname: '/pantallas/modificarPasajero', params: { id: item.id, idReserva: idReserva, idViaje:id } })}
           >
             <Text style={styles.botonTexto}>Editar</Text>
           </TouchableOpacity>

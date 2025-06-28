@@ -138,7 +138,6 @@ const MisReservas = () => {
         <Text>Fecha de Reserva: {formatDate(item.fechaReserva)}</Text>
         <Text>Fecha del Viaje: {formatDate(item.viaje.fechaViaje)}</Text>
         <Text>Hora de Salida: {formatTime(item.viaje.horarioSalida)}</Text>
-        <Text>Chofer: {item.viaje.usuarioEmpresa_id}</Text>
         <Text>Precio: ${item.viaje.precio}</Text>
 
         <View style={styles.botonesContainer}>

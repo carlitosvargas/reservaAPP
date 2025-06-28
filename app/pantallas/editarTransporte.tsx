@@ -59,6 +59,7 @@ const EditarTransporte = () => {
       const nuevoTransporte = {
         nombre: transporte.nombre,
         cantLugares: parseInt(transporte.cantLugares),
+        empresa_id: userInfo?.empresa_id
       };
 
       await editarTransporte(Number(id), nuevoTransporte);

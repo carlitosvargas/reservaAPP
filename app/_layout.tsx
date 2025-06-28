@@ -16,6 +16,7 @@ export default function RootLayout() {
 
   // Diccionario de rutas → títulos personalizados
   const titulosPorRuta: Record<string, string> = {
+    '/choferReserva': 'Reservas',
     '/choferViajes': 'Viajes',
     '/empresaUsuarios': 'Empleados',
     '/listarReservas': 'Reservas',

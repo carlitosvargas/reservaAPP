@@ -64,7 +64,7 @@ export default function ViajesScreen() {
     document.removeEventListener('mousedown', handleClickOutside);
   }; }, []);
 
- const formatDate = (fechaISO: string) => {
+const formatDate = (fechaISO: string) => {
   const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
   return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
 };
@@ -72,7 +72,7 @@ export default function ViajesScreen() {
   const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
     return `${hours}:${minutes}`;
-  };
+  };
 
   const buscarViajes = async () => {
     if (!origen || !destino) {
@@ -110,12 +110,21 @@ export default function ViajesScreen() {
       style={styles.card}
     >
       <Text style={styles.cardTitle}>Viaje #{item.id}</Text>
-      <Text>Origen: {item.origenLocalidad}</Text>
-      <Text>Destino: {item.destinoLocalidad}</Text>
-      <Text>Fecha: {formatDate(item.fechaViaje)}</Text>
-      <Text>Hora de Salida: {formatTime(item.horarioSalida)}</Text>
-      <Text>Precio: ${item.precio}</Text>
-      
+       <Text style={styles.label}>
+                      Origen:  <Text style={styles.detail}>{item.origenLocalidad}</Text>
+                    </Text>
+                    <Text style={styles.label}>
+                      Destino:  <Text style={styles.detail}>{item.destinoLocalidad}</Text>
+                    </Text>
+                    <Text style={styles.label}>
+                      Fecha:  <Text style={styles.detail}>{formatDate(item.fechaViaje)}</Text>
+                    </Text>
+                    <Text style={styles.label}>
+                     Hora de Salida:<Text style={styles.detail}>{formatTime(item.horarioSalida)}</Text>
+                    </Text>
+                    <Text style={styles.label}>
+                     Precio: $<Text style={styles.detail}>{item.precio}</Text>
+                    </Text>
     </Pressable>
   );
   return (
@@ -133,6 +142,7 @@ export default function ViajesScreen() {
               value={origen}
               onChangeText={(text) => {
                 setOrigen(text);
+                setMensaje('');
                 filtrarSugerencias(text, 'origen');
               }}
            
@@ -141,8 +151,11 @@ export default function ViajesScreen() {
               <Pressable onPress={() => {
                 setOrigen('');
                 setSugerenciasOrigen([]);
+                
+                
               }}>
                 <Icon name="times-circle" size={20} color="#aaa" />
+                 setMensaje('');
               </Pressable>
             )}
             {sugerenciasOrigen.length > 0 && (
@@ -167,6 +180,7 @@ export default function ViajesScreen() {
               value={destino}
               onChangeText={(text) => {
                 setDestino(text);
+                setMensaje('');
                 filtrarSugerencias(text, 'destino');
               }}
             
@@ -178,6 +192,7 @@ export default function ViajesScreen() {
                 setSugerenciasDestino([]);
               }}>
                 <Icon name="times-circle" size={20} color="#aaa" />
+                 setMensaje('');
               </Pressable>
             )}
             {sugerenciasDestino.length > 0 && (
@@ -231,6 +246,7 @@ export default function ViajesScreen() {
               value={origen}
               onChangeText={(text) => {
                 setOrigen(text);
+                setMensaje('');
                 filtrarSugerencias(text, 'origen');
               }}
               onBlur={() => setSugerenciasOrigen([])}
@@ -241,6 +257,7 @@ export default function ViajesScreen() {
                 setSugerenciasOrigen([]);
               }}>
                 <Icon name="times-circle" size={20} color="#aaa" style={styles.clearIcon} />
+                  setMensaje('');
               </Pressable>
 
             )}
@@ -267,6 +284,7 @@ export default function ViajesScreen() {
               value={destino}
               onChangeText={(text) => {
                 setDestino(text);
+                setMensaje('');
                 filtrarSugerencias(text, 'destino');
               }}
               onBlur={() => setSugerenciasDestino([])}
@@ -274,6 +292,7 @@ export default function ViajesScreen() {
             {destino.length > 0 && (
               <Pressable onPress={() => {
                 setDestino('');
+                setMensaje('');
                 setSugerenciasDestino([]);
               }}>
                 <Icon name="times-circle" size={20} color="#aaa" style={styles.clearIcon} />
@@ -400,10 +419,24 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   card: {
-    backgroundColor: '#f2f2f2',
-    padding: 16,
-    borderRadius: 8,
+     backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
     marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  detail: {
+    fontSize: 14,
+    fontWeight: 'normal',
+    marginBottom: 2,
+  },
+  label:{
+    fontSize: 14, 
+    fontWeight: 'bold'
   },
   cardTitle: {
     fontWeight: 'bold',

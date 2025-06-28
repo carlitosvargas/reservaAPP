@@ -25,7 +25,7 @@ import { API_URL } from '../environment/config';
     return response.data;
      } catch (error: any) {
        console.error('Error al actualizar el usuario', error.response?.data || error.message);
-    throw error;
+       throw error;
   }
   };
 
@@ -45,16 +45,18 @@ import { API_URL } from '../environment/config';
   };
 
  export const actualizarPerfil = async (id: number, perfil_id: number) => {
-  const token = await AsyncStorage.getItem('token');
-  const response = await axios.put(`${API_URL}/usuarios/actualizarPerfil/${id}`, {perfil_id},
-    {
+    try {
+    const token = await AsyncStorage.getItem('token');
+  const response = await axios.put(`${API_URL}/usuarios/actualizarPerfil/${id}`, {perfil_id}, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
-  );
-
-  return response.data;
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al actualizar el perfil', error.response?.data || error.message);
+    throw error.response?.data || {mensaje:'Error desconocido al actualizar el perfil'};
+  }
 };
 
 export const actualizarContraseña = async (id: number, data: any) => {

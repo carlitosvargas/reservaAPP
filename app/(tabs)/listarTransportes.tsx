@@ -80,9 +80,9 @@ const eliminar = async (id: number) => {
     const mensajeError = error.response?.data?.error || 'Error al eliminar el transporte.';
 
     if (Platform.OS === 'web') {
-      alert('Error: ' + mensajeError);
+      alert('Atención!! ' + mensajeError);
     } else {
-      Alert.alert('Error', mensajeError);
+      Alert.alert('Atención!!', mensajeError);
     }
   }
 };

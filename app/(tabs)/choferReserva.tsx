@@ -63,6 +63,7 @@ const ChoferReserva = () => {
   return (
    
   <View style={styles.container}>
+    
     <FlatList
       data={viajes}
       keyExtractor={(item) => item.id.toString()}
@@ -115,6 +116,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
+  },
+   titulo: {
+    fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 16
   },
   detail: {
     fontSize: 14,

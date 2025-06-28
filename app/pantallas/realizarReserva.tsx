@@ -5,6 +5,7 @@ import { obtenerViajesId } from '../../services/viajeServices';
 import { crearReserva } from '../../services/reservaService';
 import { useAuth } from '../../context/AuthContext';
 import BackButton from '../../components/BackButton';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 interface Pasajero {
   nombre: string;
@@ -100,7 +101,7 @@ const reservar = async () => {
     };
 
     const response = await crearReserva(reservaData);
-    const mensaje = response?.mensaje || 'Tu reserva fue creada en Mis Reservas pendiente de pago.';
+    const mensaje = response?.mensaje || 'Tu reserva fue creada en Mis Reservas pendiente de Confirmación.';
 
     if (Platform.OS === 'web') {
       alert('Reserva exitosa: ' + mensaje);
@@ -139,7 +140,14 @@ const reservar = async () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <KeyboardAwareScrollView
+                  style={styles.container}
+                  contentContainerStyle={{ paddingBottom: 20 }}
+                  keyboardShouldPersistTaps="handled"
+                  enableOnAndroid={true}
+                  extraScrollHeight={120} 
+                >
+  
      
 
       <Text style={styles.title}>Detalle del Viaje</Text>
@@ -249,7 +257,8 @@ const reservar = async () => {
         <Text style={styles.reservarButtonText}>{'Reservar'}</Text>
       </TouchableOpacity>
 
-    </ScrollView>
+   
+    </KeyboardAwareScrollView>
   );
 }
 

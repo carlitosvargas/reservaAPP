@@ -60,8 +60,7 @@ export default function ReservasYPasajerosScreen() {
   const renderReserva = (item: ReservaConPasajeros) => (
     <View key={item.reservaId} style={styles.card}>
       <Text style={styles.reservaId}>Reserva #{item.reservaId}</Text>
-      <Text>Fecha de reserva: {formatDate(item.fechaReserva)}</Text>
-      <Text>Estado: {item.estado || 'Sin estado'}</Text>
+   
 
       {!item.tieneVenta && (
         <TouchableOpacity
