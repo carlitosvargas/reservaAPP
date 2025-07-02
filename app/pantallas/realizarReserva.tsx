@@ -32,6 +32,9 @@ export default function DetalleViaje() {
     { nombre: '', apellido: '', dni: '', ubicacionOrigen: '', ubicacionDestino: '' },
   ]);
   const [loading, setLoading] = useState(false);
+
+  const [erroresBackend, setErroresBackend] = useState<{ [key: string]: string }>({});
+
  
   const router = useRouter();
   const { userInfo } = useAuth();
@@ -60,6 +63,15 @@ export default function DetalleViaje() {
     const nuevosPasajeros = [...pasajeros];
     nuevosPasajeros[index][field] = value;
     setPasajeros(nuevosPasajeros);
+
+     const path = `personas[${index}].${field}`;
+  if (erroresBackend[path]) {
+    setErroresBackend((prev) => {
+      const nuevosErrores = { ...prev };
+      delete nuevosErrores[path];
+      return nuevosErrores;
+    });
+  }
    
   };
 
@@ -93,7 +105,9 @@ const reservar = async () => {
   }
 
   try {
+
     setLoading(true);
+      setErroresBackend({});
     const reservaData = {
       usuarios_id,
       viajes_id: viaje.id,
@@ -118,15 +132,39 @@ const reservar = async () => {
     setPasajeros([
       { nombre: '', apellido: '', dni: '', ubicacionOrigen: '', ubicacionDestino: '' },
     ]);
-  } catch (error: any) {
-    const mensaje = error?.response?.data?.mensaje || 'Hubo un problema al crear la reserva.';
-  
+      }  catch (error: any) {
+      const respuesta = error?.response?.data;
+  const errores = respuesta?.errores;
 
+  if (Array.isArray(errores)) {
+    const erroresMap: { [key: string]: string } = {};
+    errores.forEach((err: any) => {
+       if (err.path) {
+        erroresMap[err.path] = err.msg;
+      } else if (err.msg?.includes('duplicado')) {
+        // Repartimos el mensaje a todos los DNIs
+        pasajeros.forEach((_, i) => {
+          erroresMap[`personas[${i}].dni`] = err.msg;
+        });
+      }
+    });
+    setErroresBackend(erroresMap);
+
+    const mensaje = 'Verificá los datos de los pasajeros. Hay campos con errores.';
     Platform.OS === 'web'
-      ? alert('Error: ' + mensaje)
-      : Alert.alert('Error', mensaje);
-  } finally {
-    setLoading(false);
+      ? alert('Error de validación: ' + mensaje)
+      : Alert.alert('Error de validación', mensaje);
+
+  } else {
+
+    const mensaje = respuesta?.mensaje || 'Hubo un error inesperado al crear la reserva.';
+    Platform.OS === 'web'
+      ? alert('Atención !! ' + mensaje)
+      : Alert.alert('Atención !!', mensaje);
+  }
+    }
+    finally {
+    setLoading(false); 
   }
 };
 
@@ -177,7 +215,11 @@ const reservar = async () => {
     </View>
     <View style={styles.infoBox}>
       <Text style={styles.label}>Precio</Text>
-      <Text style={styles.value}>${viaje.precio}</Text>
+      <Text  style={styles.value}>${viaje.precio.toLocaleString('es-AR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}</Text>
+      
     </View>
     <View style={styles.infoBox}>
       
@@ -199,16 +241,28 @@ const reservar = async () => {
             value={pasajero.nombre}
             onChangeText={(text) => handleChangePasajero(index, 'nombre', text)}
           />
+          {erroresBackend[`personas[${index}].nombre`] && (
+          <Text style={{ color: 'red', fontSize: 12 }}>
+            {erroresBackend[`personas[${index}].nombre`]}
+          </Text>
+        )}
           </View>
           <View style={styles.inputGroup}>
           <Text style={styles.label1}>Apellido</Text>
           <TextInput
+
             style={styles.input}
             placeholder="Apellido"
             placeholderTextColor="#888"
             value={pasajero.apellido}
             onChangeText={(text) => handleChangePasajero(index, 'apellido', text)}
           />
+            {erroresBackend[`personas[${index}].apellido`] && (
+          <Text style={{ color: 'red', fontSize: 12 }}>
+            {erroresBackend[`personas[${index}].apellido`]}
+          </Text>
+        )}
+          
           </View>
 
           <View style={styles.inputGroup}>
@@ -221,6 +275,12 @@ const reservar = async () => {
             value={pasajero.dni}
             onChangeText={(text) => handleChangePasajero(index, 'dni', text)}
           />
+
+            {erroresBackend[`personas[${index}].dni`] && (
+          <Text style={{ color: 'red', fontSize: 12 }}>
+            {erroresBackend[`personas[${index}].dni`]}
+          </Text>
+        )}
           </View>
           <View style={styles.inputGroup}>
           <Text style={styles.label1}>Ubicación de Origen</Text>
@@ -231,6 +291,12 @@ const reservar = async () => {
             value={pasajero.ubicacionOrigen}
             onChangeText={(text) => handleChangePasajero(index, 'ubicacionOrigen', text)}
           />
+
+            {erroresBackend[`personas[${index}].ubicacionOrigen`] && (
+          <Text style={{ color: 'red', fontSize: 12 }}>
+            {erroresBackend[`personas[${index}].ubicacionOrigen`]}
+          </Text>
+        )}
           </View>
           <View style={styles.inputGroup}>
           <Text style={styles.label1}>Ubicación de Destino</Text>
@@ -241,6 +307,12 @@ const reservar = async () => {
             value={pasajero.ubicacionDestino}
             onChangeText={(text) => handleChangePasajero(index, 'ubicacionDestino', text)}
           />
+               {erroresBackend[`personas[${index}].ubicacionDestino`] && (
+          <Text style={{ color: 'red', fontSize: 12 }}>
+            {erroresBackend[`personas[${index}].ubicacionDestino`]}
+          </Text>
+         )}
+          
           </View>
         </View>
       ))}

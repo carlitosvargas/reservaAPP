@@ -79,7 +79,10 @@ const ViajesChofer = () => {
         >
           <Text style={styles.title}>{item.origenLocalidad} ➜ {item.destinoLocalidad}</Text>
           <Text style={styles.detail}>🗓 Salida: {formatDate(item.fechaViaje)} - {formatTime(item.horarioSalida)}</Text>
-          <Text style={styles.detail}>💲 Precio: ${item.precio}</Text>
+          <Text style={styles.detail}>💲 Precio: ${item.precio.toLocaleString('es-AR', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      })}</Text>
           <Text style={styles.detail}>🚌 Transporte: {item.MedioTransporte?.nombre}</Text>
           <Text style={styles.detail}>🏢 Empresa: {item.MedioTransporte?.Empresa?.nombre || 'N/A'}</Text>
         </TouchableOpacity>

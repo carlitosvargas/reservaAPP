@@ -77,9 +77,15 @@ export default function GananciasPorViajeScreen() {
             <Text style={styles.viajeTitulo}>{item.viaje.origenLocalidad} → {item.viaje.destinoLocalidad}</Text>
             <Text>Fecha: {formatDate(item.viaje.fechaViaje)}</Text>
             <Text>Hora: {formatTime(item.viaje.horarioSalida)}</Text>
-            <Text>Precio del viaje: ${item.viaje.precio}</Text>
+            <Text>Precio del viaje: ${item.viaje.precio.toLocaleString('es-AR', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      })}</Text>
             <Text>Transporte: {item.viaje.medioTransporte.nombre} ({item.viaje.medioTransporte.patente})</Text>
-            <Text style={styles.totalGanancia}>Ganancia total: ${item.totalGanancia.toFixed(2)}</Text>
+            <Text style={styles.totalGanancia}>Ganancia total: ${item.totalGanancia.toLocaleString('es-AR', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      })}</Text>
 
             <View style={styles.ventasBox}>
               <Text style={styles.label}>Ventas:</Text>

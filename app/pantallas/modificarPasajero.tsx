@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity, Platform } from 'react-native';
 import { obtenerPasajeroPorId, actualizarReserva } from '../../services/reservaService'; // Asegúrate de tener estos servicios
 import { useAuth } from '../../context/AuthContext';
 import BackButton from '../../components/BackButton';
@@ -19,6 +19,8 @@ export default function ModificarPasajero() {
   ubicacionDestino: '',
   reserva_id: null, 
 });
+const [erroresBackend, setErroresBackend] = useState<{ [key: string]: string }>({});
+
 
 
   useEffect(() => {
@@ -52,14 +54,27 @@ export default function ModificarPasajero() {
 
   const handleGuardar = async () => {
     try {
-     
+      setErroresBackend({});
       await actualizarReserva(Number(id), pasajero); 
       
       Alert.alert('Éxito', 'Pasajero actualizado correctamente');
       router.push({ pathname: '/pantallas/detalleReserva', params: { idReserva:idReserva, id:idViaje } });
 
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar el pasajero');
+    } catch (error: any) {
+      const errores = error?.response?.data?.errores;
+
+    if (Array.isArray(errores)) {
+      const erroresMap: { [key: string]: string } = {};
+      errores.forEach((err: any) => {
+        const campo = err.path?.split('.').pop(); // ejemplo: personas[0].nombre → nombre
+        erroresMap[campo] = err.msg;
+      });
+      setErroresBackend(erroresMap);
+    } else {
+       Platform.OS === 'web'
+            ? alert('Error: ' + error?.response?.data?.mensaje || 'No se pudo actualizar el pasajero')
+            : Alert.alert('Error', error?.response?.data?.mensaje || 'No se pudo actualizar el pasajero');
+    }
     }
   };
 
@@ -79,6 +94,7 @@ export default function ModificarPasajero() {
       value={pasajero.nombre ?? ''}
       onChangeText={text => handleChange('nombre', text)}
     />
+    {erroresBackend.nombre && <Text style={styles.errorText}>{erroresBackend.nombre}</Text>}
     </View>
 
     <View style={styles.inputGroup}>
@@ -90,6 +106,7 @@ export default function ModificarPasajero() {
       value={pasajero.apellido ?? ''}
       onChangeText={text => handleChange('apellido', text)}
     />
+    {erroresBackend.apellido && <Text style={styles.errorText}>{erroresBackend.apellido}</Text>}
      </View>
     <View style={styles.inputGroup}>
     <Text style={styles.label}>DNI</Text>
@@ -101,6 +118,7 @@ export default function ModificarPasajero() {
       onChangeText={text => handleChange('dni', text)}
       keyboardType="numeric"
     />
+    {erroresBackend.dni && <Text style={styles.errorText}>{erroresBackend.dni}</Text>}
     </View>
 
     <View style={styles.inputGroup}>
@@ -112,6 +130,7 @@ export default function ModificarPasajero() {
       value={pasajero.ubicacionOrigen ?? ''}
       onChangeText={text => handleChange('ubicacionOrigen', text)}
     />
+    {erroresBackend.ubicacionOrigen && <Text style={styles.errorText}>{erroresBackend.ubicacionOrigen}</Text>}
     </View>
 
     <View style={styles.inputGroup}>
@@ -123,6 +142,7 @@ export default function ModificarPasajero() {
       value={pasajero.ubicacionDestino ?? ''}
       onChangeText={text => handleChange('ubicacionDestino', text)}
     />
+    {erroresBackend.ubicacionDestino && <Text style={styles.errorText}>{erroresBackend.ubicacionDestino}</Text>}
     </View>
 
       <TouchableOpacity style={styles.button} onPress={handleGuardar}>
@@ -180,4 +200,11 @@ label: {
   marginBottom: 4,
   color: '#333',
 },
+errorText: {
+  color: 'red',
+  fontSize: 12,
+  marginTop: -8,
+  marginBottom: 8,
+},
+
 });

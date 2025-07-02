@@ -83,7 +83,10 @@ export default function GananciaTotalScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Ganancia Total: ${totalGanancia.toFixed(2)}</Text>
+      <Text style={styles.title}>Ganancia Total: ${totalGanancia.toLocaleString('es-AR', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      })}</Text>
 
       <FlatList
         data={viajes}
@@ -103,7 +106,10 @@ export default function GananciaTotalScreen() {
                     {venta.DetalleVenta.map((detalle) => (
                       <View key={detalle.id} style={styles.detalleBox}>
                         <Text>Forma de pago: {detalle.formaPago}</Text>
-                        <Text>Precio final: ${detalle.precioFinal}</Text>
+                        <Text>Precio final: ${detalle.precioFinal.toLocaleString('es-AR', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      })}</Text>
                       </View>
                     ))}
                   </View>

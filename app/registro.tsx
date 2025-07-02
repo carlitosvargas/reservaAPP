@@ -27,6 +27,7 @@ export default function RegistroScreen() {
   const [usuario, setUsuario] = useState('');
   const [contrasenia, setContrasenia] = useState('');
   const [errores, setErrores] = useState<Errores>({});  // Especificar el tipo de errores
+  const [cargando, setCargando] = useState(false);
 
   const isDark = colorScheme === 'dark';
 
@@ -42,6 +43,7 @@ export default function RegistroScreen() {
       contrasenia,
     };
 
+    setCargando(true);
     try {
       const response = await registrarUsuario(payload);
       Alert.alert(
@@ -69,7 +71,9 @@ export default function RegistroScreen() {
   } else {
     Alert.alert('Error', 'Ocurrió un error inesperado');
   }
-}
+} finally {
+    setCargando(false);
+  }
 
   };
 
@@ -246,8 +250,8 @@ const styles = StyleSheet.create({
             }}
           />
 
-          <Pressable style={styles.button} onPress={handleRegistro}>
-            <Text style={styles.buttonText}>Registrarse</Text>
+          <Pressable style={styles.button} onPress={handleRegistro} disabled={cargando}>
+           <Text style={styles.buttonText}>{cargando ? 'Registrando...' : 'Registrar'}</Text>
           </Pressable>
 
           <Text style={styles.volverLogin}>

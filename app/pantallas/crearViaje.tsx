@@ -428,7 +428,7 @@ const CrearViaje = () => {
               style={{
                 padding: 10,
                 fontSize: 16,
-                width: '100%',
+                width: '98%',
                 borderWidth: 1,
                 borderColor: '#ccc',
                 borderRadius: 5,
@@ -630,7 +630,7 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 8, marginBottom: 8,
   },
   webInput: {
-    padding: 10, marginBottom: 8, borderWidth: 1, borderRadius: 8, width: '100%',
+    padding: 10, marginBottom: 8, borderWidth: 1, borderRadius: 8, width: '98%',
   },
   suggestion: {
     backgroundColor: '#f0f0f0', padding: 10, borderBottomWidth: 1, borderColor: '#ccc',fontFamily: 'Arial',
@@ -673,7 +673,7 @@ buttonText: {
     marginBottom: 12,
   },
   inputWeb: {
-    width: '100%',
+    width: '98%',
     padding: 10,
     borderWidth: 1,
     borderColor: '#ccc',

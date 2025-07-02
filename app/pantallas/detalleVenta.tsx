@@ -183,9 +183,15 @@ useEffect(() => {
         <Text style={styles.sectionTitle}>🧾 Detalle de Venta</Text>
         <Text style={styles.receiptText}>Fecha Venta: {formatDate(fecha)}</Text>
         <Text style={styles.receiptText}>Hora: {formatTime(hora)}</Text>
-        <Text style={styles.subTotal}>Subtotal: ${subTotal}</Text>
+        <Text style={styles.subTotal}>Subtotal: ${subTotal?.toLocaleString('es-AR', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      })}</Text>
         <Text style={styles.receiptText}>Descuento: {descuento}%</Text>
-        <Text style={styles.totalFinal}>Total: ${precioFinal}</Text>
+        <Text style={styles.totalFinal}>Total: ${precioFinal?.toLocaleString('es-AR', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                      })}</Text>
         <Text style={styles.receiptText}>Forma de Pago: {formaPago ?? 'N/A'}</Text>
 
         <View style={styles.separator} />

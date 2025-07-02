@@ -138,8 +138,11 @@ const MisReservas = () => {
         <Text>Fecha de Reserva: {formatDate(item.fechaReserva)}</Text>
         <Text>Fecha del Viaje: {formatDate(item.viaje.fechaViaje)}</Text>
         <Text>Hora de Salida: {formatTime(item.viaje.horarioSalida)}</Text>
-        <Text>Precio: ${item.viaje.precio}</Text>
-
+        <Text>Precio: ${item.viaje.precio.toLocaleString('es-AR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}</Text>
+        
         <View style={styles.botonesContainer}>
           <Pressable
             onPress={() =>

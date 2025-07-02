@@ -9,7 +9,9 @@ export default function PantallaLayout() {
     <AuthProvider>
      
         <Stack screenOptions={{
-          headerShown: false, //oculta el nombre de los archivos
+           gestureEnabled: true,
+           gestureDirection: 'horizontal',
+           headerShown: false,
         }}/>
     
     </AuthProvider>

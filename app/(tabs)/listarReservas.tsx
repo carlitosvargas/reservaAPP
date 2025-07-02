@@ -318,7 +318,11 @@ const limpiarFiltros = () => {
                   <Text style={styles.label}>Destino: <Text style={styles.value}>{item.Viaje.destinoLocalidad}</Text></Text>
                   <Text style={styles.label}>Fecha Viaje: <Text style={styles.value}>{formatDate(item.Viaje.fechaViaje)}</Text></Text>
                   <Text style={styles.label}>Horario Salida: <Text style={styles.value}>{formatTime(item.Viaje.horarioSalida)}</Text></Text>
-                  <Text style={styles.label}>Precio: <Text style={styles.value}>${item.Viaje.precio}</Text></Text>
+                  <Text style={styles.label}>Precio: <Text style={styles.value}>${item.Viaje.precio.toLocaleString('es-AR', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}</Text></Text>
+                  
                 </View>
               )}
 
@@ -347,7 +351,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: '#fff' },
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 12 },
   empty: { fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 },
-  card: { padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#ccc', borderRadius: 8 },
+  card: { padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, backgroundColor: '#f0f0f0', },
   label: { fontSize: 14, fontWeight: 'bold' },
   value: { fontWeight: 'normal' },
   subTitle: { marginTop: 8, fontSize: 16, fontWeight: 'bold', color: '#007bff' },

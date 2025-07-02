@@ -18,6 +18,7 @@ export default function RootLayout() {
   const titulosPorRuta: Record<string, string> = {
     '/choferReserva': 'Reservas',
     '/choferViajes': 'Viajes',
+    '/crearEmpresa': 'Crear una Empresa',
     '/empresaUsuarios': 'Empleados',
     '/listarReservas': 'Reservas',
     '/listarTransportes': 'Transportes',

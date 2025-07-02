@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   letterSpacing: 0.5, },
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 12 },
   empty: { fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 },
-  card: { padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#ccc', borderRadius: 8 },
+  card: {  padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, backgroundColor: '#f0f0f0',  },
   label: { fontSize: 14, fontWeight: 'bold' },
   value: { fontWeight: 'normal' },
   buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },

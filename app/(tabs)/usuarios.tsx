@@ -305,7 +305,7 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
 
   return (
     <View style={styles.contenedor}>
-      <Text style={styles.titulo}>Lista de Usuarios</Text>
+
       <View style={{ marginBottom: 15 }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.filtros }>

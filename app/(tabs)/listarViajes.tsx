@@ -241,7 +241,11 @@ const eliminarViajes = async (id: number) => {
     <Text style={styles.title}>Destino: {viaje.destinoLocalidad}</Text>
     <Text>Fecha del Viaje: {formatDate(viaje.fechaViaje)}</Text>
     <Text>Hora de Salida: {formatTime(viaje.horarioSalida)}</Text>
-    <Text>Precio: ${viaje.precio}</Text>
+    <Text>Precio: ${viaje.precio.toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}</Text>
+   
     <Text>Transporte: {viaje.MedioTransporte.nombre} ({viaje.MedioTransporte.patente})</Text>
     <Text>Empresa: {viaje.MedioTransporte.Empresa.nombre}</Text>
 
@@ -249,7 +253,7 @@ const eliminarViajes = async (id: number) => {
     <View style={styles.buttonContainer}>
         <Pressable
           onPress={() => handleVerReservas(viaje.id)}
-          style={[styles.botonDetalle, { marginRight: 5, flex: 1 }]}
+          style={[styles.botonDetalle, {  marginRight: 5}]}
         >
           
           <Text style={styles.textoBotonDetalle}>Ver Reservas</Text>
@@ -258,14 +262,14 @@ const eliminarViajes = async (id: number) => {
         {esMostrador && (
           <>
             <TouchableOpacity
-              style={[styles.editButton, { marginRight: 5 }]}
+              style={[styles.editButton, {  marginRight: 5}]}
               onPress={() => handleEditar(viaje.id)}
             >
               <Text style={styles.buttonText}>Editar</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.deleteButton}
+              style={[styles.deleteButton, { marginRight: 5}]}
               onPress={() => handleEliminar(viaje.id)}
             >
               <Text style={styles.buttonText}>Eliminar</Text>
@@ -477,7 +481,7 @@ const styles = StyleSheet.create({
 
   buttonContainer: {
   flexDirection: 'row',
-  justifyContent: 'space-between',
+  justifyContent: 'flex-start',
   marginTop: 10,
 },
 

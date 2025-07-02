@@ -129,7 +129,7 @@ const CrearEmpresa = () => {
     enableOnAndroid={true}
     extraScrollHeight={120} // espacio adicional para evitar superposición
   >
-     <Text style={styles.title}>Crear Nueva Empresa</Text>
+     
 
         <Text style={styles.label}>Nombre</Text>
         <TextInput
@@ -196,7 +196,7 @@ const CrearEmpresa = () => {
 
         <Text style={styles.label}>Localidad</Text>
         {Platform.OS === 'web' ? (
-          <div ref={inputRef} style={inputContainerWeb}>
+          <div  ref={inputRef} style={inputContainerWeb}>
             <input
               style={inputStyleWeb}
               placeholder="Buscar localidad"
@@ -379,8 +379,9 @@ const inputStyleWeb: React.CSSProperties = {
 };
 
 const inputContainerWeb: React.CSSProperties = {
+  flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 ,
   position: 'relative',
-  width: '100%',
+  width: '98%',
 };
 
 const suggestionBoxWeb: React.CSSProperties = {
@@ -404,8 +405,8 @@ const suggestionWeb: React.CSSProperties = {
 
 const clearButtonWeb: React.CSSProperties = {
   position: 'absolute',
-  right: 10,
-  top: 10,
+  right: -15,
+  top: 9,
   background: 'none',
   border: 'none',
   fontSize: 16,

@@ -60,6 +60,10 @@ export default function TabLayout() {
             case 'crearEmpresa':
               iconName = 'bus';
               break;
+            case 'crearEmpresa':
+              iconName = 'business';
+              break;
+          
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;

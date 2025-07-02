@@ -19,6 +19,11 @@ interface Viaje {
   usuarioEmpresa_id: number;
   medioTransporte_id: number;
   eliminado: string;
+  MedioTransporte?: {
+    Empresa?: {
+      nombre: string;
+    };
+  };
 }
 
 export default function ViajesScreen() {
@@ -103,39 +108,53 @@ const formatDate = (fechaISO: string) => {
     tipo === 'origen' ? setSugerenciasOrigen(sugerencias) : setSugerenciasDestino(sugerencias);
   };
 
-  const renderViaje = (item: Viaje) => (
-    <Pressable
-      key={item.id}
-      onPress={() => router.push({ pathname: '/pantallas/realizarReserva', params: { id: item.id } })}
-      style={styles.card}
-    >
-      <Text style={styles.cardTitle}>Viaje #{item.id}</Text>
-       <Text style={styles.label}>
-                      Origen:  <Text style={styles.detail}>{item.origenLocalidad}</Text>
-                    </Text>
-                    <Text style={styles.label}>
-                      Destino:  <Text style={styles.detail}>{item.destinoLocalidad}</Text>
-                    </Text>
-                    <Text style={styles.label}>
-                      Fecha:  <Text style={styles.detail}>{formatDate(item.fechaViaje)}</Text>
-                    </Text>
-                    <Text style={styles.label}>
-                     Hora de Salida:<Text style={styles.detail}>{formatTime(item.horarioSalida)}</Text>
-                    </Text>
-                    <Text style={styles.label}>
-                     Precio: $<Text style={styles.detail}>{item.precio}</Text>
-                    </Text>
-    </Pressable>
-  );
+ const renderViaje = (item: Viaje) => (
+  <Pressable
+    key={item.id}
+    onPress={() =>
+      router.push({ pathname: '/pantallas/realizarReserva', params: { id: item.id } })
+    }
+    style={styles.card}
+  >
+    {/* Empresa */}
+    {item.MedioTransporte?.Empresa?.nombre && (
+      <Text style={styles.nombreEmpresa}>{item.MedioTransporte.Empresa.nombre}</Text>
+    )}
+
+    {/* Origen → Destino */}
+    <Text style={styles.viajeRuta}>
+      {item.origenLocalidad} ➜ {item.destinoLocalidad}
+    </Text>
+
+    {/* Fecha y Horas */}
+    <View style={styles.fila}>
+      <Text style={styles.filaTexto}>🗓 {formatDate(item.fechaViaje)}</Text>
+      <Text style={styles.filaTexto}>🕓 {formatTime(item.horarioSalida)} hs</Text>
+      
+    </View>
+
+    {/* Precio y acción */}
+    <View style={styles.filaBottom}>
+      <Text style={styles.precio}>ARS ${item.precio.toLocaleString('es-AR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}</Text>
+      <View style={styles.btnSeleccionar}>
+        <Text style={styles.btnSeleccionarText}>Seleccionar</Text>
+      </View>
+    </View>
+  </Pressable>
+);
+
   return (
   <>
     {Platform.OS === 'web' ? (
       // ✅ Web version (pantalla más amplia)
-      <View  style={stylesWeb.container}>
-        <Text style={stylesWeb.title}>Buscar pasajes</Text>
-        <View style={stylesWeb.inputsRow}>
+      <div  style={stylesWeb.container}>
+      
+        <div style={stylesWeb.inputsRow}>
           {/* Origen */}
-         <div ref={origenRef} style={stylesWeb.inputContainerWeb}>
+         <div ref={origenRef} style={{ ...stylesWeb.inputContainerWeb, marginRight: 10 }}>
               <input
                 style={stylesWeb.inputWeb}
                 placeholder="Origen"
@@ -156,19 +175,19 @@ const formatDate = (fechaISO: string) => {
                 }} style={stylesWeb.clearButton}>✕</button>
               )}
               {sugerenciasOrigen.length > 0 && (
-                <div style={styles.suggestionBox}>
+                <div style={stylesWeb.suggestionBox}>
                   {sugerenciasOrigen.map((s, idx) => (
                     <div key={idx} onClick={() => {
                       setOrigen(s);
                       setSugerenciasOrigen([]);
-                    }} style={styles.suggestion}>{s}</div>
+                    }} style={stylesWeb.suggestion}>{s}</div>
                   ))}
                 </div>
               )}
             </div>
 
           {/* Destino */}
-           <div ref={destinoRef} style={stylesWeb.inputContainerWeb}>
+           <div ref={destinoRef} style={{ ...stylesWeb.inputContainerWeb, marginRight: 10 }}>
               <input
                 style={stylesWeb.inputWeb}
                 placeholder="Destino"
@@ -189,38 +208,39 @@ const formatDate = (fechaISO: string) => {
                 }} style={stylesWeb.clearButton}>✕</button>
               )}
               {sugerenciasDestino.length > 0 && (
-                <div style={styles.suggestionBox}>
+                <div style={stylesWeb.suggestionBox}>
                   {sugerenciasDestino.map((s, idx) => (
                     <div key={idx} onClick={() => {
                       setDestino(s);
                       setSugerenciasDestino([]);
-                    }} style={styles.suggestion}>{s}</div>
+                    }} style={stylesWeb.suggestion}>{s}</div>
                   ))}
                 </div>
               )}
             </div>
 
-          <Pressable style={stylesWeb.button} onPress={buscarViajes}>
-            <Text style={stylesWeb.buttonText}>Buscar</Text>
+          <Pressable style={[stylesWeb2.button, { marginLeft: 10 }]} onPress={buscarViajes}>
+            <Text style={stylesWeb2.buttonText}>Buscar</Text>
           </Pressable>
-        </View>
+        </div>
+        
+        {mensaje ? <Text style={stylesWeb2.mensaje}>{mensaje}</Text> : null}
 
-        {mensaje ? <Text style={stylesWeb.mensaje}>{mensaje}</Text> : null}
+       <div style={{ flex: 1, width: '100%', maxHeight: '60vh', marginTop: 20 }}>
+        {loading ? (
+          <ActivityIndicator size="large" color="#007AFF" />
+        ) : (
+          <FlatList
+            data={viajes}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => renderViaje(item)}
+            contentContainerStyle={{ paddingBottom: 16 }}
+            scrollEnabled={false} // ya que el scroll lo maneja el div contenedor
+          />
+        )}
+      </div>
 
-        <View style={{ flex: 1, width: '100%', marginTop: 20 }}>
-          {loading ? (
-            <ActivityIndicator size="large" color="#007AFF" />
-          ) : (
-            <FlatList
-              data={viajes}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => renderViaje(item)}
-              contentContainerStyle={{ paddingBottom: 16 }}
-              showsVerticalScrollIndicator={false}
-            />
-          )}
-        </View>
-      </View>
+      </div>
     ) : (
       // ✅ Mobile version (tu código original)
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -424,6 +444,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 3,
+    
   },
   detail: {
     fontSize: 14,
@@ -439,63 +460,75 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     color: '#007AFF',
   },
+   nombreEmpresa: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: '#4c68d7',
+  marginBottom: 4,
+},
+
+
+viajeRuta: {
+  fontSize: 16,
+  fontWeight: '500',
+  marginBottom: 8,
+},
+
+fila: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  marginBottom: 8,
+},
+
+filaTexto: {
+  fontSize: 14,
+  color: '#555',
+},
+
+filaBottom: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginTop: 12,
+},
+
+precio: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: '#333',
+},
+
+btnSeleccionar: {
+backgroundColor: '#4c68d7',
+  paddingVertical: 6,
+  paddingHorizontal: 16,
+  borderRadius: 8,
+},
+
+btnSeleccionarText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 14,
+},
+
+
 });
 
-const stylesWeb = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 40,
-    alignItems: 'center',
-    backgroundColor: '#f2f2f2',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 30,
-  },
-  
-  inputsRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 16,
-    flexWrap: 'wrap',
-  },
-  inputContainer: {
-    zIndex: 0,
-    width: 250,
-    position: 'relative',
-  },
-  input: {
-    height: 45,
-    paddingHorizontal: 12,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    width: '100%',
-  },
-  suggestionBox: {
-    position: 'absolute',
-    top: 48,
-    width: '100%',
-    backgroundColor: '#fff',
-    zIndex: 10,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 6,
-    
-  },
-  suggestion: {
-    padding: 8,
-    borderBottomColor: '#eee',
-    borderBottomWidth: 1,
-  },
-  button: {
+const stylesWeb2 = StyleSheet.create({
+
+ button: {
     backgroundColor: '#007AFF',
+    padding: 14,
     paddingVertical: 12,
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
     borderRadius: 8,
     alignSelf: 'center',
+    marginTop: -11,
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    cursor: 'pointer',
+   
   },
   buttonText: {
     color: '#fff',
@@ -507,17 +540,56 @@ const stylesWeb = StyleSheet.create({
     color: 'red',
     fontWeight: '500',
   },
-
+container: {
+    flex: 1,
+    padding: 40,
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
+    position: 'relative'
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 30,
+  },
+  inputsRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
+    flexWrap: 'wrap',
+  },
+});
+const stylesWeb: { [key: string]: React.CSSProperties } = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: 40,
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
+     overflowY: 'auto',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 30,
+  },
+  inputsRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
+    flexWrap: 'wrap',
+  },
   inputContainerWeb: {
     position: 'relative',
     marginBottom: 12,
-    cursor:'pointer'
+    width: 250,
   },
   inputWeb: {
     width: '100%',
     padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    border: '1px solid #ccc',
     borderRadius: 8,
     fontSize: 16,
   },
@@ -526,7 +598,43 @@ const stylesWeb = StyleSheet.create({
     right: 10,
     top: 5,
     backgroundColor: 'transparent',
-    cursor: 'pointer',
+    border: 'none',
     fontSize: 18,
+    cursor: 'pointer',
   },
-});
+  suggestionBox: {
+    position: 'absolute',
+    top: 48,
+    width: '100%',
+    backgroundColor: '#fff',
+    zIndex: 1000,
+    border: '1px solid #ddd',
+    borderRadius: 6,
+    maxHeight: 200,
+    overflowY: 'auto',
+  },
+  suggestion: {
+    padding: 10,
+    borderBottom: '1px solid #ddd',
+    color: '#007AFF',
+    cursor: 'pointer',
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    padding: '10px 30px',
+    borderRadius: 8,
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    cursor: 'pointer',
+    border: 'none',
+    marginTop: 0,
+    alignSelf: 'flex-end',
+    height: 45,
+  },
+  mensaje: {
+    marginTop: 16,
+    color: 'red',
+    fontWeight: 500,
+  },
+};
