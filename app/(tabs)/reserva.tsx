@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {View,Text,StyleSheet,ActivityIndicator,Pressable,Animated,TouchableOpacity,ScrollView,Alert,} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Pressable,
+  Animated,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Platform,
+} from 'react-native';
 import { obtenerReservas, eliminarReserva } from '../../services/reservaService';
 import { useAuth } from '../../context/AuthContext';
 import { router } from 'expo-router';
@@ -26,6 +37,7 @@ interface Reserva {
 const MisReservas = () => {
   const [reservasPendientes, setReservasPendientes] = useState<Reserva[]>([]);
   const [reservasPagadas, setReservasPagadas] = useState<Reserva[]>([]);
+  const [reservasPasadas, setReservasPasadas] = useState<Reserva[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -50,8 +62,31 @@ const MisReservas = () => {
           })
         );
 
-        setReservasPendientes(reservasConVenta.filter(r => !r.tieneVenta));
-        setReservasPagadas(reservasConVenta.filter(r => r.tieneVenta));
+        const now = new Date();
+
+        const getFechaHoraViaje = (fecha: string, hora: string): Date => {
+          const [year, month, day] = fecha.split('T')[0].split('-').map(Number);
+          const [hours, minutes] = hora.split(':').map(Number);
+          return new Date(year, month - 1, day, hours, minutes);
+        };
+
+       //para guardar las reservas por viajar y las que ya viajaron
+        const futuras: Reserva[] = [];
+        const pasadas: Reserva[] = [];
+
+        reservasConVenta.forEach(r => {
+          const fechaHoraViaje = getFechaHoraViaje(r.viaje.fechaViaje, r.viaje.horarioSalida);
+          if (fechaHoraViaje.getTime() > now.getTime()) {
+            futuras.push(r);
+          } else {
+            pasadas.push(r);
+          }
+        });
+
+        // solo las futuras controla si tiene o no venta
+        setReservasPendientes(futuras.filter(r => !r.tieneVenta));
+        setReservasPagadas(futuras.filter(r => r.tieneVenta));
+        setReservasPasadas(pasadas);
       } catch (error) {
         setError('Hubo un problema al obtener las reservas');
       } finally {
@@ -80,111 +115,151 @@ const MisReservas = () => {
     }
   };
 
-  const animatedHeight = (id: number) => {
-    return expandedId === id
-      ? animation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 200],
-        })
-      : 0;
-  };
+  const handleEliminarReserva = async (id: number) => {
+  let confirmacion = false;
+//el alerta del eliminar reserva para web y movil
+  if (Platform.OS === 'web') {
+    confirmacion = window.confirm('¿Estás seguro que deseas eliminar esta reserva?');
+  } else {
+    confirmacion = await new Promise<boolean>((resolve) => {
+      Alert.alert(
+        'Confirmar eliminación',
+        '¿Estás seguro que deseas eliminar esta reserva?',
+        [
+          { text: 'Cancelar', style: 'cancel', onPress: () => resolve(false) },
+          { text: 'Eliminar', style: 'destructive', onPress: () => resolve(true) },
+        ],
+        { cancelable: true }
+      );
+    });
+  }
 
-  const handleEliminarReserva = async (id: number) => {//cuando elimina la reserva tambien avisa que fue eliminada con exito
-  Alert.alert(
-    'Confirmar eliminación',
-    '¿Estás seguro que deseas eliminar esta reserva?',
-    [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Eliminar',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await eliminarReserva(Number(id));
-            setReservasPendientes(prev => {
-              const nuevasReservas = prev.filter(reserva => reserva.id !== id);
-              if (nuevasReservas.length === 0) {
-                Alert.alert('Reserva eliminada con éxito', 'Aún no hay reservas pendientes de pago');
-              } else {
-                Alert.alert('Reserva eliminada con éxito');
-              }
-              return nuevasReservas;
-            });
-          } catch (error) {
-            setError('No se pudo eliminar la reserva');
-          }
-        },
-      },
-    ]
-  );
+  if (!confirmacion) return;
+
+  try {
+    await eliminarReserva(Number(id));
+    setReservasPendientes(prev => prev.filter(reserva => reserva.id !== id));
+    if (Platform.OS === 'web') {
+      alert('Reserva eliminada con éxito');
+    } else {
+      Alert.alert('Reserva eliminada con éxito');
+    }
+  } catch (error) {
+    if (Platform.OS === 'web') {
+      alert('No se pudo eliminar la reserva');
+    } else {
+      Alert.alert('Error', 'No se pudo eliminar la reserva');
+    }
+  }
 };
-  const formatDate = (fechaISO: string) => {
+
+
+const formatDate = (fechaISO: string) => {
   const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
-  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+  return ` ${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
 };
 
   const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
-    return `${hours}:${minutes}`;
+    return ` ${hours}:${minutes}`;
   };
 
-  const renderReserva = (item: Reserva) => (
-    <Pressable key={item.id} onPress={() => toggleExpand(item.id)} style={styles.reservaItem}>
-      <Text style={styles.title}>Origen: {item.viaje.origenLocalidad}</Text>
-      <Text style={styles.title}>Destino: {item.viaje.destinoLocalidad}</Text>
+  const renderReserva = (item: Reserva, esPasada: boolean = false) => {
+    //si es pasada y no  viajo o no se conformo va a mostrar el mensaje despues 
+  const noViajaste = esPasada && !item.tieneVenta;
 
-      <Animated.View style={{ overflow: 'hidden', height: animatedHeight(item.id) }}>
-        <Text>Reserva #{item.id}</Text>
-        <Text>Fecha de Reserva: {formatDate(item.fechaReserva)}</Text>
-        <Text>Fecha del Viaje: {formatDate(item.viaje.fechaViaje)}</Text>
-        <Text>Hora de Salida: {formatTime(item.viaje.horarioSalida)}</Text>
-        <Text>Precio: ${item.viaje.precio.toLocaleString('es-AR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}</Text>
-        
-        <View style={styles.botonesContainer}>
-          <Pressable
-            onPress={() =>
-             router.push({ pathname: '/pantallas/detalleReserva', params: { id: item.viaje.id, tieneVenta: item.tieneVenta?.toString(), idReserva: item.id } })
+  return (
+    <View
+      key={item.id}
+      style={[
+        styles.card,
+        esPasada && { backgroundColor: '#e0e0e0' },
+      ]}
+    >
+      <Text style={styles.viajeRuta}>
+        {item.viaje.origenLocalidad} ➜ {item.viaje.destinoLocalidad}
+      </Text>
 
-            }
-            style={styles.botonDetalle}
-          >
-           
-            <Text style={styles.textoBotonDetalle}>Ver Detalle</Text>
-          </Pressable>
+      <View style={styles.fila}>
+        <Text style={styles.filaTexto}>🗓 {formatDate(item.viaje.fechaViaje)}</Text>
+        <Text style={styles.filaTexto}>🕓 {formatTime(item.viaje.horarioSalida)} hs</Text>
+      </View>
 
-          {!item.tieneVenta ? (
-            <>
-             
+      <View style={styles.filaBottom}>
+        <Text style={styles.precio}>ARS ${item.viaje.precio.toLocaleString('es-AR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}</Text>
 
-              <TouchableOpacity
-                style={styles.botonEliminar}
-                onPress={() => handleEliminarReserva(item.id)}
-              >
-                <Text style={styles.botonTexto}>Eliminar</Text>
-              </TouchableOpacity>
-            </>
+        <Pressable
+          style={styles.btnSeleccionar}
+          onPress={() => toggleExpand(item.id)}
+        >
+          <Text style={styles.btnSeleccionarText}>Ver más</Text>
+        </Pressable>
+      </View>
+
+      {expandedId === item.id && (
+        <View style={{ marginTop: 10 }}>
+          <Text style={styles.detail}>Reserva #{item.id}</Text>
+          <Text style={styles.detail}>Fecha de Reserva: {formatDate(item.fechaReserva)}</Text>
+
+          {noViajaste ? (
+            <Text style={[styles.detail, { color: 'red', marginTop: 8 }]}>
+              No viajaste
+            </Text>
           ) : (
-            <Pressable
-              style={styles.botonVerCompra}
-              onPress={() =>
-                router.push({ pathname: '/pantallas/detalleVenta', params: { id: item.id } })
-              }
-            >  
-              <Text style={styles.textoBotonDetalle}>Ver Compra</Text>
-            </Pressable>
+            <View style={styles.botonesContainer}>
+              <Pressable
+                style={styles.botonDetalle}
+                onPress={() =>
+                  router.push({
+                    pathname: '/pantallas/detalleReserva',
+                    params: {
+                      id: item.viaje.id,
+                      tieneVenta: item.tieneVenta?.toString(),
+                      idReserva: item.id,
+                    },
+                  })
+                }
+              >
+                <Text style={styles.btnSeleccionarText}>Ver Detalle</Text>
+              </Pressable>
+
+              {item.tieneVenta ? (
+                <Pressable
+                  style={styles.botonDetalle}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/pantallas/detalleVenta',
+                      params: { id: item.id },
+                    })
+                  }
+                >
+                  <Text style={styles.btnSeleccionarText}>Ver Compra</Text>
+                </Pressable>
+              ) : (
+                // Si no tiene venta (reserva pendiente), muestro botón eliminar
+                <TouchableOpacity
+                  style={styles.botonEliminar}
+                  onPress={() => handleEliminarReserva(item.id)}
+                >
+                  <Text style={styles.btnSeleccionarText}>Eliminar</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           )}
         </View>
-      </Animated.View>
-    </Pressable>
+      )}
+    </View>
   );
+};
+
 
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#007AFF" />
       </View>
     );
   }
@@ -197,124 +272,129 @@ const MisReservas = () => {
     );
   }
 
- return (
-  <ScrollView style={styles.container}>
-    {reservasPendientes.length === 0 && reservasPagadas.length === 0 ? (
-      <Text style={{ textAlign: 'center', marginTop: 20, color: '#888' }}>
-        Aún no hay reservas
-      </Text>
-    ) : (
-      <>
-        {reservasPendientes.length > 0 && (
-          <>
-            <Text style={styles.sectionTitle}>Reservas pendientes de confirmación</Text>
-            {reservasPendientes.map(renderReserva)}
-          </>
-        )}
+  return (
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      {reservasPendientes.length === 0 &&
+      reservasPagadas.length === 0 &&
+      reservasPasadas.length === 0 ? (
+        <Text style={{ textAlign: 'center', marginTop: 20, color: '#888' }}>
+          Aún no hay reservas
+        </Text>
+      ) : (
+        <>
+          {reservasPendientes.length > 0 && (
+            <>
+              <Text style={styles.sectionTitle}>Reservas pendientes de confirmación</Text>
+              {reservasPendientes.map(r => renderReserva(r))}
+            </>
+          )}
 
-        {reservasPagadas.length > 0 && (
-          <>
-            <Text style={styles.sectionTitle}>Reservas confirmadas</Text>
-            {reservasPagadas.map(renderReserva)}
-          </>
-        )}
-      </>
-    )}
-  </ScrollView>
-);
+          {reservasPagadas.length > 0 && (
+            <>
+              <Text style={styles.sectionTitle}>Reservas confirmadas</Text>
+              {reservasPagadas.map(r => renderReserva(r))}
+            </>
+          )}
 
+          {reservasPasadas.length > 0 && (
+            <>
+              <Text style={styles.sectionTitle}>Viajes Terminados</Text>
+              {reservasPasadas.map(r => renderReserva(r, true))}
+            </>
+          )}
+        </>
+      )}
+    </ScrollView>
+  );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    padding: 16,
+    backgroundColor: '#f2f2f2',
+  },
   container: {
     flex: 1,
-    padding: 16,
+    justifyContent: 'center',
     backgroundColor: '#fff',
-  },
-  reservaItem: {
-    backgroundColor: '#f0f0f0',
-    padding: 16,
-    marginBottom: 12,
-    borderRadius: 8,
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  textoBotonDetalle: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  botonTexto: {
-   color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 14,
-  letterSpacing: 0.5,
-  },
-  botonesContainer: {
-    flexDirection: 'row',
-    marginTop: 10,
-    gap: 10,
-    flexWrap: 'wrap',
-  },
-  botonDetalle: {
-    backgroundColor: '#4c68d7',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  botonConfirmar: {
-    backgroundColor: '#4c68d7',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  botonVerCompra: {
-    backgroundColor: '#4c68d7',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  botonEliminar: {
-    backgroundColor: '#F44336',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 8,
-    marginTop: 20,
+    marginBottom: 12,
     color: '#333',
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  viajeRuta: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  fila: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  filaTexto: {
+    fontSize: 14,
+    color: '#555',
+  },
+  filaBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  precio: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  btnSeleccionar: {
+    backgroundColor: '#4c68d7',
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  btnSeleccionarText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  detail: {
+    fontSize: 14,
+    marginTop: 4,
+    color: '#666',
+  },
+  botonesContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  botonDetalle: {
+    backgroundColor: '#4c68d7',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  botonEliminar: {
+    backgroundColor: '#F44336',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
   },
 });
 

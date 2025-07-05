@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView, Platform, Pressable, Alert, Image } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { listarReservasYPasajerosPorViaje } from '../../services/reservaService';
+import { listarReservasYPasajerosPorViaje, eliminarPasajero } from '../../services/reservaService';
 import { existeReservaVenta } from '../../services/ventaService';
+
 
 export interface Pasajero {
   id: number;
@@ -11,6 +12,7 @@ export interface Pasajero {
   dni: string;
   ubicacionOrigen: string;
   ubicacionDestino: string;
+  
 }
 
 export interface ReservaConPasajeros {
@@ -22,7 +24,7 @@ export interface ReservaConPasajeros {
 }
 
 export default function ReservasYPasajerosScreen() {
-  const { id } = useLocalSearchParams();
+  const { id, origen, destino, fecha, hora} = useLocalSearchParams();
   const [reservasPendientes, setReservasPendientes] = useState<ReservaConPasajeros[]>([]);
   const [reservasConfirmadas, setReservasConfirmadas] = useState<ReservaConPasajeros[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,46 +56,194 @@ export default function ReservasYPasajerosScreen() {
 
   const formatDate = (fechaISO: string) => {
     const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
-    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+    return ` ${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
   };
 
-  const renderReserva = (item: ReservaConPasajeros) => (
-    <View key={item.reservaId} style={styles.card}>
-      <Text style={styles.reservaId}>Reserva #{item.reservaId}</Text>
-   
+  
+  
+  const handleEliminar = (idPasajero: number, reservaId: number) => {
+  const reserva = reservasPendientes.find(r => r.reservaId === reservaId);
 
-      {!item.tieneVenta && (
-        <TouchableOpacity
-          style={styles.botonConfirmar}
-          onPress={() =>
-            router.push({
-              pathname: '/pantallas/ventaReserva',
-              params: { id: item.reservaId }
-            })
-          }
-        >
-          <Text style={styles.botonTexto}>Confirmar</Text>
-        </TouchableOpacity>
+  const cantidadPasajeros = reserva?.pasajeros.length ?? 0;
+
+  const mensaje = cantidadPasajeros === 1
+    ? 'Este es el último pasajero. Si lo eliminás, se eliminará la reserva completa. ¿Deseás continuar?'
+    : '¿Estás seguro de que querés eliminar este pasajero?';
+
+  if (Platform.OS === 'web') {
+    const confirmacion = window.confirm(mensaje);
+    if (confirmacion) {
+      eliminarYActualizar(idPasajero, cantidadPasajeros);
+    }
+  } else {
+    Alert.alert(
+      'Confirmar eliminación',
+      mensaje,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: () => eliminarYActualizar(idPasajero, cantidadPasajeros),
+        },
+      ]
+    );
+  }
+};
+
+  
+  // Elimina y redirige si era el último
+  const eliminarYActualizar = async (idPasajero: number, cantidadPasajeros: number) => {
+    try {
+      await eliminarPasajero(idPasajero);
+  
+      // Mostrar mensaje de éxito
+      if (Platform.OS === 'web') {
+        alert('Pasajero eliminado correctamente'); 
+      } else {
+        Alert.alert('Pasajero eliminado correctamente');
+        
+      }
+     
+         // Si era el último pasajero
+       if (cantidadPasajeros === 1) {
+          // Si querés, también podés eliminar la reserva acá
+          // await eliminarReserva(idReserva);
+
+          // Redirige a otra pantalla
+          router.replace('/(tabs)/choferReserva');
+          return;
+        }
+        router.push({ pathname: '/pantallas/confirmarReserva', params: { id: id, origen: origen, destino: destino, fecha: fecha, hora: hora } })
+       
+    } catch (error) {
+      console.error('Error al eliminar pasajero:', error);
+  
+      if (Platform.OS === 'web') {
+         alert('Error al eliminar pasajero');
+      } else {
+        Alert.alert('Error al eliminar pasajero');
+       
+      }
+    }
+  };
+  
+
+const renderReserva = (item: ReservaConPasajeros) => {
+  const mostrarColumna = !item.tieneVenta;
+
+  return (
+    <View key={item.reservaId} style={styles.card}>
+      <Text style={styles.label}>
+        Fecha Reserva: {formatDate(item.fechaReserva)} | {origen} ➜ {destino} | {fecha} - {hora}hs
+      </Text>
+
+      {Platform.OS === 'web' ? (
+        <View style={stylesweb.webTablaContenedor}>
+          {/* Encabezado */}
+          <View style={stylesweb.tablaEncabezado}>
+            <View style={stylesweb.tablaCelda}><Text style={stylesweb.celdaHeader}>Nombre</Text></View>
+            <View style={stylesweb.tablaCelda}><Text style={stylesweb.celdaHeader}>Apellido</Text></View>
+            <View style={stylesweb.tablaCelda}><Text style={stylesweb.celdaHeader}>DNI</Text></View>
+            <View style={stylesweb.tablaCelda}><Text style={stylesweb.celdaHeader}>Ubi. Origen</Text></View>
+            <View style={stylesweb.tablaCelda}><Text style={stylesweb.celdaHeader}>Ubi. Destino</Text></View>
+            
+            {mostrarColumna && (
+              <View style={stylesweb.iconoCelda}><Text style={stylesweb.celdaHeader}>Acción</Text></View>
+            )}
+          </View>
+
+          {/* Filas */}
+          {item.pasajeros.map((p) => (
+            <View key={p.id} style={stylesweb.tablaFila}>
+              <View style={stylesweb.tablaCelda}><Text>{p.nombre}</Text></View>
+              <View style={stylesweb.tablaCelda}><Text>{p.apellido}</Text></View>
+              <View style={stylesweb.tablaCelda}><Text>{p.dni}</Text></View>
+              <View style={stylesweb.tablaCelda}><Text>{p.ubicacionOrigen}</Text></View>
+              <View style={stylesweb.tablaCelda}><Text>{p.ubicacionDestino}</Text></View>
+              
+              {mostrarColumna && (
+                <View style={stylesweb.iconoCelda}>
+                  {!item.tieneVenta && (
+                    <Pressable onPress={() => handleEliminar(p.id, item.reservaId)}>
+                      <Image
+                        source={require('../../assets/images/icons8-close-50.png')}
+                        style={stylesweb.iconoEliminar}
+                      />
+                    </Pressable>
+                  )}
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
+      ) : (
+        <ScrollView horizontal showsHorizontalScrollIndicator={true}>
+          <View>
+            {/* Encabezado */}
+            <View style={styles.tablaEncabezado}>
+              <View style={styles.celda}><Text style={styles.celdaHeader}>Nombre</Text></View>
+              <View style={styles.celda}><Text style={styles.celdaHeader}>Apellido</Text></View>
+              <View style={styles.celda}><Text style={styles.celdaHeader}>DNI</Text></View>
+              <View style={styles.celda}><Text style={styles.celdaHeader}>Origen</Text></View>
+              <View style={styles.celda}><Text style={styles.celdaHeader}>Destino</Text></View>
+              {mostrarColumna && (
+                <View style={styles.celdaAccion}><Text style={styles.celdaHeader}>Acción</Text></View>
+              )}
+            </View>
+
+            {/* Filas */}
+            {item.pasajeros.map((p) => (
+              <View key={p.id} style={styles.tablaFila}>
+                <View style={styles.celda}><Text>{p.nombre}</Text></View>
+                <View style={styles.celda}><Text>{p.apellido}</Text></View>
+                <View style={styles.celda}><Text>{p.dni}</Text></View>
+                <View style={styles.celda}><Text>{p.ubicacionOrigen}</Text></View>
+                <View style={styles.celda}><Text>{p.ubicacionDestino}</Text></View>
+                {mostrarColumna && (
+                  <View style={styles.celdaAccion}>
+                    {!item.tieneVenta && (
+                      <Pressable onPress={() => handleEliminar(p.id, item.reservaId)}>
+                        <Image
+                          source={require('../../assets/images/icons8-close-50.png')}
+                          style={styles.iconoEliminar}
+                        />
+                      </Pressable>
+                    )}
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       )}
 
-      <Text style={styles.subTitle}>Pasajeros:</Text>
-      {item.pasajeros.map((p) => (
-        <View key={p.id} style={styles.pasajeroBox}>
-          <Text style={styles.pasajeroNombre}>{p.nombre} {p.apellido}</Text>
-          <Text>DNI: {p.dni}</Text>
-          <Text>Desde: {p.ubicacionOrigen}</Text>
-          <Text>Hasta: {p.ubicacionDestino}</Text>
+      {!item.tieneVenta && (
+        <View style={styles.buttonContainer}>
+          <Pressable
+            style={styles.botonConfirmar}
+            onPress={() =>
+              router.push({
+                pathname: '/pantallas/ventaReserva',
+                params: { id: item.reservaId },
+              })
+            }
+          >
+            <Text style={styles.botonTexto}>Confirmar</Text>
+          </Pressable>
         </View>
-      ))}
+      )}
     </View>
   );
+};
+
 
   if (loading) return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
   if (error) return <Text style={styles.error}>{error}</Text>;
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Reservas del Viaje</Text>
+    
 
       {reservasPendientes.length > 0 && (
         <>
@@ -117,6 +267,61 @@ export default function ReservasYPasajerosScreen() {
 }
 
 const styles = StyleSheet.create({
+   tablaEncabezado: {
+    flexDirection: 'row',
+    backgroundColor: '#eee',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    
+  },
+
+  tablaFila: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    alignItems: 'center',
+  },
+
+  celda: {
+    width: 120, // ancho fijo para alineación garantizada
+    padding: 6,
+    justifyContent: 'center',
+  },
+
+  celdaAccion: {
+    width: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  celdaHeader: {
+    fontWeight: 'bold',
+    color: '#333',
+  },
+
+  iconoEliminar: {
+    width: 20,
+    height: 20,
+    tintColor: '#E53935',
+  },
+
+
+  tablaCelda: {
+    flex: 1,
+    paddingHorizontal: 8,
+    justifyContent: 'center',
+  },
+
+ 
+
+  iconoCelda: {
+    flex: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+ 
+ 
   container: { flex: 1, padding: 16, backgroundColor: '#f2f2f2' },
   title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 16 },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginVertical: 10, color: '#333' },
@@ -130,7 +335,8 @@ const styles = StyleSheet.create({
   reservaId: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 4
+    marginBottom: 4,
+    color: '#333'
   },
   subTitle: {
     marginTop: 8,
@@ -158,12 +364,85 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   botonConfirmar: {
-    backgroundColor: '#4c68d7',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+  backgroundColor: '#4c68d7',
+  paddingVertical: 12,        
+  paddingHorizontal: 20,     
+  borderRadius: 20,          
+  alignItems: 'center',
+  justifyContent: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 4,
+  },
+
+  webScrollWrapper: {
+  alignItems: 'center',
+  width: '100%',
+  overflowX: 'auto',
+},
+buttonContainer: {
+  flexDirection: 'row',
+  justifyContent: 'flex-end',
+  marginTop: 10,
+},
+
+label: {
+  fontSize: 18,
+  fontWeight: '600',
+  marginBottom: 10,
+  color: '#333',
+},
+
+
+});
+
+const stylesweb = StyleSheet.create({
+ webTablaContenedor: {
+    marginTop: 10,
+    width: '100%',
+  },
+
+  tablaEncabezado: {
+    flexDirection: 'row',
+    backgroundColor: '#f5f5f5',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+
+  tablaFila: {
+    flexDirection: 'row',
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    alignItems: 'center',
+  },
+
+  tablaCelda: {
+    flex: 1,
+    paddingHorizontal: 8,
+    justifyContent: 'center',
+  },
+
+  celdaHeader: {
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'left',
+  },
+
+  iconoCelda: {
+    flex: 0.5,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10
   },
-});
+
+  iconoEliminar: {
+    width: 20,
+    height: 20,
+    tintColor: '#E53935',
+    cursor: 'pointer',
+  },
+ 
+})

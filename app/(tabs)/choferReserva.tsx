@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
+import { View, Text, FlatList, Pressable, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { obtenerViajesPorChofer } from '../../services/viajeServices';
 import { useAuth } from '@/context/AuthContext';
@@ -32,77 +32,204 @@ interface Viaje {
 
 const ChoferReserva = () => {
   const [viajes, setViajes] = useState<Viaje[]>([]);
+  const [loading, setLoading] = useState(true);
   const { userInfo } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     const fetchViajes = async () => {
       try {
+        setLoading(true);
         const data = await obtenerViajesPorChofer(userInfo?.id);
-        console.log('ver viajes chofer', data)
         setViajes(data.viajes);
-         console.log('ver viajes ', viajes)
       } catch (error) {
         console.error('Error al obtener viajes:', error);
-      }
+      }finally {
+      setLoading(false);
+    }
+      
     };
 
     fetchViajes();
   }, []);
 
   const formatDate = (fechaISO: string) => {
-  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
-  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
-};
+    const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+    return ` ${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+  };
 
   const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
-    return `${hours}:${minutes}`;
+    return ` ${hours}:${minutes}`;
   };
+// Filtrar y clasificar los viajes
+
+
+  const fechaActual = new Date();
+  const fechaActualLimpia = limpiarHoraUTC(fechaActual);
+  const horaActualMinutos = fechaActual.getHours() * 60 + fechaActual.getMinutes();
+
+  function limpiarHoraUTC(fecha: any) {
+    const isoStr = fecha.toISOString(); // ejemplo: "2025-06-27T00:00:00.000Z"
+    const [anio, mes, dia] = isoStr.substring(0, 10).split('-');
+    return new Date(Number(anio), Number(mes) - 1, Number(dia));
+  }
+  
+
+  const viajesPasados = viajes.filter((v) => {
+ 
+    const fechaViajeLimpia = limpiarHoraUTC(new Date(v.fechaViaje));
+    const [h, m] = v.horarioSalida.split(':').map(Number);
+    const horaViajeMinutos = h * 60 + m;
+
+    if (fechaActualLimpia > fechaViajeLimpia) {
+      return true; // la fecha ya pasó
+    }
+
+    if (fechaActualLimpia.getTime() === fechaViajeLimpia.getTime()) {
+      return horaActualMinutos > horaViajeMinutos; // misma fecha, hora ya pasó
+    }
+
+    return false; // fecha futura
+});
+
+
+  const viajesFuturos = viajes.filter((v) => {
+    const fechaViajeLimpia = limpiarHoraUTC(new Date(v.fechaViaje));
+    const [h, m] = v.horarioSalida.split(':').map(Number);
+    const horaViajeMinutos = h * 60 + m;
+
+    if (fechaActualLimpia < fechaViajeLimpia) {
+      return true; // fecha aún no llegó
+    }
+
+    if (fechaActualLimpia.getTime() === fechaViajeLimpia.getTime()) {
+      return horaActualMinutos <= horaViajeMinutos; // misma fecha, aún no es la hora
+    }
+
+    return false; // fecha ya pasó
+});
+
+
+
+
+
+  const renderViajeReserva = (item: Viaje) => {
+
+    const fechaActual = new Date();
+    const fechaActualLimpia = limpiarHoraUTC(fechaActual);
+    const horaActualMinutos = fechaActual.getHours() * 60 + fechaActual.getMinutes();
+
+    const fechaViajeLimpia = limpiarHoraUTC(new Date(item.fechaViaje));
+    const [h, m] = item.horarioSalida.split(':').map(Number);
+    const horaViajeMinutos = h * 60 + m;
+
+    const viajeFinalizado =
+      fechaActualLimpia > fechaViajeLimpia ||
+      (fechaActualLimpia.getTime() === fechaViajeLimpia.getTime() &&
+        horaActualMinutos > horaViajeMinutos)
+
+   return (
+    <View key={item.id} style={styles.card}>
+      {/* Empresa */}
+      {item.MedioTransporte?.Empresa?.nombre && (
+        <Text style={styles.nombreEmpresa}>{item.MedioTransporte.Empresa.nombre}</Text>
+      )}
+
+      {/* Origen → Destino */}
+      <Text style={styles.viajeRuta}>
+        {item.origenLocalidad} ➜ {item.destinoLocalidad}
+      </Text>
+
+      {/* Fecha y Hora */}
+      <View style={styles.fila}>
+        <Text style={styles.filaTexto}>🗓 {formatDate(item.fechaViaje)}</Text>
+        <Text style={styles.filaTexto}>🕓 {formatTime(item.horarioSalida)} hs</Text>
+      </View>
+
+      {/* Precio y botón */}
+      <View style={styles.filaBottom}>
+        <Text style={styles.precio}>
+          ARS ${item.precio.toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </Text>
+
+        {/* Botón solo si el viaje no fue realizado */}
+        {!viajeFinalizado && (
+          <Pressable
+            style={styles.btnSeleccionar}
+            onPress={() =>
+              router.push({
+                pathname: '/pantallas/confirmarReserva',
+                params: {
+                  id: item.id,
+                  origen: item.origenLocalidad,
+                  destino: item.destinoLocalidad,
+                  fecha: formatDate(item.fechaViaje),
+                  hora: formatTime(item.horarioSalida),
+                },
+              })
+            }
+          >
+            <Text style={styles.btnSeleccionarText}>Confirmar Reservas</Text>
+          </Pressable>
+        )}
+      </View>
+    </View>
+  );
+  }
+
+
+
 
   return (
+    <View style={styles.container}>
+       {loading ? (
+         <ActivityIndicator size="large" color="#0000ff" />
+       ) : (
+         <ScrollView contentContainerStyle={styles.scrollContainer}>
+           {/* VIAJES FUTUROS */}
+           {viajesFuturos.length > 0 && (
+             <>
+               <Text style={styles.sectionTitle}>Próximos viajes</Text>
+               {viajesFuturos.map(renderViajeReserva)}
+             </>
+           )}
    
-  <View style={styles.container}>
-    
-    <FlatList
-      data={viajes}
-      keyExtractor={(item) => item.id.toString()}
-      contentContainerStyle={styles.listContent}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: '/pantallas/confirmarReserva',
-              params: { id: item.id },
-            })
-          }
-          style={styles.card}
-        >
-          <Text style={styles.title}>{item.origenLocalidad} ➜ {item.destinoLocalidad}</Text>
-          <Text style={styles.detail}>🗓 Salida: {formatDate(item.fechaViaje)} - {formatTime(item.horarioSalida)}</Text>
-          <Text style={styles.detail}>💲 Precio: ${item.precio.toLocaleString('es-AR', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2,
-                                      })}</Text>
-          <Text style={styles.detail}>🚌 Transporte: {item.MedioTransporte?.nombre}</Text>
-          <Text style={styles.detail}>🏢 Empresa: {item.MedioTransporte?.Empresa?.nombre || 'N/A'}</Text>
-        </TouchableOpacity>
-      )}
-       ListEmptyComponent={
-              <Text style={styles.emptyMessage}>No hay Viajes para este Chofer.</Text>
-            }
-    />
-  </View>
+           {/* VIAJES PASADOS */}
+           {viajesPasados.length > 0 && (
+             <>
+               <Text style={styles.sectionTitle}>Viajes realizados</Text>
+               {viajesPasados.map(renderViajeReserva)}
+             </>
+           )}
+   
+           {/* NINGÚN VIAJE */}
+           {viajesFuturos.length === 0 && viajesPasados.length === 0 && (
+             <Text style={styles.mensaje}>No hay Viajes para este Chofer.</Text>
+           )}
+         </ScrollView>
+       )}
+     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f4f4f4',
     padding: 15,
   },
-  listContent: {
-    paddingBottom: 20,
+  scrollContainer: {
+    paddingBottom: 24,
+  },
+  mensaje: {
+    textAlign: 'center',
+    color: '#ff3333',
+    marginTop: 40,
+    fontSize: 16,
   },
   card: {
     backgroundColor: '#fff',
@@ -115,25 +242,57 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   },
-  title: {
+  nombreEmpresa: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 8,
-  },
-   titulo: {
-    fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 16
-  },
-  detail: {
-    fontSize: 14,
-   
+    color: '#4c68d7',
     marginBottom: 4,
   },
-  emptyMessage: {
-    textAlign: 'center',
-    marginTop: 40,
+  viajeRuta: {
     fontSize: 16,
-    color: '#777',
+    fontWeight: '500',
+    marginBottom: 8,
   },
+  fila: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  filaTexto: {
+    fontSize: 14,
+    color: '#555',
+  },
+  filaBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  precio: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  btnSeleccionar: {
+    backgroundColor: '#4c68d7',
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  btnSeleccionarText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+   sectionTitle: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  marginTop: 20,
+  marginBottom: 10,
+  color: '#333',
+  textAlign: 'center',
+},
+
 });
 
 export default ChoferReserva;

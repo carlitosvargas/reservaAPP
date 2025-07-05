@@ -14,7 +14,8 @@ export default function BackButton() {
 
     //cliente
     '/pantallas/actualizarContrasenia': '/perfil',
-    '/pantallas/choferListaPasajeros': '/index',
+    '/pantallas/choferListaPasajeros': '/choferViajes',
+    '/pantallas/confirmarReserva': '/choferReserva',
     '/pantallas/crearTransporte': '/listarTransportes',
     '/pantallas/crearViaje': '/listarViajes',
     '/pantallas/detalleReserva': '/reserva',
@@ -27,7 +28,6 @@ export default function BackButton() {
     '/pantallas/modificarUsuario': '/perfil',
     '/pantallas/realizarReserva': '/viajes',
     '/pantallas/ventaReserva' : '/reserva',
-    
     
     
     // más rutas si necesitás

@@ -138,4 +138,17 @@ export const listarReservasYPasajerosPorViaje = async (id: number) => {
   }
 };
 
-
+export const eliminarPasajero = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.put(`${API_URL}/reserva/eliminarPasajero/${id}`,{}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al eliminar pasajero', error.response?.data || error.message);
+    throw error;
+  }
+};

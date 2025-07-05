@@ -1,10 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity, Platform } from 'react-native';
+import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity, Platform , Image} from 'react-native';
 import { obtenerViajesId } from '../../services/viajeServices';
 import { crearReserva } from '../../services/reservaService';
 import { useAuth } from '../../context/AuthContext';
-import BackButton from '../../components/BackButton';
+import { obtenerUsuarioPorId } from '../../services/usuarioService'; 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 interface Pasajero {
@@ -51,12 +51,12 @@ export default function DetalleViaje() {
 
    const formatDate = (fechaISO: string) => {
   const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
-  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+  return ` ${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
 };
 
   const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
-    return `${hours}:${minutes}`;
+    return ` ${hours}:${minutes}`;
   };
 
   const handleChangePasajero = (index: number, field: keyof Pasajero, value: string) => {
@@ -64,7 +64,7 @@ export default function DetalleViaje() {
     nuevosPasajeros[index][field] = value;
     setPasajeros(nuevosPasajeros);
 
-     const path = `personas[${index}].${field}`;
+     const path = ` personas[${index}].${field}`;
   if (erroresBackend[path]) {
     setErroresBackend((prev) => {
       const nuevosErrores = { ...prev };
@@ -82,7 +82,11 @@ export default function DetalleViaje() {
     }
     setPasajeros([...pasajeros, { nombre: '', apellido: '', dni: '', ubicacionOrigen: '', ubicacionDestino: '' }]);
   };
-
+const eliminarPasajero = (index: number) => {
+    if (index === 0) return; // No eliminar el primer pasajero
+    const nuevosPasajeros = pasajeros.filter((_, i) => i !== index);
+    setPasajeros(nuevosPasajeros);
+  };
   const validarPasajeros = () => {
     for (const p of pasajeros) {
       if (!p.nombre || !p.apellido || !p.dni || !p.ubicacionOrigen || !p.ubicacionDestino) {
@@ -92,10 +96,40 @@ export default function DetalleViaje() {
     return true;
   };
 
- 
+ const rellenarConMisDatos = async () => {
+    try {
+      if (!usuarios_id) return;
+
+      const response = await obtenerUsuarioPorId(usuarios_id);
+    
+      const usuario = Array.isArray(response) ? response[0] : response;
+
+      if (!usuario) {
+        throw new Error('No se encontraron datos del usuario');
+      }
+
+      const nuevosPasajeros = [...pasajeros];
+      nuevosPasajeros[0] = {
+        ...nuevosPasajeros[0],
+        nombre: usuario.nombre ? String(usuario.nombre) : '',
+        apellido: usuario.apellido ? String(usuario.apellido) : '',
+        dni: usuario.dni ? String(usuario.dni) : '', 
+      };
+      setPasajeros(nuevosPasajeros);
+
+
+      console.log('Datos cargados:', usuario); //  Para verificar
+    } catch (error) {
+      console.error('Error al obtener datos del usuario:', error);
+      Platform.OS === 'web'
+        ? alert('No se pudieron cargar tus datos.')
+        : Alert.alert('Error', 'No se pudieron cargar tus datos.');
+    }
+  };
 
 const reservar = async () => {
   if (!viaje) return;
+
 
   if (!validarPasajeros()) {
     Platform.OS === 'web'
@@ -144,7 +178,7 @@ const reservar = async () => {
       } else if (err.msg?.includes('duplicado')) {
         // Repartimos el mensaje a todos los DNIs
         pasajeros.forEach((_, i) => {
-          erroresMap[`personas[${i}].dni`] = err.msg;
+          erroresMap[` personas[${i}].dni`] = err.msg;
         });
       }
     });
@@ -229,9 +263,26 @@ const reservar = async () => {
 
 
       <Text style={[styles.title, { marginTop: 30 }]}>Datos de Pasajeros</Text>
+       {/* Botón Rellenar con mis datos */}
+            <TouchableOpacity onPress={rellenarConMisDatos} style={styles.rellenarButton}>
+              <Text style={styles.rellenarButtonText}>Cargar mis datos</Text>
+            </TouchableOpacity>
 
+            
+      
       {pasajeros.map((pasajero, index) => (
         <View key={index} style={styles.pasajeroCard}>
+           {index !== 0 && (
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => eliminarPasajero(index)}
+            >
+              <Image
+                    source={require('../../assets/images/icons8-close-50.png')}
+                    style={styles.iconoEliminar}
+                  />
+            </TouchableOpacity>
+          )}
           <View style={styles.inputGroup}>
           <Text style={styles.label1}>Nombre</Text>
           <TextInput
@@ -241,9 +292,9 @@ const reservar = async () => {
             value={pasajero.nombre}
             onChangeText={(text) => handleChangePasajero(index, 'nombre', text)}
           />
-          {erroresBackend[`personas[${index}].nombre`] && (
+          {erroresBackend[` personas[${index}].nombre`] && (
           <Text style={{ color: 'red', fontSize: 12 }}>
-            {erroresBackend[`personas[${index}].nombre`]}
+            {erroresBackend[` personas[${index}].nombre`]}
           </Text>
         )}
           </View>
@@ -257,9 +308,9 @@ const reservar = async () => {
             value={pasajero.apellido}
             onChangeText={(text) => handleChangePasajero(index, 'apellido', text)}
           />
-            {erroresBackend[`personas[${index}].apellido`] && (
+            {erroresBackend[` personas[${index}].apellido`] && (
           <Text style={{ color: 'red', fontSize: 12 }}>
-            {erroresBackend[`personas[${index}].apellido`]}
+            {erroresBackend[` personas[${index}].apellido`]}
           </Text>
         )}
           
@@ -276,9 +327,9 @@ const reservar = async () => {
             onChangeText={(text) => handleChangePasajero(index, 'dni', text)}
           />
 
-            {erroresBackend[`personas[${index}].dni`] && (
+            {erroresBackend[` personas[${index}].dni`] && (
           <Text style={{ color: 'red', fontSize: 12 }}>
-            {erroresBackend[`personas[${index}].dni`]}
+            {erroresBackend[` personas[${index}].dni`]}
           </Text>
         )}
           </View>
@@ -292,9 +343,9 @@ const reservar = async () => {
             onChangeText={(text) => handleChangePasajero(index, 'ubicacionOrigen', text)}
           />
 
-            {erroresBackend[`personas[${index}].ubicacionOrigen`] && (
+            {erroresBackend[` personas[${index}].ubicacionOrigen`] && (
           <Text style={{ color: 'red', fontSize: 12 }}>
-            {erroresBackend[`personas[${index}].ubicacionOrigen`]}
+            {erroresBackend[` personas[${index}].ubicacionOrigen`]}
           </Text>
         )}
           </View>
@@ -307,9 +358,9 @@ const reservar = async () => {
             value={pasajero.ubicacionDestino}
             onChangeText={(text) => handleChangePasajero(index, 'ubicacionDestino', text)}
           />
-               {erroresBackend[`personas[${index}].ubicacionDestino`] && (
+               {erroresBackend[` personas[${index}].ubicacionDestino`] && (
           <Text style={{ color: 'red', fontSize: 12 }}>
-            {erroresBackend[`personas[${index}].ubicacionDestino`]}
+            {erroresBackend[` personas[${index}].ubicacionDestino`]}
           </Text>
          )}
           
@@ -317,9 +368,11 @@ const reservar = async () => {
         </View>
       ))}
 
-      <TouchableOpacity onPress={agregarPasajero} style={styles.agregarButton}>
-        <Text style={styles.agregarButtonText}>Agregar otro pasajero</Text>
-      </TouchableOpacity>
+      {pasajeros.length < 3 && (
+        <TouchableOpacity onPress={agregarPasajero} style={styles.agregarButton}>
+          <Text style={styles.agregarButtonText}>Agregar otro pasajero</Text>
+        </TouchableOpacity>
+      )}
 
       <TouchableOpacity
         onPress={reservar}
@@ -383,8 +436,9 @@ const styles = StyleSheet.create({
   pasajeroCard: {
     marginBottom: 20,
     padding: 16,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f2f2f2',
     borderRadius: 12,
+    shadowColor: '#000',
   },
   input: {
     height: 40,
@@ -457,5 +511,43 @@ label1: {
   marginBottom: 4,
   color: '#333',
 },
+ rellenarButton: {
+  backgroundColor: '#4c68d7',
+  paddingVertical: 8, 
+  paddingHorizontal: 12, 
+  borderRadius: 12,
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginVertical: 8,
+  alignSelf: 'flex-end', 
+},
+rellenarButtonText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 14,
+},
+  deleteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    
+   
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex:1,
+     fontWeight: 'bold',
+  },
+  deleteButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  iconoEliminar: {
+  width: 20,
+  height: 20,
+  marginLeft: -10,
+  tintColor: '#333',
+}
   
 });

@@ -51,3 +51,21 @@ export const existeReservaVenta = async (id: number): Promise<boolean> => {
     return false;
   }
 };
+
+export const existeVentaPorPasajero = async (idPasajero: number): Promise<boolean> => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+
+    const response = await axios.get(`${API_URL}/ventas/existePasajeroVenta/${idPasajero}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // El backend devuelve: { existe: true, pasajeroId: ..., reservaId: ... }
+    return response.data.existe === true;
+  } catch (error) {
+    console.error('Error al verificar si el pasajero tiene venta:', error);
+    return false;
+  }
+};

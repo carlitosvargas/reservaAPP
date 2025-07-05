@@ -3,7 +3,7 @@ import {
   View, Text, TextInput, Pressable, StyleSheet, ScrollView,
   ActivityIndicator, KeyboardAvoidingView, Platform,
   Keyboard, TouchableWithoutFeedback,
-  FlatList
+  FlatList,Image
 } from 'react-native';
 import { listarViajes, obtenerLocalidades } from '../../services/viajeServices';
 import { useRouter } from 'expo-router';
@@ -18,12 +18,13 @@ interface Viaje {
   precio: number;
   usuarioEmpresa_id: number;
   medioTransporte_id: number;
+  cantPasajeros: number;
   eliminado: string;
   MedioTransporte?: {
     Empresa?: {
       nombre: string;
-    };
-  };
+    };
+  };
 }
 
 export default function ViajesScreen() {
@@ -71,13 +72,13 @@ export default function ViajesScreen() {
 
 const formatDate = (fechaISO: string) => {
   const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
-  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+  return ` ${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
 };
 
   const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
-    return `${hours}:${minutes}`;
-  };
+    return ` ${hours}:${minutes}`;
+  };
 
   const buscarViajes = async () => {
     if (!origen || !destino) {
@@ -121,10 +122,20 @@ const formatDate = (fechaISO: string) => {
       <Text style={styles.nombreEmpresa}>{item.MedioTransporte.Empresa.nombre}</Text>
     )}
 
+   <View style={styles.fila}>
     {/* Origen → Destino */}
     <Text style={styles.viajeRuta}>
       {item.origenLocalidad} ➜ {item.destinoLocalidad}
     </Text>
+     {/* agrege la imagen del icono y un estilo cantPasajeros, no te olvides de la importacion de la imagen **** */}
+       <View style={styles.filaPasajeros}>
+    <Image
+      source={require('../../assets/images/icons8-asiento-50.png')}
+      style={styles.iconoAsiento}
+    />
+    <Text style={styles.cantPasajeros}>{item.cantPasajeros}</Text>
+  </View>
+    </View>
 
     {/* Fecha y Horas */}
     <View style={styles.fila}>
@@ -149,7 +160,7 @@ const formatDate = (fechaISO: string) => {
   return (
   <>
     {Platform.OS === 'web' ? (
-      // ✅ Web version (pantalla más amplia)
+      //  Web version
       <div  style={stylesWeb.container}>
       
         <div style={stylesWeb.inputsRow}>
@@ -242,7 +253,7 @@ const formatDate = (fechaISO: string) => {
 
       </div>
     ) : (
-      // ✅ Mobile version (tu código original)
+      
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={{ flex: 1, padding: 16 }}>
@@ -466,8 +477,15 @@ const styles = StyleSheet.create({
   color: '#4c68d7',
   marginBottom: 4,
 },
-
-
+  filaPasajeros: {
+   flexDirection: 'row',          
+  alignItems: 'center', 
+  },
+  cantPasajeros: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+  },
 viajeRuta: {
   fontSize: 16,
   fontWeight: '500',
@@ -509,6 +527,11 @@ btnSeleccionarText: {
   color: '#fff',
   fontWeight: 'bold',
   fontSize: 14,
+},
+iconoAsiento: {
+  width: 18,                     // Ajustá tamaño según necesites
+  height: 18,
+  marginRight: 4,
 },
 
 
@@ -618,6 +641,7 @@ const stylesWeb: { [key: string]: React.CSSProperties } = {
     borderBottom: '1px solid #ddd',
     color: '#007AFF',
     cursor: 'pointer',
+    fontFamily:'sans-serif'
   },
   button: {
     backgroundColor: '#007AFF',

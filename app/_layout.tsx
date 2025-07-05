@@ -29,6 +29,7 @@ export default function RootLayout() {
     '/viajes': 'Buscar Viajes',
     '/pantallas/actualizarContrasenia': 'Actualizar Contraseña',
     '/pantallas/choferListaPasajeros': 'Lista de Pasajeros',
+    '/pantallas/confirmarReserva': 'Lista de Reservas',
     '/pantallas/crearTransporte': 'Crear Transporte',
     '/pantallas/crearViaje': 'Crear Nuevo Viaje',
     '/pantallas/detalleReserva': 'Detalle de reserva',
