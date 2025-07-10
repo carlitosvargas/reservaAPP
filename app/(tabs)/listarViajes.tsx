@@ -1,24 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  TouchableOpacity,
-  Platform,
-  Alert,
-  TextInput,
-  Button,
+import React, { useState, useEffect, useCallback } from 'react';
+import { View,Text,StyleSheet,ActivityIndicator,Pressable,ScrollView,TouchableOpacity,Platform,Alert,TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { obtenerViajesPorEmpresa,eliminarViaje } from '../../services/viajeServices';
+import { obtenerViajesPorEmpresa, eliminarViaje } from '../../services/viajeServices';
 import { useAuth } from '../../context/AuthContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback } from 'react';
 
 interface MedioTransporte {
   id: number;
@@ -54,30 +41,15 @@ const ViajesEmpresa = () => {
   const { userInfo } = useAuth();
   const router = useRouter();
   const [busqueda, setBusqueda] = useState('');
-  
-      // Estados para filtro por fechas
+
+  // Estados para filtro por fechas
   const [fechaDesde, setFechaDesde] = useState<Date | null>(null);
   const [fechaHasta, setFechaHasta] = useState<Date | null>(null);
-  
+
   const [showPickerDesde, setShowPickerDesde] = useState(false);
   const [showPickerHasta, setShowPickerHasta] = useState(false);
 
-  const [mostrarOpcionesReporte, setMostrarOpcionesReporte] = useState(false);
-
-  const toggleOpcionesReporte = () => {
-    setMostrarOpcionesReporte(prev => !prev);
-    }
-
- const [mostrarMenuCompleto, setMostrarMenuCompleto] = useState(false);
-
-const toggleMenu = () => {
-  setMostrarMenuCompleto(!mostrarMenuCompleto);
-};
-
-
-
   const esMostrador = userInfo?.perfil === 'usuarioMostrador';
-  const esEmpresa = userInfo?.perfil === 'usuarioEmpresa';
 
   useEffect(() => {
     const fetchViajes = async () => {
@@ -86,9 +58,7 @@ const toggleMenu = () => {
           setError('No se pudo obtener el ID de la empresa');
           return;
         }
-        
         const data = await obtenerViajesPorEmpresa(userInfo?.empresa_id);
-  
         setViajes(data);
         if (data.length > 0) {
           setNombreEmpresa(data[0].MedioTransporte.Empresa.nombre);
@@ -99,113 +69,92 @@ const toggleMenu = () => {
         setLoading(false);
       }
     };
-
     fetchViajes();
   }, []);
 
   useFocusEffect(
-  useCallback(() => {
+    useCallback(() => {
+      setBusqueda('');
+      setFechaDesde(null);
+      setFechaHasta(null);
+    }, [])
+  );
 
-    setBusqueda('');
-    setFechaDesde(null);
-    setFechaHasta(null);
-  }, [])
-);
+  const hayFiltrosActivos = busqueda !== '' || fechaDesde !== null || fechaHasta !== null;
 
-const hayFiltrosActivos = busqueda !== '' || fechaDesde !== null || fechaHasta !== null;
+  const formatDate = (fechaISO: string) => {
+    const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+  };
 
-
- const formatDate = (fechaISO: string) => {
-  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
-  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
-};
-
-   const formatTime = (timeString: string) => {
+  const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
     return `${hours}:${minutes}`;
   };
 
   const handleAgregar = () => {
-    router.push({pathname:'/pantallas/crearViaje'})
+    router.push({ pathname: '/pantallas/crearViaje' });
   };
 
-  const handleReportes = (tipo: string) => {
-  switch (tipo) {
-    case 'reservas':
-      router.push({ pathname: '/pantallas/reportes/reportesReservas' });
-      break;
-    case 'usuarios':
-      router.push({ pathname: '/pantallas/reportes/reportesReservas' });
-      break;
-    case 'pasajeros':
-      router.push({ pathname: '/pantallas/reportes/reportesReservas' });
-      break;
-    default:
-      console.warn('Tipo de reporte no reconocido:', tipo);
-  }
-};
-
- 
   const handleVerReservas = (viajeId: number) => {
     router.push({
-      pathname: '/pantallas/listarReservasPorViaje',params: { id: viajeId },
+      pathname: '/pantallas/listarReservasPorViaje',
+      params: { id: viajeId },
     });
   };
 
   const handleEditar = (viajeId: number) => {
-  router.push({ pathname: '/pantallas/editarViaje', params: { id: viajeId } });
-};
+    router.push({ pathname: '/pantallas/editarViaje', params: { id: viajeId } });
+  };
 
-const handleEliminar = (id: number) => {
-  const confirmar = Platform.OS === 'web'
-    ? window.confirm('¿Estás seguro de que deseas eliminar este viaje?')
-    : null;
+  const handleEliminar = (id: number) => {
+    const confirmar = Platform.OS === 'web'
+      ? window.confirm('¿Estás seguro de que deseas eliminar este viaje?')
+      : null;
 
-  const continuar = Platform.OS === 'web' ? confirmar : true;
+    const continuar = Platform.OS === 'web' ? confirmar : true;
 
-  if (continuar) {
-    if (Platform.OS !== 'web') {
-      Alert.alert(
-        'Confirmar eliminación',
-        '¿Estás seguro de que deseas eliminar este viaje?',
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Sí, eliminar',
-            style: 'destructive',
-            onPress: () => eliminarViajes(id),
-          },
-        ]
-      );
-    } else {
-      eliminarViajes(id);
+    if (continuar) {
+      if (Platform.OS !== 'web') {
+        Alert.alert(
+          'Confirmar eliminación',
+          '¿Estás seguro de que deseas eliminar este viaje?',
+          [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+              text: 'Sí, eliminar',
+              style: 'destructive',
+              onPress: () => eliminarViajes(id),
+            },
+          ]
+        );
+      } else {
+        eliminarViajes(id);
+      }
     }
-  }
-};
+  };
 
-const eliminarViajes = async (id: number) => {
-  try {
-    // reemplazá esto por tu servicio real
-    await eliminarViaje(id);
-    setViajes((prev) => prev.filter((v) => v.id !== id));
+  const eliminarViajes = async (id: number) => {
+    try {
+      await eliminarViaje(id);
+      setViajes((prev) => prev.filter((v) => v.id !== id));
 
-    Platform.OS === 'web'
-      ? alert('Viaje eliminado correctamente')
-      : Alert.alert('Viaje eliminado correctamente');
-  } catch (error: any) {
-     const mensajeError = error.response?.data?.error || 'Error al eliminar el transporte.';
-    console.error('Error al eliminar viaje:', error);
-    Platform.OS === 'web'
-      ? alert('Error: ' + mensajeError)
-      : Alert.alert('Error', mensajeError);
-  }
-};
+      Platform.OS === 'web'
+        ? alert('Viaje eliminado correctamente')
+        : Alert.alert('Viaje eliminado correctamente');
+    } catch (error: any) {
+      const mensajeError = error.response?.data?.error || 'Error al eliminar el viaje.';
+      console.error('Error al eliminar viaje:', error);
+      Platform.OS === 'web'
+        ? alert('Advertencia: ' + mensajeError)
+        : Alert.alert('Advertencia', mensajeError);
+    }
+  };
 
- // Filtrado combinado (busqueda texto + filtro fechas)
+  // Filtrado combinado (texto + fechas)
   const viajesFiltrados = viajes.filter((viaje) => {
     const texto = busqueda.toLowerCase();
 
-    // Busca coincidencia texto
     const textoCoincide =
       viaje.id.toString().includes(texto) ||
       formatDate(viaje.fechaViaje).toLowerCase().includes(texto) ||
@@ -214,20 +163,25 @@ const eliminarViajes = async (id: number) => {
       viaje.destinoLocalidad.toLowerCase().includes(texto) ||
       viaje.MedioTransporte.nombre.toLowerCase().includes(texto) ||
       viaje.MedioTransporte.patente.toLowerCase().includes(texto);
-    
-    // Si no coincide texto, lo ignoramos directamente
+
     if (!textoCoincide) return false;
 
-    // Ahora filtramos por fechas, si están definidas
     const fechaViajeDate = new Date(viaje.fechaViaje);
 
-    // Queremos que la  fechaViaje este dentro del rango de fechaDesde y fechaHasta
-
-    const dentroRangoDesde = fechaDesde ? (fechaViajeDate >= fechaDesde) : true;
-    const dentroRangoHasta = fechaHasta ? ( fechaViajeDate <= fechaHasta) : true;
+    const dentroRangoDesde = fechaDesde ? fechaViajeDate >= fechaDesde : true;
+    const dentroRangoHasta = fechaHasta ? fechaViajeDate <= fechaHasta : true;
 
     return dentroRangoDesde && dentroRangoHasta;
   });
+
+  // 🔥 Dividir viajes en futuros y pasados
+  const ahora = new Date();
+  const viajesFuturos = viajesFiltrados.filter(
+    (viaje) => new Date(viaje.fechaViaje) >= ahora
+  );
+  const viajesPasados = viajesFiltrados.filter(
+    (viaje) => new Date(viaje.fechaViaje) < ahora
+  );
 
   const limpiarFiltros = () => {
     setBusqueda('');
@@ -235,49 +189,114 @@ const eliminarViajes = async (id: number) => {
     setFechaHasta(null);
   };
 
-    const renderViaje = (viaje: Viaje) => (
-  <View key={viaje.id} style={styles.reservaItem}>
-    <Text style={styles.title}>Origen: {viaje.origenLocalidad}</Text>
-    <Text style={styles.title}>Destino: {viaje.destinoLocalidad}</Text>
-    <Text>Fecha del Viaje: {formatDate(viaje.fechaViaje)}</Text>
-    <Text>Hora de Salida: {formatTime(viaje.horarioSalida)}</Text>
-    <Text>Precio: ${viaje.precio.toLocaleString('es-AR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}</Text>
-   
-    <Text>Transporte: {viaje.MedioTransporte.nombre} ({viaje.MedioTransporte.patente})</Text>
-    <Text>Empresa: {viaje.MedioTransporte.Empresa.nombre}</Text>
+  const renderViaje = (viaje: Viaje, esPasado = false) => (
+  <View
+    key={viaje.id}
+    style={[
+      styles.viajeCard,
+      esPasado && styles.viajePasadoCard, // Estilo oscuro para viajes pasados
+    ]}
+  >
+    <Text
+      style={[
+        styles.viajeRuta,
+        esPasado && { color: '#888' }, // Título gris para viajes pasados
+      ]}
+    >
+      {viaje.origenLocalidad} → {viaje.destinoLocalidad}
+    </Text>
 
+    <View style={styles.viajeInfoRow}>
+      <Text style={styles.viajeLabel}>Fecha:</Text>
+      <Text
+        style={[
+          styles.viajeValor,
+          esPasado && { color: '#888' },
+        ]}
+      >
+        {formatDate(viaje.fechaViaje)}
+      </Text>
+    </View>
+
+    <View style={styles.viajeInfoRow}>
+      <Text style={styles.viajeLabel}>Hora:</Text>
+      <Text
+        style={[
+          styles.viajeValor,
+          esPasado && { color: '#888' },
+        ]}
+      >
+        {formatTime(viaje.horarioSalida)}
+      </Text>
+    </View>
+
+    <View style={styles.viajeInfoRow}>
+      <Text style={styles.viajeLabel}>Precio:</Text>
+      <Text
+        style={[
+          styles.viajeValor,
+          esPasado && { color: '#888' },
+        ]}
+      >
+        $
+        {viaje.precio.toLocaleString('es-AR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
+      </Text>
+    </View>
+
+    <View style={styles.viajeInfoRow}>
+      <Text style={styles.viajeLabel}>Transporte:</Text>
+      <Text
+        style={[
+          styles.viajeValor,
+          esPasado && { color: '#888' },
+        ]}
+      >
+        {viaje.MedioTransporte.nombre} ({viaje.MedioTransporte.patente})
+      </Text>
+    </View>
+
+    <View style={styles.viajeInfoRow}>
+      <Text style={styles.viajeLabel}>Empresa:</Text>
+      <Text
+        style={[
+          styles.viajeValor,
+          esPasado && { color: '#888' },
+        ]}
+      >
+        {viaje.MedioTransporte.Empresa.nombre}
+      </Text>
+    </View>
 
     <View style={styles.buttonContainer}>
-        <Pressable
-          onPress={() => handleVerReservas(viaje.id)}
-          style={[styles.botonDetalle, {  marginRight: 5}]}
-        >
-          
-          <Text style={styles.textoBotonDetalle}>Ver Reservas</Text>
-        </Pressable>
+      <Pressable
+        onPress={() => handleVerReservas(viaje.id)}
+        style={styles.botonDetalle}
+      >
+        <Text style={styles.textoBotonDetalle}>Ver Reservas</Text>
+      </Pressable>
 
-        {esMostrador && (
-          <>
-            <TouchableOpacity
-              style={[styles.editButton, {  marginRight: 5}]}
-              onPress={() => handleEditar(viaje.id)}
-            >
-              <Text style={styles.buttonText}>Editar</Text>
-            </TouchableOpacity>
+      {/* Mostrar Editar y Eliminar solo si no es pasado */}
+      {!esPasado && esMostrador && (
+        <>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => handleEditar(viaje.id)}
+          >
+            <Text style={styles.buttonText}>Editar</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.deleteButton, { marginRight: 5}]}
-              onPress={() => handleEliminar(viaje.id)}
-            >
-              <Text style={styles.buttonText}>Eliminar</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
-
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => handleEliminar(viaje.id)}
+          >
+            <Text style={styles.buttonText}>Eliminar</Text>
+          </TouchableOpacity>
+        </>
+      )}
+    </View>
   </View>
 );
 
@@ -298,81 +317,27 @@ const eliminarViajes = async (id: number) => {
     );
   }
 
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.filaBotones}>
-      {esMostrador && (
-              <TouchableOpacity style={styles.agregarButton} onPress={handleAgregar}>
-                <Text style={styles.agregarButtonText}>+ Agregar Viaje</Text>
-              </TouchableOpacity>
-            )}
-           
-     {hayFiltrosActivos && (
-              <TouchableOpacity onPress={limpiarFiltros} style={styles.limpiarFiltrosButton}>
-                <Text style={styles.limpiarFiltrosText}>Limpiar filtros</Text>
-              </TouchableOpacity>
-    )}
-
-
- <>
- {/* {esEmpresa && (
-    <View style={{ position: 'relative' }}>
-      {Platform.OS === 'web' ? (
-        // 🌐 Web: Menú tipo cascada
-        <>
-          <TouchableOpacity style={styles.agregarButton} onPress={toggleOpcionesReporte}>
-            <Text style={styles.agregarButtonText}>Reportes</Text>
+        {esMostrador && (
+          <TouchableOpacity style={styles.agregarButton} onPress={handleAgregar}>
+            <Text style={styles.agregarButtonText}>+ Agregar Viaje</Text>
           </TouchableOpacity>
-
-          {mostrarOpcionesReporte && (
-      <View style={styles.menuOpcionesweb}>
-        <TouchableOpacity style={styles.opcionReporteweb} onPress={() => handleReportes('reservas')}>
-          <Text style={styles.opcionTextoweb}>Reporte de Reservas</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.opcionReporteweb} onPress={() => handleReportes('usuarios')}>
-          <Text style={styles.opcionTextoweb}>Reporte de Usuarios</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.opcionReporteweb} onPress={() => handleReportes('pasajeros')}>
-          <Text style={styles.opcionTextoweb}>Reporte de Pasajeros</Text>
-        </TouchableOpacity>
+        )}
+        {hayFiltrosActivos && (
+          <TouchableOpacity
+            onPress={limpiarFiltros}
+            style={styles.limpiarFiltrosButton}
+          >
+            <Text style={styles.limpiarFiltrosText}>Limpiar filtros</Text>
+          </TouchableOpacity>
+        )}
       </View>
-    )}
-        </>
-      ) : (
-        // 📱 Dispositivo móvil: Menú desplegable táctil
-        <>
-          <TouchableOpacity style={styles.agregarButton} onPress={toggleOpcionesReporte}>
-            <Text style={styles.agregarButtonText}>Reportes</Text>
-          </TouchableOpacity>
 
-          {mostrarOpcionesReporte && (
-            <View style={styles.menuOpciones}>
-              <TouchableOpacity style={styles.opcionReporte} onPress={() => handleReportes('reservas')}>
-                <Text style={styles.opcionTexto}>Reservas</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.opcionReporte} onPress={() => handleReportes('usuarios')}>
-                <Text style={styles.opcionTexto}>Usuarios</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.opcionReporte} onPress={() => handleReportes('pasajeros')}>
-                <Text style={styles.opcionTexto}>Pasajeros</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </>
-      )}
-    </View>
-  )}
-  */}
-</>
-
-
-
-
-    </View>
       <Text style={styles.sectionTitle}>{nombreEmpresa} - Viajes</Text>
-     
-       {/* Input búsqueda */}
+
+      {/* 🔎 Input búsqueda */}
       <TextInput
         style={styles.input}
         placeholder="Buscar por fecha, origen, destino, transporte..."
@@ -381,8 +346,10 @@ const eliminarViajes = async (id: number) => {
         onChangeText={setBusqueda}
       />
 
-     {/* Filtros de fecha */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
+      {/* 📆 Filtros de fecha */}
+      <View
+        style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}
+      >
         {/* Fecha Desde */}
         <View style={{ flex: 1, marginRight: 8 }}>
           {Platform.OS === 'web' ? (
@@ -390,16 +357,19 @@ const eliminarViajes = async (id: number) => {
               <Text style={styles.fechaLabel}>Fecha Desde:</Text>
               <input
                 type="date"
-                value={fechaDesde ? fechaDesde.toISOString().split('T')[0] : ""}
+                value={fechaDesde ? fechaDesde.toISOString().split('T')[0] : ''}
                 onChange={(e) => setFechaDesde(new Date(e.target.value))}
                 style={styles.dateInputWeb}
               />
             </>
           ) : (
             <>
-              <TouchableOpacity style={styles.fechaButton} onPress={() => setShowPickerDesde(true)}>
+              <TouchableOpacity
+                style={styles.fechaButton}
+                onPress={() => setShowPickerDesde(true)}
+              >
                 <Text style={styles.fechaButtonText}>
-                  {fechaDesde ? formatDate(fechaDesde.toISOString()) : "Fecha desde"}
+                  {fechaDesde ? formatDate(fechaDesde.toISOString()) : 'Fecha desde'}
                 </Text>
               </TouchableOpacity>
               {showPickerDesde && (
@@ -424,16 +394,19 @@ const eliminarViajes = async (id: number) => {
               <Text style={styles.fechaLabel}>Fecha Hasta:</Text>
               <input
                 type="date"
-                value={fechaHasta ? fechaHasta.toISOString().split('T')[0] : ""}
+                value={fechaHasta ? fechaHasta.toISOString().split('T')[0] : ''}
                 onChange={(e) => setFechaHasta(new Date(e.target.value))}
                 style={styles.dateInputWeb}
               />
             </>
           ) : (
             <>
-              <TouchableOpacity style={styles.fechaButton} onPress={() => setShowPickerHasta(true)}>
+              <TouchableOpacity
+                style={styles.fechaButton}
+                onPress={() => setShowPickerHasta(true)}
+              >
                 <Text style={styles.fechaButtonText}>
-                  {fechaHasta ? formatDate(fechaHasta.toISOString()) : "Fecha hasta"}
+                  {fechaHasta ? formatDate(fechaHasta.toISOString()) : 'Fecha hasta'}
                 </Text>
               </TouchableOpacity>
               {showPickerHasta && (
@@ -452,243 +425,204 @@ const eliminarViajes = async (id: number) => {
         </View>
       </View>
 
-      {viajesFiltrados.map(renderViaje)}
+      {/* 🚍 Viajes Futuros */}
+      {viajesFuturos.map((viaje) => renderViaje(viaje,false))}
+
+      {/* 🚫 Viajes Pasados */}
+      {viajesPasados.length > 0 && (
+        <>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 20 }}>
+            Viajes Pasados
+          </Text>
+          {viajesPasados.map((viaje) => renderViaje(viaje, true))}
+        </>
+      )}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  viajeCard: {
+  backgroundColor: '#ffffff',
+  borderRadius: 16,
+  padding: 18,
+  marginBottom: 16,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 3 },
+  shadowOpacity: 0.15,
+  shadowRadius: 6,
+  elevation: 5,
+  borderLeftWidth: 6,
+  borderLeftColor: '#4c68d7',
+},
+
+viajeRuta: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  color: '#2c3e50',
+  marginBottom: 12,
+},
+
+viajeInfoRow: {
+  flexDirection: 'row',
+  marginBottom: 6,
+},
+
+viajeLabel: {
+  fontSize: 14,
+  fontWeight: '600',
+  color: '#555',
+  marginRight: 4,
+},
+
+viajeValor: {
+  fontSize: 14,
+  color: '#333',
+},
+
+buttonContainer: {
+  flexDirection: 'row',
+  justifyContent: 'flex-end',
+  marginTop: 16,
+  gap: 10,
+},
+
+botonDetalle: {
+  backgroundColor: '#17a589',
+  paddingVertical: 10,
+  paddingHorizontal: 16,
+  borderRadius: 12,
+  marginRight: 6,
+},
+
+textoBotonDetalle: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 14,
+},
+
+editButton: {
+  backgroundColor: '#4c68d7',
+  paddingVertical: 10,
+  paddingHorizontal: 16,
+  borderRadius: 12,
+  marginRight: 6,
+},
+
+deleteButton: {
+  backgroundColor: '#F44336',
+  paddingVertical: 10,
+  paddingHorizontal: 16,
+  borderRadius: 12,
+},
+
+buttonText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 14,
+},
+  sectionTitle: {
+  fontSize: 26,
+  fontWeight: '700',
+  color: '#34495e',
+  marginBottom: 14,
+  textAlign: 'left',
+  borderBottomWidth: 2,
+  borderBottomColor: '#4c68d7',
+  paddingBottom: 6,
+  },
   container: {
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
   },
- 
+
   reservaItem: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#3332',
     padding: 16,
     marginBottom: 12,
     borderRadius: 8,
+  },
+  viajePasadoCard: {
+    backgroundColor: '#3332', // más oscuro para viajes pasados
+   
   },
   title: {
     fontWeight: 'bold',
     fontSize: 16,
   },
-  sectionTitle: {
-   fontSize: 22, fontWeight: 'bold', marginBottom: 12
-  },
-  
 
-  buttonContainer: {
-  flexDirection: 'row',
-  justifyContent: 'flex-start',
-  marginTop: 10,
-},
-
-
-buttonText: {
-  color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 16,
-  letterSpacing: 0.5,
-},
- input: {
+  input: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 8,
     marginBottom: 12,
   },
+  filaBotones: {
+    flexDirection: 'row-reverse',
+    justifyContent: 'flex-start',
+    gap: 8,
+    marginBottom: 12,
+  },
+  agregarButton: {
+    backgroundColor: '#4c68d7',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  agregarButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 
-  filtrosHeader: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 10,
-  marginTop: 10,
-},
+  limpiarFiltrosButton: {
+    backgroundColor: '#b2babb',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
-
+  fechaButton: {
+    backgroundColor: '#4c68d7',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  fechaButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  fechaLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4,
+    color: '#333',
+  },
+  dateInputWeb: {
+    width: '100%',
+    padding: 8,
+    fontSize: 16,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: '#fff',
+  },
+ 
 limpiarFiltrosText: {
   color: '#fff',
   fontWeight: 'bold',
   fontSize: 14,
 },
-
-filaBotones: {
-  flexDirection: 'row-reverse', 
-  justifyContent: 'flex-start', 
-  gap: 8, 
-  marginBottom: 12,
-},
-
-
-agregarButton: {
-  backgroundColor: '#4c68d7',
-  paddingVertical: 12,
-  paddingHorizontal: 20,
-  borderRadius: 20,
-  alignItems: 'center',
-  justifyContent: 'center',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 5, 
-  transform: [{ scale: 1 }],
-  transitionDuration: '200ms', 
-},
-agregarButtonText: {
-  color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 16,
-  letterSpacing: 0.5,
-},
-editButton: {
-  backgroundColor: '#4c68d7',
-  paddingVertical: 12,
-  paddingHorizontal: 20,
-  borderRadius: 20,
-  alignItems: 'center',
-  justifyContent: 'center',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 4,
-},
-
-deleteButton: {
-  backgroundColor: '#F44336',
-  paddingVertical: 12,
-  paddingHorizontal: 20,
-  borderRadius: 20,
-  alignItems: 'center',
-  justifyContent: 'center',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 4,
-},
-
-limpiarFiltrosButton: {
-  backgroundColor: '#b2babb',
-  paddingVertical: 12,
-  paddingHorizontal: 20,
-  borderRadius: 20,
-  alignItems: 'center',
-  justifyContent: 'center',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 4,
-},
-
-botonDetalle: {
-  backgroundColor: '#4c68d7',
-  paddingVertical: 12,        
-  paddingHorizontal: 20,     
-  borderRadius: 20,          
-  alignItems: 'center',
-  justifyContent: 'center',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 4,
-},
-
-textoBotonDetalle: {
-   color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 14,
-},
-fechaButton: {
-  backgroundColor: '#4c68d7',
-  paddingVertical: 10,
-  paddingHorizontal: 16,
-  borderRadius: 20,
-  alignItems: 'center',
-  justifyContent: 'center',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 4,
-  marginBottom: 8,
-},
-
-fechaButtonText: {
-  color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 14,
-  letterSpacing: 0.3,
-},
-
-fechaLabel: {
-  fontSize: 14,
-  fontWeight: '600',
-  marginBottom: 4,
-  color: '#333',
-},
-
-dateInputWeb: {
-  width: '100%',
-  padding: 8,
-  fontSize: 16,
-  borderColor: '#ccc',
-  borderWidth: 1,
-  borderRadius: 5,
-  backgroundColor: '#fff',
-  boxSizing: 'border-box', // importante en web para evitar overflow
-},
-menuOpciones: {
-  position: 'absolute',
-  top: '100%', // justo debajo del botón
-  left: 0,
-  right: 0,
-  backgroundColor: 'rgba(0, 0, 0, 0.6)', // fondo negro semitransparente
-  padding: 10,
-  borderRadius: 8,
-  zIndex: 999, // que quede encima de todo
-},
-opcionReporte: {
-  paddingVertical: 10,
-  backgroundColor: '#4c68d7', // fondo blanco semiopaco para cada opción
-  marginVertical: 5,
-  borderRadius: 5,
-},
-
-opcionTexto: {
-  fontSize: 14,
-  color: '#fff',
-  fontWeight: 'bold',
-  textAlign: 'center',
-},
-
-
-//-------------
-
-menuOpcionesweb: {
-  backgroundColor: '#f9f9f9',
-  padding: 10,
-  borderRadius: 8,
-  marginTop: 5, // separa del botón "Reportes"
-  elevation: 2, // sombra en Android
-  shadowColor: '#000', // sombra en iOS
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.2,
-  shadowRadius: 4,
-},
-opcionReporteweb: {
-  paddingVertical: 8,
-},
-opcionTextoweb: {
-  fontSize: 16,
-  color: '#333',
-}
 
 
 });

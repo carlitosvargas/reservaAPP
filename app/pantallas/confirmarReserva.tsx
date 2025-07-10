@@ -3,6 +3,7 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, 
 import { router, useLocalSearchParams } from 'expo-router';
 import { listarReservasYPasajerosPorViaje, eliminarPasajero } from '../../services/reservaService';
 import { existeReservaVenta } from '../../services/ventaService';
+import { Ionicons } from '@expo/vector-icons';
 
 
 export interface Pasajero {
@@ -18,7 +19,7 @@ export interface Pasajero {
 export interface ReservaConPasajeros {
   reservaId: number;
   fechaReserva: string;
-  estado: string;
+  usuarios_id: number;
   pasajeros: Pasajero[];
   tieneVenta?: boolean;
 }
@@ -41,7 +42,7 @@ export default function ReservasYPasajerosScreen() {
             return { ...reserva, tieneVenta };
           })
         );
-
+        
         setReservasPendientes(reservasConVenta.filter(r => !r.tieneVenta));
         setReservasConfirmadas(reservasConVenta.filter(r => r.tieneVenta));
       } catch (err: any) {
@@ -130,6 +131,7 @@ export default function ReservasYPasajerosScreen() {
   
 
 const renderReserva = (item: ReservaConPasajeros) => {
+   console.log('ver si viene id usuario ', item.usuarios_id)
   const mostrarColumna = !item.tieneVenta;
 
   return (
@@ -149,7 +151,7 @@ const renderReserva = (item: ReservaConPasajeros) => {
             <View style={stylesweb.tablaCelda}><Text style={stylesweb.celdaHeader}>Ubi. Destino</Text></View>
             
             {mostrarColumna && (
-              <View style={stylesweb.iconoCelda}><Text style={stylesweb.celdaHeader}>Acción</Text></View>
+              <View style={stylesweb.iconoCelda}><Text style={stylesweb.celdaHeader}>Eliminar</Text></View>
             )}
           </View>
 
@@ -166,10 +168,7 @@ const renderReserva = (item: ReservaConPasajeros) => {
                 <View style={stylesweb.iconoCelda}>
                   {!item.tieneVenta && (
                     <Pressable onPress={() => handleEliminar(p.id, item.reservaId)}>
-                      <Image
-                        source={require('../../assets/images/icons8-close-50.png')}
-                        style={stylesweb.iconoEliminar}
-                      />
+                       <Ionicons name="trash-bin-outline" size={24} style={stylesweb.iconoEliminar} />
                     </Pressable>
                   )}
                 </View>
@@ -188,7 +187,7 @@ const renderReserva = (item: ReservaConPasajeros) => {
               <View style={styles.celda}><Text style={styles.celdaHeader}>Origen</Text></View>
               <View style={styles.celda}><Text style={styles.celdaHeader}>Destino</Text></View>
               {mostrarColumna && (
-                <View style={styles.celdaAccion}><Text style={styles.celdaHeader}>Acción</Text></View>
+                <View style={styles.celdaAccion}><Text style={styles.celdaHeader}>Eliminar</Text></View>
               )}
             </View>
 
@@ -204,10 +203,7 @@ const renderReserva = (item: ReservaConPasajeros) => {
                   <View style={styles.celdaAccion}>
                     {!item.tieneVenta && (
                       <Pressable onPress={() => handleEliminar(p.id, item.reservaId)}>
-                        <Image
-                          source={require('../../assets/images/icons8-close-50.png')}
-                          style={styles.iconoEliminar}
-                        />
+                       <Ionicons name="trash-bin-outline" size={24} style={stylesweb.iconoEliminar} />
                       </Pressable>
                     )}
                   </View>
@@ -303,6 +299,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     tintColor: '#E53935',
+    color:'#b90606',
   },
 
 
@@ -443,6 +440,7 @@ const stylesweb = StyleSheet.create({
     height: 20,
     tintColor: '#E53935',
     cursor: 'pointer',
+    color:'#b90606',
   },
  
 })

@@ -6,6 +6,8 @@ import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
+import Feather from 'react-native-vector-icons/Feather';
+
 interface Empresa {
   id: number;
   nombre: string;
@@ -188,7 +190,7 @@ const limpiarFiltros = () => {
       />
 
        {/* Filtros de fecha */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 23 }}>
         {/* Fecha Desde */}
         <View style={{ flex: 1, marginRight: 8 }}>
           {Platform.OS === 'web' ? (
@@ -274,9 +276,14 @@ const limpiarFiltros = () => {
               </Text>
 
               {/* Sección Datos del Usuario */}
-              <TouchableOpacity onPress={() => toggleSection(item.id, 'usuario')}>
-                <Text style={styles.subTitle}>Datos del Usuario</Text>
-              </TouchableOpacity>
+              <TouchableOpacity onPress={() => toggleSection(item.id, 'usuario')} style={styles.sectionHeader}>
+              <Text style={styles.subTitle}>Datos del Usuario</Text>
+              <Feather
+                name={expanded[item.id]?.usuario ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color="#4c68d7"
+              />
+            </TouchableOpacity>
               {expanded[item.id]?.usuario && (
                 <View style={styles.details}>
                   <Text style={styles.label}>
@@ -289,9 +296,14 @@ const limpiarFiltros = () => {
               )}
 
               {/* Sección Datos de los Pasajeros */}
-              <TouchableOpacity onPress={() => toggleSection(item.id, 'pasajeros')}>
-                <Text style={styles.subTitle}>Datos de Pasajeros</Text>
-              </TouchableOpacity>
+              <TouchableOpacity onPress={() => toggleSection(item.id, 'pasajeros')} style={styles.sectionHeader}>
+              <Text style={styles.subTitle}>Datos de Pasajeros</Text>
+              <Feather
+                name={expanded[item.id]?.pasajeros ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color="#4c68d7"
+              />
+            </TouchableOpacity>
               {expanded[item.id]?.pasajeros && item.Pasajeros?.length > 0 && (
                 <View style={styles.details}>
                   {item.Pasajeros.map((pasajero, index) => (
@@ -309,9 +321,14 @@ const limpiarFiltros = () => {
               )}
 
               {/* Sección Datos del Viaje */}
-              <TouchableOpacity onPress={() => toggleSection(item.id, 'viaje')}>
-                <Text style={styles.subTitle}>Datos del Viaje</Text>
-              </TouchableOpacity>
+              <TouchableOpacity onPress={() => toggleSection(item.id, 'viaje')} style={styles.sectionHeader}>
+              <Text style={styles.subTitle}>Datos del Viaje</Text>
+              <Feather
+                name={expanded[item.id]?.viaje ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color="#4c68d7"
+              />
+            </TouchableOpacity>
               {expanded[item.id]?.viaje && (
                 <View style={styles.details}>
                   <Text style={styles.label}>Origen: <Text style={styles.value}>{item.Viaje.origenLocalidad}</Text></Text>
@@ -327,9 +344,14 @@ const limpiarFiltros = () => {
               )}
 
               {/* Sección Datos del Transporte */}
-              <TouchableOpacity onPress={() => toggleSection(item.id, 'transporte')}>
-                <Text style={styles.subTitle}>Datos del Transporte</Text>
-              </TouchableOpacity>
+              <TouchableOpacity onPress={() => toggleSection(item.id, 'transporte')} style={styles.sectionHeader}>
+              <Text style={styles.subTitle}>Datos del Transporte</Text>
+              <Feather
+                name={expanded[item.id]?.transporte ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color="#4c68d7"
+              />
+            </TouchableOpacity>
               {expanded[item.id]?.transporte && (
                 <View style={styles.details}>
                   <Text style={styles.label}>Nombre: <Text style={styles.value}>{item.Viaje.MedioTransporte.nombre}</Text></Text>
@@ -348,14 +370,61 @@ const limpiarFiltros = () => {
 };
 
 const styles = StyleSheet.create({
+
+  card: {
+  backgroundColor: '#ffffff',
+  borderRadius: 16,
+  padding: 18,
+  marginBottom: 20,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.1,
+  shadowRadius: 6,
+  elevation: 5,
+  borderLeftWidth: 6,
+  borderLeftColor: '#4c68d7',
+},
+
+label: {
+  fontSize: 14,
+  fontWeight: '600',
+  color: '#555',
+  marginBottom: 2,
+},
+
+value: {
+  fontWeight: 'normal',
+  color: '#333',
+},
+
+subTitle: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: '#4c68d7',
+  marginTop: 14,
+  marginBottom: 6,
+  textDecorationLine: 'underline',
+},
+
+details: {
+  backgroundColor: '#f4f6f8',
+  padding: 10,
+  borderRadius: 12,
+  marginBottom: 10,
+},
+
   container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 12 },
+  title: {
+  fontSize: 26,
+  fontWeight: '700',
+  color: '#34495e',
+  marginBottom: 14,
+  textAlign: 'left',
+  borderBottomWidth: 2,
+  borderBottomColor: '#4c68d7',
+  paddingBottom: 6,
+},
   empty: { fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 },
-  card: { padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, backgroundColor: '#f0f0f0', },
-  label: { fontSize: 14, fontWeight: 'bold' },
-  value: { fontWeight: 'normal' },
-  subTitle: { marginTop: 8, fontSize: 16, fontWeight: 'bold', color: '#007bff' },
-  details: { marginLeft: 10, marginTop: 4 },
    input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -435,6 +504,18 @@ limpiarFiltrosButton: {
   shadowRadius: 4,
   elevation: 4,
 },
+sectionHeader: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingVertical: 6,
+  paddingHorizontal: 10,
+  backgroundColor: '#eaf0fa',
+  borderRadius: 10,
+  marginTop: 12,
+  marginBottom: 6,
+},
+
 });
 
 export default ListarReservas;

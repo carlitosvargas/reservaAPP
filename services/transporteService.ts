@@ -81,3 +81,17 @@ export const editarTransporte = async (id: number, transporteData: any) => {
     }
   };
 
+
+   export const verificarTransporteSinReservas = async (id: any) => {
+  try{
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/medioTransporte/verificarTransporteSinReservas/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;}
+    catch (error: any) {
+      throw error;
+    }
+  };

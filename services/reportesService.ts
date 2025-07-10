@@ -130,3 +130,17 @@ export const obtenerGananciasPorViajePorEmpresa = async (id: number) => {
 };
 
 
+export const obtenerUsuariosConReservasSinVenta = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/reportes/obtenerUsuariosConReservasSinVenta/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al obtener pasajeros con ventas NO confirmada por empresa', error.response?.data || error.message);
+    throw error;
+  }
+};

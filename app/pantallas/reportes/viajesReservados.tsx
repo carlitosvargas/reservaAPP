@@ -16,7 +16,7 @@ interface ViajeMasReservado {
 export default function ViajesMasReservadosScreen() {
   const { id } = useLocalSearchParams();
   const [viajes, setViajes] = useState<ViajeMasReservado[]>([]);
-  const [totalReservas, setTotalReservas] = useState(0);
+  const [totalViajes, setTotalReservas] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { userInfo } = useAuth();
@@ -60,7 +60,7 @@ export default function ViajesMasReservadosScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Viajes más Reservados</Text>
-      <Text style={styles.subtitle}>Total de reservas: {totalReservas}</Text>
+      <Text style={styles.subtitle}>Total de viajes: {totalViajes}</Text>
 
       <FlatList
         data={viajes}

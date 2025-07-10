@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/context/AuthContext';
-import { editarTransporte, obtenerTransporteId } from '../../services/transporteService';
+import { editarTransporte, obtenerTransporteId, verificarTransporteSinReservas } from '../../services/transporteService';
 import { useLocalSearchParams } from 'expo-router';
 
 const EditarTransporte = () => {
   const [transporte, setTransporte] = useState({
+    id: '',
     nombre: '',
     patente: '',
     marca: '',
@@ -17,18 +18,26 @@ const EditarTransporte = () => {
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
   const { userInfo } = useAuth();
+  const [sinReservas, setSinReservas] = useState<boolean | null>(null);
+  const [bloquearInput, setBloquearInput] = useState(false);
+  const [mensajeBloqueo, setMensajeBloqueo] = useState('');
 
   useEffect(() => {
     const cargarDatos = async () => {
       try {
         const transporteData = await obtenerTransporteId(Number(id));
 
+    
+         
+
+
         if (!transporteData) {
         Alert.alert('No se encontró el transporte');
         return;
         }
-
+      
         setTransporte({
+        id: transporteData.id?.toString() ?? '',
         nombre: transporteData.nombre ?? '',
         patente: transporteData.patente ?? '',
         marca: transporteData.marca ?? '',
@@ -69,6 +78,23 @@ const EditarTransporte = () => {
       Alert.alert('Error', 'No se pudo actualizar el transporte');
     }
   };
+const handleFocusInput = async () => {
+  try {
+    const res = await verificarTransporteSinReservas(transporte.id);
+    console.log('ver booleannn de transporte ', res.sinReservas)
+    if (!res.sinReservas) {
+      setBloquearInput(true);
+      setMensajeBloqueo('No se puede modificar los lugares porque el transporte ya tiene reservas.');
+    } else {
+      setBloquearInput(false);
+      setMensajeBloqueo('');
+    }
+  } catch (error) {
+    console.error('Error al verificar disponibilidad:', error);
+    setBloquearInput(true);
+    setMensajeBloqueo('Ocurrió un error al verificar la disponibilidad.');
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -107,15 +133,28 @@ const EditarTransporte = () => {
       </View>
 
       <View style={styles.inputGroup}>
-      <Text style={styles.label}>Cnatidad de Lugares</Text>
-      <TextInput
-        style={styles.input}
+      <Text style={styles.label}>Cantidad de Lugares</Text>
+    <TextInput
+        style={[
+          styles.input,
+          bloquearInput && { backgroundColor: '#eee', color: '#aaa' }, // estilo visual bloqueado
+        ]}
         placeholder="Cantidad de Lugares"
         placeholderTextColor="#888"
         value={transporte.cantLugares}
-        onChangeText={text => handleChange('cantLugares', text)}
+        onChangeText={text => {
+          if (!bloquearInput) {
+            handleChange('cantLugares', text);
+          }
+        }}
+        onFocus={handleFocusInput}
         keyboardType="numeric"
+        editable={!bloquearInput}
       />
+        {mensajeBloqueo !== '' && (
+        <Text style={{ color: 'red', marginTop: 4 }}>{mensajeBloqueo}</Text>
+      )}
+
        </View> 
       <TouchableOpacity style={styles.botonGuardar} onPress={handleGuardar}>
         <Text style={styles.botonTexto}>Actualizar Transporte</Text>

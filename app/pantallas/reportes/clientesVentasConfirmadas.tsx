@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useAuth }from '../../../context/AuthContext';
 import { obtenerClientesConVentasConfirmadasPorEmpresa } from '../../../services/reportesService';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 interface ClienteConVenta {
   usuarios_id: number;
@@ -44,7 +46,15 @@ export default function TopClientesConVentasScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Clientes con Ventas Confirmadas</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Clientes con Ventas Confirmadas</Text>
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => router.push('/pantallas/reportes/clientesVentasNoConfirmadas')}
+        >
+          <Ionicons name="alert-circle-outline" size={24} color="#007aff" />
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={clientes}
         keyExtractor={(item) => item.usuarios_id.toString()}
@@ -90,4 +100,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
   },
+  header: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 16,
+  },
+  iconButton: {
+    padding: 4,
+  },
+
 });

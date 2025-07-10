@@ -51,12 +51,12 @@ export default function DetalleViaje() {
 
    const formatDate = (fechaISO: string) => {
   const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
-  return ` ${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
 };
 
   const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
-    return ` ${hours}:${minutes}`;
+    return `${hours}:${minutes}`;
   };
 
   const handleChangePasajero = (index: number, field: keyof Pasajero, value: string) => {
@@ -64,7 +64,7 @@ export default function DetalleViaje() {
     nuevosPasajeros[index][field] = value;
     setPasajeros(nuevosPasajeros);
 
-     const path = ` personas[${index}].${field}`;
+     const path = `personas[${index}].${field}`;
   if (erroresBackend[path]) {
     setErroresBackend((prev) => {
       const nuevosErrores = { ...prev };
@@ -178,7 +178,7 @@ const reservar = async () => {
       } else if (err.msg?.includes('duplicado')) {
         // Repartimos el mensaje a todos los DNIs
         pasajeros.forEach((_, i) => {
-          erroresMap[` personas[${i}].dni`] = err.msg;
+          erroresMap[`personas[${i}].dni`] = err.msg;
         });
       }
     });
@@ -292,9 +292,9 @@ const reservar = async () => {
             value={pasajero.nombre}
             onChangeText={(text) => handleChangePasajero(index, 'nombre', text)}
           />
-          {erroresBackend[` personas[${index}].nombre`] && (
+          {erroresBackend[`personas[${index}].nombre`] && (
           <Text style={{ color: 'red', fontSize: 12 }}>
-            {erroresBackend[` personas[${index}].nombre`]}
+            {erroresBackend[`personas[${index}].nombre`]}
           </Text>
         )}
           </View>
@@ -308,9 +308,9 @@ const reservar = async () => {
             value={pasajero.apellido}
             onChangeText={(text) => handleChangePasajero(index, 'apellido', text)}
           />
-            {erroresBackend[` personas[${index}].apellido`] && (
+            {erroresBackend[`personas[${index}].apellido`] && (
           <Text style={{ color: 'red', fontSize: 12 }}>
-            {erroresBackend[` personas[${index}].apellido`]}
+            {erroresBackend[`personas[${index}].apellido`]}
           </Text>
         )}
           
@@ -327,9 +327,9 @@ const reservar = async () => {
             onChangeText={(text) => handleChangePasajero(index, 'dni', text)}
           />
 
-            {erroresBackend[` personas[${index}].dni`] && (
+            {erroresBackend[`personas[${index}].dni`] && (
           <Text style={{ color: 'red', fontSize: 12 }}>
-            {erroresBackend[` personas[${index}].dni`]}
+            {erroresBackend[`personas[${index}].dni`]}
           </Text>
         )}
           </View>
@@ -343,9 +343,9 @@ const reservar = async () => {
             onChangeText={(text) => handleChangePasajero(index, 'ubicacionOrigen', text)}
           />
 
-            {erroresBackend[` personas[${index}].ubicacionOrigen`] && (
+            {erroresBackend[`personas[${index}].ubicacionOrigen`] && (
           <Text style={{ color: 'red', fontSize: 12 }}>
-            {erroresBackend[` personas[${index}].ubicacionOrigen`]}
+            {erroresBackend[`personas[${index}].ubicacionOrigen`]}
           </Text>
         )}
           </View>
@@ -358,9 +358,9 @@ const reservar = async () => {
             value={pasajero.ubicacionDestino}
             onChangeText={(text) => handleChangePasajero(index, 'ubicacionDestino', text)}
           />
-               {erroresBackend[` personas[${index}].ubicacionDestino`] && (
+               {erroresBackend[`personas[${index}].ubicacionDestino`] && (
           <Text style={{ color: 'red', fontSize: 12 }}>
-            {erroresBackend[` personas[${index}].ubicacionDestino`]}
+            {erroresBackend[`personas[${index}].ubicacionDestino`]}
           </Text>
          )}
           

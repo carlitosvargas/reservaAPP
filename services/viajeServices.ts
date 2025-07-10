@@ -114,9 +114,10 @@ export const crearViaje = async (viajeData: any) => {
   }
 };
 
-export const eliminarViaje = async (id: number) => {
+export const eliminarViaje = async (id: any) => {
     const token = await AsyncStorage.getItem('token');
-   const response = await axios.put(`${API_URL}/viajes/eliminarViaje/${id}`,{},{
+    const data = {};
+   const response = await axios.put(`${API_URL}/viajes/eliminarViaje/${id}`, data,{
       headers: {
         Authorization: ` Bearer ${token}`,
       },

@@ -24,7 +24,6 @@ export default function BackButton() {
     '/pantallas/editarViaje': '/listarViajes',
     '/pantallas/listarReservasPorViaje': '/listarViajes',
     '/pantallas/modificarEmpresa': '/perfil',
-    '/pantallas/modificarPasajero': '/detalleReserva',
     '/pantallas/modificarUsuario': '/perfil',
     '/pantallas/realizarReserva': '/viajes',
     '/pantallas/ventaReserva' : '/reserva',

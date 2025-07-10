@@ -205,8 +205,8 @@ const formatDate = (fechaISO: string) => {
           <Text style={styles.detail}>Fecha de Reserva: {formatDate(item.fechaReserva)}</Text>
 
           {noViajaste ? (
-            <Text style={[styles.detail, { color: 'red', marginTop: 8 }]}>
-              No viajaste
+            <Text style={[styles.detail, { color: 'red', marginTop: 8,  fontWeight: 'bold' }]}>
+              Sin Confirmación !!
             </Text>
           ) : (
             <View style={styles.botonesContainer}>
@@ -298,7 +298,7 @@ const formatDate = (fechaISO: string) => {
 
           {reservasPasadas.length > 0 && (
             <>
-              <Text style={styles.sectionTitle}>Viajes Terminados</Text>
+              <Text style={styles.sectionTitle}>Viajes Finalizados</Text>
               {reservasPasadas.map(r => renderReserva(r, true))}
             </>
           )}

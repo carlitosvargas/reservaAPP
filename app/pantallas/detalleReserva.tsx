@@ -46,7 +46,7 @@ useEffect(() => {
         setLoading(false);
       });
   }
-}, [id, updated]); // se vuelve a ejecutar si `updated` cambia
+}, [id, updated]); 
 
 const handleEliminar = (idPasajero: number) => {
   const cantidadPasajeros = pasajeros.length;
@@ -91,10 +91,7 @@ const eliminarYActualizar = async (idPasajero: number, cantidadPasajeros: number
 
     // Si era el último pasajero
     if (cantidadPasajeros === 1) {
-      // Si querés, también podés eliminar la reserva acá
-      // await eliminarReserva(idReserva);
-
-      // Redirige a otra pantalla
+     
       router.replace('/(tabs)/reserva');
       return;
     }
@@ -138,123 +135,113 @@ const eliminarYActualizar = async (idPasajero: number, cantidadPasajeros: number
       
       <Text style={styles.subTitle}>Pasajeros:</Text>
       <FlatList
-        data={pasajeros}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.pasajeroItem}>
-            <View style={{ flex: 1 }}>
-              <Text>Nombre: {item.nombre} {item.apellido}</Text>
-              <Text>DNI: {item.dni}</Text>
-              <Text>Ubicación Origen: {item.ubicacionOrigen}</Text>
-              <Text>Ubicación Destino: {item.ubicacionDestino}</Text>
-            </View>
-           
+  data={pasajeros}
+  keyExtractor={(item, index) => index.toString()}
+  renderItem={({ item }) => (
+    <View style={styles.pasajeroCard}>
+      <View style={styles.infoContainer}>
+        <Text style={styles.nombre}>{item.nombre} {item.apellido}</Text>
+        <Text style={styles.dato}>DNI: <Text style={styles.valor}>{item.dni}</Text></Text>
+        <Text style={styles.dato}>Origen: <Text style={styles.valor}>{item.ubicacionOrigen}</Text></Text>
+        <Text style={styles.dato}>Destino: <Text style={styles.valor}>{item.ubicacionDestino}</Text></Text>
+      </View>
 
-        {!reservaConfirmada && (
-          <View style={styles.botonesRow}>
-            <TouchableOpacity
-              style={styles.botonEditar}
-              onPress={() =>
-                router.push({
-                  pathname: '/pantallas/modificarPasajero',
-                  params: { id: item.id, idReserva: idReserva, idViaje: id },
-                })
-              }
-            >
-              <Text style={styles.botonTexto}>Editar</Text>
-            </TouchableOpacity>
+      {!reservaConfirmada && (
+        <View style={styles.botonesRow}>
+          <TouchableOpacity
+            style={styles.botonEditar}
+            onPress={() =>
+              router.push({
+                pathname: '/pantallas/modificarPasajero',
+                params: { id: item.id, idReserva: idReserva, idViaje: id },
+              })
+            }
+          >
+            <Text style={styles.botonTexto}>Editar</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.botonEliminar}
-              onPress={() => handleEliminar(item.id)} 
-            >
-              <Text style={styles.botonTexto}>Eliminar</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-             
-          </View>
-        )}
-      />
+          <TouchableOpacity
+            style={styles.botonEliminar}
+            onPress={() => handleEliminar(item.id)}
+          >
+            <Text style={styles.botonTexto}>Eliminar</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  )}
+/>
+
     </View>
   )
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 20,
-    marginBottom: 8,
+    backgroundColor: '#f4f6f8',
   },
   subTitle: {
     fontWeight: 'bold',
-    fontSize: 18,
-    marginTop: 20,
-    marginBottom: 8,
+    fontSize: 20,
+    marginBottom: 16,
+    color: '#333',
   },
 
-  pasajeroItem: {
+  pasajeroCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  infoContainer: {
+    marginBottom: 12,
+  },
+  nombre: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+    marginBottom: 4,
+  },
+  dato: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 2,
+  },
+  valor: {
+    fontWeight: '600',
+    color: '#333',
+  },
+  botonesRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    marginBottom: 10,
+    justifyContent: 'flex-end',
+    gap: 10, 
   },
   botonEditar: {
     backgroundColor: '#4c68d7',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    marginRight: 10,
   },
-    
+  botonEliminar: {
+    backgroundColor: '#f44336',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+  },
   botonTexto: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 16,
-    letterSpacing: 0.5,
+    fontSize: 14,
   },
-  botonesRow: {
-  flexDirection: 'row',
-  justifyContent: 'flex-start',
-  gap: 10, // Si tu versión de RN no soporta gap, usá marginRight en los botones
-  marginTop: 10,
-},
-
-
-
-botonEliminar: {
-    backgroundColor: '#F44336',
-  paddingVertical: 12,
-  paddingHorizontal: 20,
-  borderRadius: 20,
-  alignItems: 'center',
-  justifyContent: 'center',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 4,
-},
-
-
-
-
 });
+
 
 
 

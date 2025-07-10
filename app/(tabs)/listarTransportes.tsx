@@ -155,34 +155,36 @@ const transporteFiltrados = transportes.filter((transporte) => {
         <FlatList
           data={transporteFiltrados}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text style={styles.label}>
-                Nombre: <Text style={styles.value}>{item.nombre}</Text>
-              </Text>
-              <Text style={styles.label}>
-                Patente: <Text style={styles.value}>{item.patente}</Text>
-              </Text>
-              <Text style={styles.label}>
-                Marca: <Text style={styles.value}>{item.marca}</Text>
-              </Text>
-              <Text style={styles.label}>
-                Cantidad de lugares: <Text style={styles.value}>{item.cantLugares}</Text>
-              </Text>
-              
+         renderItem={({ item }) => (
+        <View style={styles.transporteCard}>
+          <Text style={styles.transporteNombre}>{item.nombre}</Text>
 
-              {esMostrador && (
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity style={styles.editButton} onPress={() => handleEditar(item.id)}>
-                    <Text style={styles.buttonText}>Editar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.deleteButton} onPress={() => handleEliminar(item.id)}>
-                    <Text style={styles.buttonText}>Eliminar</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+          <View style={styles.transporteInfoRow}>
+            <Text style={styles.transporteLabel}>Patente:</Text>
+            <Text style={styles.transporteValor}>{item.patente}</Text>
+          </View>
+          <View style={styles.transporteInfoRow}>
+            <Text style={styles.transporteLabel}>Marca:</Text>
+            <Text style={styles.transporteValor}>{item.marca}</Text>
+          </View>
+          <View style={styles.transporteInfoRow}>
+            <Text style={styles.transporteLabel}>Lugares:</Text>
+            <Text style={styles.transporteValor}>{item.cantLugares}</Text>
+          </View>
+
+          {esMostrador && (
+            <View style={styles.transporteBotones}>
+              <TouchableOpacity style={styles.editButton} onPress={() => handleEditar(item.id)}>
+                <Text style={styles.buttonText}>Editar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.deleteButton} onPress={() => handleEliminar(item.id)}>
+                <Text style={styles.buttonText}>Eliminar</Text>
+              </TouchableOpacity>
             </View>
           )}
+        </View>
+      )}
+
         />
       )}
     </View>
@@ -210,7 +212,17 @@ const styles = StyleSheet.create({
   fontWeight: 'bold',
   fontSize: 16,
   letterSpacing: 0.5, },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 12 },
+ title: {
+  fontSize: 26,
+  fontWeight: '700',
+  color: '#34495e',
+  marginBottom: 14,
+  textAlign: 'left',
+  borderBottomWidth: 2,
+  borderBottomColor: '#4c68d7',
+  paddingBottom: 6,
+},
+
   empty: { fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 },
   card: {  padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, backgroundColor: '#f0f0f0',  },
   label: { fontSize: 14, fontWeight: 'bold' },
@@ -250,7 +262,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 8,
-    marginBottom: 12,
+    marginBottom: 40,
   },
 
   filtrosHeader: {
@@ -293,6 +305,52 @@ limpiarFiltrosText: {
   fontWeight: 'bold',
   fontSize: 14,
 },
+transporteCard: {
+  backgroundColor: '#fefefe', 
+  borderRadius: 16,
+  padding: 10,
+  marginBottom: 16,
+  borderLeftWidth: 6,
+  borderLeftColor: '#4c68d7', 
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.15,
+  shadowRadius: 6,
+  elevation: 6,
+},
+
+transporteNombre: {
+  fontSize: 20,
+  fontWeight: 'bold',
+  color: '#2c3e50',
+  marginBottom: 10,
+},
+
+transporteInfoRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 4,
+},
+
+transporteLabel: {
+  fontSize: 15,
+  fontWeight: '600',
+  color: '#555',
+  marginRight: 6,
+},
+
+transporteValor: {
+  fontSize: 15,
+  color: '#1a1a1a',
+},
+
+transporteBotones: {
+  flexDirection: 'row',
+  justifyContent: 'flex-end',
+  marginTop: 16,
+  gap: 12, 
+},
+
 });
 
 export default ListarTransportes;

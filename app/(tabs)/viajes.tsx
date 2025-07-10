@@ -151,7 +151,7 @@ const formatDate = (fechaISO: string) => {
         maximumFractionDigits: 2,
       })}</Text>
       <View style={styles.btnSeleccionar}>
-        <Text style={styles.btnSeleccionarText}>Seleccionar</Text>
+        <Text style={styles.btnSeleccionarText}>Ir a Reservar</Text>
       </View>
     </View>
   </Pressable>

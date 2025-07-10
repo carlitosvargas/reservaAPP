@@ -84,15 +84,17 @@ const ReservasPorViaje = () => {
           {item.Usuario && (
             <Text>Realizada por: {item.Usuario.nombre} {item.Usuario.apellido}</Text>
           )}
-
           {item.Pasajeros && item.Pasajeros.length > 0 && (
-            <View style={{ marginTop: 6 }}>
-              <Text style={{ fontWeight: 'bold' }}>Pasajeros:</Text>
+            <View style={styles.pasajeroLista}>
+              <Text style={{ fontWeight: 'bold', marginBottom: 6 }}>Pasajeros:</Text>
               {item.Pasajeros.map((pasajero, index) => (
-                <Text key={index}>- {pasajero.nombre} {pasajero.apellido}</Text>
+                <Text key={index} style={styles.pasajeroItem}>
+                  • {pasajero.nombre} {pasajero.apellido}
+                </Text>
               ))}
             </View>
           )}
+
         </View>
       )}
     />
@@ -100,10 +102,47 @@ const ReservasPorViaje = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  reservaItem: { padding: 12, marginBottom: 10, backgroundColor: '#eee', borderRadius: 8 },
-  reservaTitulo: { fontWeight: 'bold', fontSize: 16 },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  reservaItem: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+    borderLeftWidth: 4,
+    borderLeftColor: '#17a589',
+  },
+  reservaTitulo: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: 6,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pasajeroLista: {
+    marginTop: 6,
+    backgroundColor: '#f0f4f7',
+    borderRadius: 10,
+    padding: 10,
+  },
+  pasajeroItem: {
+    fontSize: 14,
+    marginBottom: 2,
+    color: '#333',
+  },
 });
+
 
 export default ReservasPorViaje;

@@ -1,7 +1,10 @@
+
 import React from 'react';
 import { Tabs, Redirect } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
+
+
 
 export default function TabLayout() {
   const { isLoggedIn, isLoading, userInfo } = useAuth();
@@ -11,7 +14,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      screenOptions={({ route }) => ({
+    screenOptions={({ route }) => ({
         headerStyle: { backgroundColor: '#000' },
         headerTintColor: '#007AFF',
         tabBarActiveTintColor: '#007AFF',
@@ -69,6 +72,7 @@ export default function TabLayout() {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
+
     >
       <Tabs.Screen name="index" options={{ title: 'Inicio' }} />
      

@@ -60,9 +60,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 26,
-    fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    fontWeight: '700',
+    color: '#34495e',
+    borderBottomColor: '#4c68d7',
+    paddingBottom: 6,
   },
   profileBox: {
     backgroundColor: '#fff',
