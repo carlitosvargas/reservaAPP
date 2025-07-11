@@ -186,7 +186,13 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () =>
             <Text style={styles.linkText} onPress={() => router.push('/registro')}>
               Registrarse
             </Text>
+            
           </Text>
+          <Text style={[styles.registroLink, { marginTop: 12 }]}onPress={() => router.push('/recuperarContrasenia')}>
+          ¿Olvidaste tu contraseña?
+        </Text>
+
+         
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

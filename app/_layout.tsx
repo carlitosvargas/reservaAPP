@@ -11,7 +11,9 @@ export default function RootLayout() {
   const isDark = colorScheme === 'dark';
   const pathname = usePathname();
 
-  const esLogin = pathname === '/login';
+  const esPrincipal= pathname === '/login' || '/registro' || '/recuperarContrasenia' || '/resetear/[token]';
+  const esResgistro = pathname === '/registro';
+  const esRecuperar = pathname === '/recuperarContrasenia';
   const esPantallaSecundaria = pathname.startsWith('/pantallas/');
 
   // Diccionario de rutas → títulos personalizados
@@ -66,7 +68,7 @@ export default function RootLayout() {
           translucent={false}
         />
         <View style={styles.container}>
-          {!esLogin && (
+          {!esPrincipal && (
             <View style={styles.header}>
               {esPantallaSecundaria && <BackButton />}
               <Animated.Text

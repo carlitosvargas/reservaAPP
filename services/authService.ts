@@ -23,3 +23,26 @@ export const registrarUsuario = async (usuarioData: any) => {
     throw error.response?.data || { mensaje: 'Error desconocido al registrar' };
   }
 };
+
+
+export const enviarEmailRecuperacion = async (email: string, plataforma: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/api/auth/recuperar`, { email, plataforma });
+    return response.data; 
+  } catch (error: any) {
+    console.error('Error al solicitar recuperación de contraseña:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const resetearContrasenia = async (token: string, nuevaContrasenia: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/api/auth/resetear/${token}`, {
+      nuevaContrasenia,
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al restablecer contraseña:', error.response?.data || error.message);
+    throw error;
+  }
+};
