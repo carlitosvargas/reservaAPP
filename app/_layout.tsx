@@ -5,6 +5,9 @@ import { AuthProvider } from '../context/AuthContext';
 import BackButton from '@/components/BackButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { useFonts } from 'expo-font';
+
+
 
 export default function RootLayout() {
   const colorScheme = useColorScheme(); // 'light' | 'dark' | null
@@ -48,7 +51,7 @@ export default function RootLayout() {
     '/pantallas/realizarReserva': 'Nueva reserva',
   };
 
-  const tituloHeader = titulosPorRuta[pathname] || 'V&V Reservas 🚌';
+  const tituloHeader = titulosPorRuta[pathname] || 'V&V Reservas';
 
   // === Animación: fade in del título ===
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -126,10 +129,18 @@ const styles = StyleSheet.create({
 },
 
   title: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+    textShadowColor: '#000',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
+    fontStyle: 'italic',
+    fontFamily: 'System', // o una fuente personalizada si cargás una
 },
+
   content: {
     flex: 1,
     padding: 0,

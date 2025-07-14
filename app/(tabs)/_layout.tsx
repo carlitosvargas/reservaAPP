@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs, Redirect } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Octicons, MaterialIcons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   const { isLoggedIn, isLoading, userInfo } = useAuth();
@@ -19,21 +19,21 @@ export default function TabLayout() {
       tabBarInactiveTintColor: '#888',
       headerShown: false,
       tabBarStyle: {
-      position: 'relative', 
-      bottom: 20,           
-      left: 20,
-      right: 20,
-      backgroundColor: '#111',
-      borderTopColor: '#222',
-      height: 65,
-      paddingBottom: 8,
-      paddingTop: 6,
-      borderRadius: 0,
-      elevation: 10,
-      shadowColor: '#000',
-      shadowOpacity: 0.3,
-      shadowOffset: { width: 0, height: -1 },
-      shadowRadius: 2,
+        position: 'relative', 
+        bottom: 20,           
+        left: 0,
+        right: 20,
+        backgroundColor: '#111',
+        borderTopColor: '#222',
+        height: 65,
+        paddingBottom: 8,
+        paddingTop: 6,
+        borderRadius: 0,
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.3,
+        shadowOffset: { width: 0, height: -1 },
+        shadowRadius: 2,
       },
       tabBarLabelStyle: {
         fontSize: 12,
@@ -74,7 +74,7 @@ export default function TabLayout() {
       iconName = 'clipboard-outline';
       break;
     case 'listarTransportes':
-      iconName = 'car-outline';
+      iconName = 'bus-outline';
       break;
     case 'crearEmpresa':
       iconName = 'business-outline';
