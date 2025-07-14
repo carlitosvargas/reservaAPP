@@ -212,20 +212,17 @@ const reservar = async () => {
   }
 
   return (
-    <KeyboardAwareScrollView
-                  style={styles.container}
-                  contentContainerStyle={{ paddingBottom: 20 }}
-                  keyboardShouldPersistTaps="handled"
-                  enableOnAndroid={true}
-                  extraScrollHeight={120} 
-                >
+    
+    <KeyboardAwareScrollView  contentContainerStyle={styles.container}
   
-     
+     keyboardShouldPersistTaps="handled" enableOnAndroid={true}extraScrollHeight={120} 
+                >
+      <View>
 
       <Text style={styles.title}>Detalle del Viaje</Text>
 
       <View style={styles.card}>
-  <View style={styles.infoRow}>
+    <View style={styles.infoRow}>
     <View style={styles.infoBox}>
       <Text style={styles.label}>Origen</Text>
       <Text style={styles.value}>{viaje.origenLocalidad}</Text>
@@ -382,7 +379,7 @@ const reservar = async () => {
         <Text style={styles.reservarButtonText}>{'Reservar'}</Text>
       </TouchableOpacity>
 
-   
+    </View>
     </KeyboardAwareScrollView>
   );
 }
@@ -396,6 +393,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 16,
+    paddingBottom: 40,
     backgroundColor: '#fff',
   },
   volverButton: {

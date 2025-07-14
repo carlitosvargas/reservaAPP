@@ -197,14 +197,7 @@ const ViajesEmpresa = () => {
       esPasado && styles.viajePasadoCard, // Estilo oscuro para viajes pasados
     ]}
   >
-    <Text
-      style={[
-        styles.viajeRuta,
-        esPasado && { color: '#888' }, // Título gris para viajes pasados
-      ]}
-    >
-      {viaje.origenLocalidad} → {viaje.destinoLocalidad}
-    </Text>
+    <Text style={[styles.viajeRuta, ]} > {viaje.origenLocalidad} → {viaje.destinoLocalidad} </Text>
 
     <View style={styles.viajeInfoRow}>
       <Text style={styles.viajeLabel}>Fecha:</Text>
@@ -455,6 +448,20 @@ const styles = StyleSheet.create({
   borderLeftWidth: 6,
   borderLeftColor: '#4c68d7',
 },
+ viajePasadoCard: {
+  borderRadius: 16,
+  padding: 18,
+  marginBottom: 16,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 3 },
+  shadowOpacity: 0.15,
+  shadowRadius: 6,
+  elevation: 0,
+  borderLeftWidth: 6,
+  borderLeftColor: '#4c68d7',
+   backgroundColor: '#3332',
+   flex: 1
+},
 
 viajeRuta: {
   fontSize: 18,
@@ -543,10 +550,7 @@ buttonText: {
     marginBottom: 12,
     borderRadius: 8,
   },
-  viajePasadoCard: {
-    backgroundColor: '#3332', // más oscuro para viajes pasados
-   
-  },
+  
   title: {
     fontWeight: 'bold',
     fontSize: 16,

@@ -25,8 +25,8 @@ export default function PerfilesScreen() {
       <Text style={styles.title}>Hola {userInfo?.nombre}!</Text>
 
       <View style={styles.profileBox}>
-        <Text style={styles.label}>Nombre:</Text>
-        <Text style={styles.value}>{userInfo?.nombre}</Text>
+        <Text style={styles.label}>Nombre: {userInfo?.nombre}</Text>
+        
 
         
       </View>
@@ -92,12 +92,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 5, 
     transform: [{ scale: 1 }],
     transitionDuration: '200ms', 
      marginVertical: 8,
+     
   },
   logoutButton: {
     backgroundColor: '#dc3545',

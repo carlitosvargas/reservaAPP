@@ -11,9 +11,12 @@ export default function RootLayout() {
   const isDark = colorScheme === 'dark';
   const pathname = usePathname();
 
-  const esPrincipal= pathname === '/login' || '/registro' || '/recuperarContrasenia' || '/resetear/[token]';
-  const esResgistro = pathname === '/registro';
-  const esRecuperar = pathname === '/recuperarContrasenia';
+  const esPrincipal =
+  pathname === '/login' ||
+  pathname === '/registro' ||
+  pathname === '/recuperarContrasenia' ||
+  pathname === '/resetear/[token]';
+
   const esPantallaSecundaria = pathname.startsWith('/pantallas/');
 
   // Diccionario de rutas → títulos personalizados
@@ -97,10 +100,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#111'
   },
   header: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#4c68d7',
     paddingVertical: 15,
     paddingHorizontal: 20,
-    flexDirection: 'row',
+    flexDirection: 'row', 
     alignItems: 'center',
     opacity: 0.95, 
   },

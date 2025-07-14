@@ -108,7 +108,7 @@ export default function ReservasYPasajerosScreen() {
      
          // Si era el último pasajero
        if (cantidadPasajeros === 1) {
-          // Si querés, también podés eliminar la reserva acá
+          
           // await eliminarReserva(idReserva);
 
           // Redirige a otra pantalla
@@ -265,7 +265,7 @@ const renderReserva = (item: ReservaConPasajeros) => {
 const styles = StyleSheet.create({
    tablaEncabezado: {
     flexDirection: 'row',
-    backgroundColor: '#eee',
+    color: '#4c68d7',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
 
   celdaHeader: {
     fontWeight: 'bold',
-    color: '#333',
+    color: '#4c68d7',
   },
 
   iconoEliminar: {
@@ -323,11 +323,17 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 16 },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginVertical: 10, color: '#333' },
   card: {
-    backgroundColor: '#fff',
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 16,
-    elevation: 2
+   backgroundColor: '#ffffff',
+  borderRadius: 16,
+  padding: 18,
+  marginBottom: 16,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 3 },
+  shadowOpacity: 0.15,
+  shadowRadius: 6,
+  elevation: 5,
+  borderLeftWidth: 6,
+  borderLeftColor: '#4c68d7',
   },
   reservaId: {
     fontSize: 18,

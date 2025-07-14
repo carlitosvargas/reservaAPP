@@ -117,7 +117,7 @@ console.log('ver viajes pasados ', viajesPasados)
       onPress={() =>
         router.push({ pathname: '/pantallas/choferListaPasajeros', params: { id: item.id, origen: item.origenLocalidad, destino: item.destinoLocalidad } })
       }
-      style={styles.card}
+      style={styles.viajeCard}
     >
       {/* Empresa */}
       {item.MedioTransporte?.Empresa?.nombre && (
@@ -196,17 +196,19 @@ const styles = StyleSheet.create({
     marginTop: 40,
     fontSize: 16,
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 3,
-  },
+   viajeCard: {
+  backgroundColor: '#ffffff',
+  borderRadius: 16,
+  padding: 18,
+  marginBottom: 16,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 3 },
+  shadowOpacity: 0.15,
+  shadowRadius: 6,
+  elevation: 5,
+  borderLeftWidth: 6,
+  borderLeftColor: '#4c68d7',
+},
   nombreEmpresa: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -250,12 +252,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   sectionTitle: {
-  fontSize: 18,
-  fontWeight: 'bold',
-  marginTop: 20,
-  marginBottom: 10,
-  color: '#333',
-  textAlign: 'center',
+   fontSize: 26,
+  fontWeight: '700',
+  color: '#34495e',
+  marginBottom: 14,
+  textAlign: 'left',
+  borderBottomWidth: 2,
+  borderBottomColor: '#4c68d7',
+  paddingBottom: 6,
 },
 
 });
