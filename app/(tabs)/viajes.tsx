@@ -95,7 +95,7 @@ const formatDate = (fechaISO: string) => {
         setMensaje('No se encontraron viajes disponibles.');
       }
     } catch (error) {
-      console.error('Error al obtener viajes:', error);
+      console.log('Error al obtener viajes:', error);
       setMensaje('No se encontraron viajes disponibles !!');
     } finally {
       setLoading(false);

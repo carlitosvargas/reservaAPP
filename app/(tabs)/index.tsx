@@ -6,11 +6,12 @@ import Login from '../login';
 import * as Animatable from 'react-native-animatable';
 
 const { width, height } = Dimensions.get('window');
- const colorScheme = useColorScheme();
+ 
  
 export default function Index() {
  
-
+const colorScheme = useColorScheme();
+ const isDark = colorScheme === 'dark';
   const { isLoggedIn, isLoading } = useAuth();
   const router = useRouter();
   const { userInfo } = useAuth();
@@ -91,7 +92,7 @@ export default function Index() {
     </ImageBackground>
   );
 }
- const isDark = colorScheme === 'dark';
+
  
 const styles = StyleSheet.create({
   loaderContainer: {

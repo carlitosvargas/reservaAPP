@@ -42,7 +42,7 @@ export default function BackButton() {
   };
 
   return (
-    <Pressable onPress={handleBack}>
+    <Pressable onPress={handleBack} style={{ padding: 2 }}>
       <Ionicons name="arrow-back" size={24} color="white" />
     </Pressable>
   );

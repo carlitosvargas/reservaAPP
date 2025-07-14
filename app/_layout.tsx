@@ -70,25 +70,29 @@ export default function RootLayout() {
           backgroundColor={isDark ? '#000' : '#fff'}
           translucent={false}
         />
-        <View style={styles.container}>
-          {!esPrincipal && (
+       <View style={styles.container}>
+                {!esPrincipal && (
+          <>
             <View style={styles.header}>
-              {esPantallaSecundaria && <BackButton />}
-              <Animated.Text
-                style={[
-                  styles.title,
-                  esPantallaSecundaria && { marginLeft: 10 },
-                  { opacity: fadeAnim }, 
-                ]}
-              >
-                {tituloHeader}
-              </Animated.Text>
+              <View style={styles.center}>
+                <Animated.Text style={[styles.title, { opacity: fadeAnim }]}>
+                  {tituloHeader}
+                </Animated.Text>
+              </View>
             </View>
-          )}
-          <View style={styles.content}>
-            <Slot />
-          </View>
-        </View>
+
+            {esPantallaSecundaria && (
+              <View style={styles.backFloating}>
+                <BackButton />
+              </View>
+            )}
+          </>
+        )}
+    <View style={styles.content}>
+      <Slot />
+    </View>
+  </View>
+
       </SafeAreaView>
     </AuthProvider>
   );
@@ -99,23 +103,58 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#111'
   },
-  header: {
+    header: {
     backgroundColor: '#4c68d7',
     paddingVertical: 15,
     paddingHorizontal: 20,
-    flexDirection: 'row', 
+    flexDirection: 'row',
     alignItems: 'center',
-    opacity: 0.95, 
-  },
+    justifyContent: 'space-between', // distribuye los elementos
+    opacity: 0.95,
+},
+
+  side: {
+    width: 40, // o lo que mida tu botón (ajustable)
+    alignItems: 'center',
+    justifyContent: 'center',
+},
+
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+},
+
   title: {
     color: '#fff',
     fontSize: 20,
     fontWeight: 'bold',
-    flex: 1,
-    textAlign: 'center',
-  },
+},
   content: {
     flex: 1,
     padding: 0,
   },
+ backContainer: {
+  paddingHorizontal: 10,
+  paddingTop: 12,
+  width: 'auto',
+  alignSelf: 'flex-start',
+  backgroundColor: 'transparent', // o '#111' si querés mantener el fondo
+},
+backFloating: {
+  position: 'absolute',
+  top: 3, // ajustalo según tus necesidades
+  left: 10,
+  zIndex: 999,
+  backgroundColor: 'transparent',
+  borderRadius: 24,
+  padding: 10,
+  elevation: 5, // Android
+  shadowColor: '#000', // iOS
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 1.25,
+  shadowRadius: 2.5,
+},
+
+
 });

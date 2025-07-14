@@ -1,10 +1,7 @@
-
 import React from 'react';
 import { Tabs, Redirect } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
-
-
 
 export default function TabLayout() {
   const { isLoggedIn, isLoading, userInfo } = useAuth();
@@ -14,64 +11,78 @@ export default function TabLayout() {
 
   return (
     <Tabs
-    screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: '#000' },
-        headerTintColor: '#007AFF',
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#888',
-        tabBarActiveBackgroundColor: '#000',
-        tabBarInactiveBackgroundColor: '#111',
-        tabBarStyle: { borderTopColor: '#333' },
-        headerShown: false,
-        tabBarIcon: ({ color, size }) => {
-          let iconName: keyof typeof Ionicons.glyphMap = 'home';
+      screenOptions={({ route }) => ({
+      tabBarShowLabel: false,
+      headerStyle: { backgroundColor: '#000' },
+      headerTintColor: '#007AFF',
+      tabBarActiveTintColor: '#007AFF',
+      tabBarInactiveTintColor: '#888',
+      headerShown: false,
+      tabBarStyle: {
+      position: 'relative', 
+      bottom: 20,           
+      left: 20,
+      right: 20,
+      backgroundColor: '#111',
+      borderTopColor: '#222',
+      height: 65,
+      paddingBottom: 8,
+      paddingTop: 6,
+      borderRadius: 0,
+      elevation: 10,
+      shadowColor: '#000',
+      shadowOpacity: 0.3,
+      shadowOffset: { width: 0, height: -1 },
+      shadowRadius: 2,
+      },
+      tabBarLabelStyle: {
+        fontSize: 12,
+        fontWeight: '600',
+        marginBottom: 1,
+      },
+      tabBarIconStyle: {
+        marginTop: 4,
+      },
+      tabBarIcon: ({ color, size }) => {
+        let iconName: keyof typeof Ionicons.glyphMap = 'home-outline';
 
-          switch (route.name) {
-            case 'index':
-              iconName = 'home';
-              break;
-            case 'reserva':
-              iconName = 'calendar';
-              break;
-            case 'viajes':
-              iconName = 'bus';
-              break;
-            case 'perfil':
-              iconName = 'person';
-              break;
-            case 'usuarios':
-              iconName = 'people';
-              break;
-              case 'empresaUsuarios':
-              iconName = 'people';
-              break;
-            case 'choferViajes':
-              iconName = 'bus';
-              break;
-              case 'choferReserva':
-              iconName = 'calendar';
-              break;
-            case 'listarReservas':
-              iconName = 'calendar';
-              break;
-            case 'listarViajes':
-              iconName = 'map';
-              break;
-            case 'listarTransportes':
-              iconName = 'bus';
-              break;
-            case 'crearEmpresa':
-              iconName = 'bus';
-              break;
-            case 'crearEmpresa':
-              iconName = 'business';
-              break;
-          
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-      })}
+  switch (route.name) {
+    case 'index':
+      iconName = 'home-outline';
+      break;
+    case 'reserva':
+      iconName = 'calendar-outline';
+      break;
+    case 'viajes':
+      iconName = 'navigate-outline';
+      break;
+    case 'perfil':
+      iconName = 'person-circle-outline';
+      break;
+    case 'usuarios':
+    case 'empresaUsuarios':
+      iconName = 'people-outline';
+      break;
+    case 'choferViajes':
+    case 'listarViajes':
+      iconName = 'trail-sign-outline';
+      break;
+    case 'choferReserva':
+      iconName = 'reader-outline';
+      break;
+    case 'listarReservas':
+      iconName = 'clipboard-outline';
+      break;
+    case 'listarTransportes':
+      iconName = 'car-outline';
+      break;
+    case 'crearEmpresa':
+      iconName = 'business-outline';
+      break;
+  }
+        return <Ionicons name={iconName} size={size} color={color} />;
+      },
+    })}
 
     >
       <Tabs.Screen name="index" options={{ title: 'Inicio' }} />
