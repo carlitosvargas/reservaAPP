@@ -497,6 +497,7 @@ const CrearViaje = () => {
             </div>
           ) : (
             <>
+            <View style={styles.choferInputContainer}>
               <TextInput
                 style={styles.input}
                 placeholder="Buscar chofer"
@@ -506,18 +507,21 @@ const CrearViaje = () => {
                   setChoferInput(text);
                   filtrarChoferes(text);
                 }}
+                  onBlur={() => setSugerenciasChofer([])}
               />
+              
                 {choferInput.length > 0 && (
                 <Pressable
                   onPress={() => {
                     setChoferInput('');
                     setSugerenciasChofer([]);
                   }}
-                  style={styles.clearIconContainer}
+                  style={styles.clearIconChofer}
                 >
                   <Icon name="times-circle" size={20} color="#aaa" />
                 </Pressable>
               )}
+              </View>
               {sugerenciasChofer.map((s, i) => (
                 <Pressable
                   key={i}
@@ -608,6 +612,7 @@ const CrearViaje = () => {
             </div>
           ) : (
             <>
+            <View style={styles.transporteInputContainer}>
               <TextInput
                 style={styles.input}
                 placeholder="Buscar transporte"
@@ -617,6 +622,7 @@ const CrearViaje = () => {
                   setTransporteInput(text);
                   filtrarTransportes(text);
                 }}
+                onBlur={() => setSugerenciasTransporte([])}
               />
                 {transporteInput.length > 0 && (
                 <Pressable
@@ -624,11 +630,12 @@ const CrearViaje = () => {
                     setTransporteInput('');
                     setSugerenciasTransporte([]);
                   }}
-                  style={styles.clearIconContainer}
+                  style={styles.clearIconTransporte}
                 >
                   <Icon name="times-circle" size={20} color="#aaa" />
                 </Pressable>
               )}
+              </View>
               {sugerenciasTransporte.map((s, i) => (
                 <Pressable key={i} onPress={async () => {
                   const transporte = transportes.find(t => ` ${t.nombre} - ${t.patente}` === s);
@@ -678,7 +685,14 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
   label: { fontSize: 16, marginBottom: 4, marginTop: 12 },
   input: {
-    borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 8, marginBottom: 8,
+     borderWidth: 1,
+  borderColor: '#ccc',
+  paddingVertical: 10,
+  paddingLeft: 10,
+  paddingRight: 36, 
+  borderRadius: 8,
+  backgroundColor: '#fff',
+  fontSize: 16,
   },
   webInput: {
     padding: 10, marginBottom: 8, borderWidth: 1, borderRadius: 8, width: '98%',
@@ -717,8 +731,9 @@ buttonText: {
     backgroundColor: '#f0f0f0',
     borderRadius: 8,
     marginBottom: 12,
-    maxHeight: 240, 
+    maxHeight: 150, 
     overflow: 'scroll', 
+    
 
   },
 
@@ -766,6 +781,32 @@ clearIconContainer: {
   transform: [{ translateY: -10 }],
   padding: 1,
   zIndex: 1,
+},
+choferInputContainer: {
+  position: 'relative',
+  marginBottom: 10,
+},
+
+clearIconChofer: {
+  position: 'absolute',
+  right: 10,
+  top: '50%',
+  transform: [{ translateY: -10 }],
+  zIndex: 1,
+  padding: 1,
+},
+transporteInputContainer: {
+  position: 'relative',
+  marginBottom: 10,
+},
+
+clearIconTransporte: {
+  position: 'absolute',
+  right: 10,
+  top: '50%',
+  transform: [{ translateY: -10 }],
+  zIndex: 1,
+  padding: 1,
 },
 
 
