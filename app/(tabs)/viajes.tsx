@@ -416,6 +416,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#ddd',
     color: '#007AFF',
+    fontWeight: 'bold'
   },
   button: {
     padding: 14,
@@ -529,7 +530,7 @@ btnSeleccionarText: {
   fontSize: 14,
 },
 iconoAsiento: {
-  width: 18,                     // Ajustá tamaño según necesites
+  width: 18,                     
   height: 18,
   marginRight: 4,
 },
@@ -641,7 +642,8 @@ const stylesWeb: { [key: string]: React.CSSProperties } = {
     borderBottom: '1px solid #ddd',
     color: '#007AFF',
     cursor: 'pointer',
-    fontFamily:'sans-serif'
+    fontFamily:'sans-serif',
+    fontWeight: 'bold'
   },
   button: {
     backgroundColor: '#007AFF',
