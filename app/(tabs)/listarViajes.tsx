@@ -341,7 +341,7 @@ const ViajesEmpresa = () => {
 
       {/* 📆 Filtros de fecha */}
       <View
-        style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}
+        style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 23 }}
       >
         {/* Fecha Desde */}
         <View style={{ flex: 1, marginRight: 8 }}>
@@ -590,21 +590,32 @@ buttonText: {
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
 
   fechaButton: {
-    backgroundColor: '#4c68d7',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
+      backgroundColor: '#4c68d7',
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 4,
+      marginBottom: 8,
   },
   fechaButtonText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 14,
+    letterSpacing: 0.3,
   },
   fechaLabel: {
     fontSize: 14,
@@ -613,13 +624,14 @@ buttonText: {
     color: '#333',
   },
   dateInputWeb: {
-    width: '100%',
-    padding: 8,
-    fontSize: 16,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: '#fff',
+     width: '100%',
+      padding: 8,
+      fontSize: 16,
+      borderColor: '#ccc',
+      borderWidth: 1,
+      borderRadius: 5,
+      backgroundColor: '#fff',
+      boxSizing: 'border-box',
   },
  
 limpiarFiltrosText: {

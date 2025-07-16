@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, ScrollView, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, ScrollView, Button, Alert, Platform } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { obtenerVentaDetalle } from '../../services/ventaService';
 import { obtenerUsuarioPorId } from '../../services/usuarioService';
@@ -7,6 +7,8 @@ import { generarHTMLComprobante } from '../../utils/imprimirComprobante';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { useAuth } from '@/context/AuthContext';
+import { WebView } from 'react-native-webview';
+
 
 
 export default function DetalleVenta() {
@@ -85,22 +87,60 @@ useEffect(() => {
 
   const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
-    return ` ${hours}:${minutes}`;
+    return `${hours}:${minutes}`;
   };
 
   const handleDownload = async () => {
-    if (!data) return;
+  if (!data) return;
 
-    const htmlContent = generarHTMLComprobante(data);
+  const htmlContent = generarHTMLComprobante(data);
 
-    try {
+  try {
+    if (Platform.OS === 'web') {
+      // En web, abrimos una ventana con el comprobante
+      const newWindow = window.open('', '_blank');
+if (newWindow) {
+      // Escribimos un HTML completo
+      newWindow.document.write(`
+        <html>
+          <head>
+            <title>Comprobante</title>
+            <style>
+              ${/* Forzamos un CSS para impresión */''}
+              * {
+                box-sizing: border-box;
+              }
+              @media print {
+                body {
+                  -webkit-print-color-adjust: exact; /* Forza colores */
+                  color-adjust: exact;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            ${htmlContent}
+          </body>
+        </html>
+      `);
+      newWindow.document.close();
+
+      // Espera a que cargue el contenido antes de imprimir
+      newWindow.onload = () => {
+        newWindow.print();
+      };
+    }
+
+    } else {
+      // En móvil usamos expo-print
       const { uri } = await Print.printToFileAsync({ html: htmlContent });
       await Sharing.shareAsync(uri);
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo generar el comprobante.');
-      console.error(error);
     }
-  };
+  } catch (error) {
+    Alert.alert('Error', 'No se pudo generar el comprobante.');
+    console.error(error);
+  }
+};
 
   if (loading) {
     return (
@@ -135,71 +175,37 @@ useEffect(() => {
   
 
 
-  return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent}>
-      <Text style={styles.successMessage}>✅ ¡Compra realizada con éxito!</Text>
+return (
+  <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent}>
+    <Text style={styles.successMessage}>✅ ¡Compra realizada con éxito!</Text>
 
-      <View style={styles.receipt}>
-        <Text style={styles.receiptTitle}>RECIBO DE COMPRA</Text>
-        <View style={styles.separator} />
-
-        {/* DATOS DEL USUARIO */}
-        <Text style={styles.sectionTitle}>🙋 Usuario</Text>
-        <Text style={styles.receiptText}>Nombre: {usuario.usuario} </Text>
-        <Text style={styles.receiptText}>Email: {usuario.email || 'N/A'}</Text>
-
-        <View style={styles.separator} />
-
-        {/* VIAJE */}
-        <Text style={styles.sectionTitle}>🚌 Viaje</Text>
-        <View style={styles.viajeBox}>
-          <Text style={styles.viajeText}>Origen: {origenLocalidad}</Text>
-          <Text style={styles.viajeText}>Destino: {destinoLocalidad}</Text>
-          
-          <Text style={styles.viajeText}>Fecha: {formatDate(fechaViaje)}</Text>
-          <Text style={styles.viajeText}>Hora: {formatTime(horarioSalida)}</Text>
-        </View>
-
-        <View style={styles.separator} />
-
-        {/* PASAJEROS */}
-        <Text style={styles.sectionTitle}>👤 Pasajeros</Text>
-        <FlatList
-          data={pasajeros || []}
-          keyExtractor={(item) => item.id.toString()}
-          scrollEnabled={false}
-          renderItem={({ item }) => (
-            <View style={styles.pasajeroItem}>
-              <Text style={styles.receiptText}>Nombre: {item.nombre} {item.apellido}</Text>
-              <Text style={styles.receiptText}>DNI: {item.dni}</Text>
-              <Text style={styles.receiptText}>Origen: {item.ubicacionOrigen}</Text>
-              <Text style={styles.receiptText}>Destino: {item.ubicacionDestino}</Text>
-              <View style={styles.innerSeparator} />
-            </View>
-          )}
+    {Platform.OS === 'web' ? (
+      // 👇 En web usamos un div nativo
+      <div
+        style={{
+          width: '100%',
+          backgroundColor: '#fff',
+          borderRadius: 8,
+          overflow: 'hidden',
+          marginBottom: 20,
+        }}
+        dangerouslySetInnerHTML={{ __html: generarHTMLComprobante(data) }}
+      />
+    ) : (
+      // 👇 En móvil usamos WebView
+      <View style={{ flex: 1, height: 600, width: '100%' }}>
+        <WebView
+          originWhitelist={['*']}
+          source={{ html: generarHTMLComprobante(data) }}
+          style={{ flex: 1 }}
         />
-
-        {/* DETALLE DE VENTA */}
-        <Text style={styles.sectionTitle}>🧾 Detalle de Venta</Text>
-        <Text style={styles.receiptText}>Fecha Venta: {formatDate(fecha)}</Text>
-        <Text style={styles.receiptText}>Hora: {formatTime(hora)}</Text>
-        <Text style={styles.subTotal}>Subtotal: ${subTotal?.toLocaleString('es-AR', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2,
-                                      })}</Text>
-        <Text style={styles.receiptText}>Descuento: {descuento}%</Text>
-        <Text style={styles.totalFinal}>Total: ${precioFinal?.toLocaleString('es-AR', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2,
-                                      })}</Text>
-        <Text style={styles.receiptText}>Forma de Pago: {formaPago ?? 'N/A'}</Text>
-
-        <View style={styles.separator} />
-        <Text style={styles.footer}>¡Gracias por su compra!</Text>
-        <Button title="📄 Descargar Comprobante" onPress={handleDownload} />
       </View>
-    </ScrollView>
-  );
+    )}
+
+    <Button title="📥 Descargar Comprobante" onPress={handleDownload} />
+  </ScrollView>
+);
+
 }
 
 const styles = StyleSheet.create({

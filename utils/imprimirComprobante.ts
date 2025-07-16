@@ -48,6 +48,7 @@ export const generarHTMLComprobante = (data: any) => {
         .info-table {
           width: 100%;
           margin-top: 10px;
+          border-collapse: collapse;
         }
 
         .info-table td {
@@ -56,14 +57,11 @@ export const generarHTMLComprobante = (data: any) => {
           color: #555;
         }
 
-        .conceptos {
-          margin-top: 20px;
-        }
-
         table {
           width: 100%;
           border-collapse: collapse;
           margin-top: 10px;
+          table-layout: fixed; 
         }
 
         th {
@@ -71,6 +69,7 @@ export const generarHTMLComprobante = (data: any) => {
           color: white;
           padding: 8px;
           font-size: 14px;
+          text-align: left;
         }
 
         td {
@@ -78,6 +77,28 @@ export const generarHTMLComprobante = (data: any) => {
           padding: 8px;
           font-size: 14px;
           color: #333;
+          text-align: left; 
+        }
+
+        .conceptos th:nth-child(1),
+        .conceptos td:nth-child(1) {
+          width: 35%;
+        }
+
+        .conceptos th:nth-child(2),
+        .conceptos td:nth-child(2) {
+          width: 20%;
+        }
+
+        .conceptos th:nth-child(3),
+        .conceptos td:nth-child(3) {
+          width: 20%;
+        }
+
+        .conceptos th:nth-child(4),
+        .conceptos td:nth-child(4) {
+          width: 25%;
+          text-align: right; 
         }
 
         .totales {
@@ -117,44 +138,44 @@ export const generarHTMLComprobante = (data: any) => {
           </div>
         </div>
 
-       <div class="section-title">INFORMACIÓN DEL CLIENTE</div>
-      <table class="info-table">
-        <tr><td>Nombre:</td><td>${data.usuario.nombre} ${data.usuario.apellido}</td></tr>
-        <tr><td>Email:</td><td>${data.usuario.email ?? '-'}</td></tr>
-        <tr><td>Reserva N°:</td><td>${data.reserva_id}</td></tr>
-      </table>
-
+        <div class="section-title">INFORMACIÓN DEL CLIENTE</div>
+        <table class="info-table">
+          <tr><td>Nombre:</td><td>${data.usuario.nombre} ${data.usuario.apellido}</td></tr>
+          <tr><td>Email:</td><td>${data.usuario.email ?? '-'}</td></tr>
+          <tr><td>Reserva N°:</td><td>${data.reserva_id}</td></tr>
+        </table>
 
         <div class="section-title">DETALLES DEL VIAJE</div>
         <table class="info-table">
           <tr><td>Origen:</td><td>${data.origenLocalidad}</td></tr>
           <tr><td>Destino:</td><td>${data.destinoLocalidad}</td></tr>
-          <tr><td>Fecha:</td><td>${data.fechaViaje}</td></tr>
+          <tr><td>Fecha:</td><td>${data.fechaViaje.split('T')[0]}</td></tr>
           <tr><td>Hora de salida:</td><td>${data.horarioSalida}</td></tr>
         </table>
 
         <div class="section-title">CONCEPTOS</div>
-        <table>
+       <table class="conceptos">
+        <tr>
+          <th>Pasajero</th>
+          <th>Origen</th>
+          <th>Destino</th>
+          <th>Precio</th>
+        </tr>
+        ${data.pasajeros.map((p: any) => `
           <tr>
-            <th>Pasajero</th>
-            <th>Origen</th>
-            <th>Destino</th>
-            <th>Precio</th>
+            <td>${p.nombre} ${p.apellido}</td>
+            <td>${p.ubicacionOrigen}</td>
+            <td>${p.ubicacionDestino}</td>
+            <td>$${data.precio.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
           </tr>
-          ${data.pasajeros.map((p: any) => `
-            <tr>
-              <td>${p.nombre} ${p.apellido}</td>
-              <td>${p.ubicacionOrigen}</td>
-              <td>${p.ubicacionDestino}</td>
-              <td>$${data.precio.toFixed(2)}</td>
-            </tr>
-          `).join('')}
-        </table>
+        `).join('')}
+      </table>
+
 
         <div class="totales">
-          <p>Subtotal: $${data.subTotal?.toFixed(2)}</p>
+          <p>Subtotal: $${data.subTotal?.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           <p>Descuento: ${data.descuento}%</p>
-          <p><strong>Total: $${data.precioFinal?.toFixed(2)}</strong></p>
+          <p><strong>Total: $${data.precioFinal?.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></p>
         </div>
 
         <div class="footer">

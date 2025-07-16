@@ -24,13 +24,13 @@ export default function TabLayout() {
         left: 0,
         right: 20,
         backgroundColor: '#111',
-        borderTopColor: '#222',
+        borderTopColor: '#111',
         height: 65,
         paddingBottom: 8,
         paddingTop: 6,
         borderRadius: 0,
         elevation: 10,
-        shadowColor: '#000',
+        shadowColor: '#111',
         shadowOpacity: 0.3,
         shadowOffset: { width: 0, height: -1 },
         shadowRadius: 2,
@@ -170,7 +170,7 @@ export default function TabLayout() {
           lazy: true,
         }}
       />
-      <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
+      <Tabs.Screen name="perfil" options={{ title: 'Perfil', href:null }} />
     </Tabs>
   );
 }

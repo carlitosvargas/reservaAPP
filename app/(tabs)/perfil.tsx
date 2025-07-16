@@ -1,125 +1,128 @@
 import { useRouter } from 'expo-router';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
-import BackButton from '@/components/BackButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PerfilesScreen() {
   const router = useRouter();
-  const { isLoggedIn, logout, isLoading, userInfo } = useAuth();
- 
+  const { logout, userInfo } = useAuth();
 
   const handleLogout = async () => {
     await logout();
     router.replace('/login');
-       const allKeys = await AsyncStorage.getAllKeys();
+    const allKeys = await AsyncStorage.getAllKeys();
     const allData = await AsyncStorage.multiGet(allKeys);
     console.log('Contenido de AsyncStorage perfil:', allData);
   };
 
-
-
   return (
-    <View style={styles.container}>
- 
-      <Text style={styles.title}>Hola {userInfo?.nombre}!</Text>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Hola {userInfo?.nombre}!</Text>
 
-      <View style={styles.profileBox}>
-        <Text style={styles.label}>Nombre: {userInfo?.nombre}</Text>
-        
+        <View style={styles.profileBox}>
+          <Text style={styles.label}>Nombre:</Text>
+          <Text style={styles.value}>{userInfo?.nombre}</Text>
+        </View>
 
-        
+        <View style={styles.buttonGroup}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push({ pathname: '/pantallas/modificarUsuario', params: { id: userInfo.id } })}
+          >
+            <Text style={styles.buttonText}>Editar Perfil</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push({ pathname: '/pantallas/actualizarContrasenia', params: { id: userInfo.id } })}
+          >
+            <Text style={styles.buttonText}>Cambiar Contraseña</Text>
+          </TouchableOpacity>
+
+          {userInfo?.perfil === "usuarioEmpresa" && (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => router.push({ pathname: '/pantallas/modificarEmpresa', params: { id: userInfo.empresa_id } })}
+            >
+              <Text style={styles.buttonText}>Editar Empresa</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={handleLogout}>
+            <Text style={styles.buttonText}>Cerrar Sesión</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <TouchableOpacity style={styles.button} onPress={() => router.push({pathname:'/pantallas/modificarUsuario',params:{id:userInfo.id}})}>
-        <Text style={styles.buttonText}>Editar Perfil</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => router.push({pathname:'/pantallas/actualizarContrasenia',params:{id:userInfo.id}})}>
-        <Text style={styles.buttonText}>Cambiar Contraseña</Text>
-      </TouchableOpacity>
-
-     {userInfo?.perfil == "usuarioEmpresa" && (
-        <TouchableOpacity style={styles.button} onPress={() => router.push({pathname:'/pantallas/modificarEmpresa',params:{id:userInfo.empresa_id}})}>
-        <Text style={styles.buttonText}>Editar Empresa</Text>
-        </TouchableOpacity>
-      )}
-
-      <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Cerrar Sesión</Text>
-      </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
+  scrollContainer: {
+    flexGrow: 1,
     backgroundColor: '#f4f4f4',
+    paddingVertical: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container: {
+    width: Platform.OS === 'web' ? '50%' : '90%',
+    maxWidth: 600,
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#34495e',
     marginBottom: 20,
     textAlign: 'center',
-    fontWeight: '700',
-    color: '#34495e',
+    borderBottomWidth: 1,
     borderBottomColor: '#4c68d7',
-    paddingBottom: 6,
+    paddingBottom: 10,
   },
   profileBox: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-    elevation: 2,
+    marginBottom: 30,
   },
   label: {
-    fontWeight: '600',
     fontSize: 16,
-    marginTop: 5,
+    fontWeight: '600',
+    color: '#555',
+    marginBottom: 4,
   },
   value: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#222',
+  },
+  buttonGroup: {
+    gap: 12,
   },
   button: {
     backgroundColor: '#4c68d7',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    paddingVertical: 14,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5, 
-    transform: [{ scale: 1 }],
-    transitionDuration: '200ms', 
-     marginVertical: 8,
-     
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   logoutButton: {
     backgroundColor: '#dc3545',
   },
   buttonText: {
-   color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 16,
-  letterSpacing: 0.5,
-  },
-
-filaBotones: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 12,
-},
-
- buttonContainer: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  marginTop: 10,
-},
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    letterSpacing: 0.5,
+  },
 });

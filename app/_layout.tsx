@@ -1,28 +1,38 @@
 import React, { useEffect, useRef } from 'react';
-import { Slot, usePathname } from 'expo-router';
-import { View, Text, StyleSheet, useColorScheme, Animated } from 'react-native';
-import { AuthProvider } from '../context/AuthContext';
+import { Slot, usePathname, useRouter } from 'expo-router';
+import {
+  View,
+  Text,
+  StyleSheet,
+  useColorScheme,
+  Animated,
+  TouchableOpacity,
+  Platform,
+  Pressable,
+} from 'react-native';
+import { AuthProvider, useAuth } from '../context/AuthContext';
 import BackButton from '@/components/BackButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { useFonts } from 'expo-font';
-
-
+import { Ionicons} from '@expo/vector-icons';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme(); // 'light' | 'dark' | null
+  const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const pathname = usePathname();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const router = useRouter();
+
+ // const { userInfo } = useAuth();
 
   const esPrincipal =
-  pathname === '/login' ||
-  pathname === '/registro' ||
-  pathname === '/recuperarContrasenia' ||
-  pathname === '/resetear/[token]';
+    pathname === '/login' ||
+    pathname === '/registro' ||
+    pathname === '/recuperarContrasenia' ||
+    pathname === '/resetear/[token]';
 
   const esPantallaSecundaria = pathname.startsWith('/pantallas/');
 
-  // Diccionario de rutas → títulos personalizados
   const titulosPorRuta: Record<string, string> = {
     '/choferReserva': 'Reservas',
     '/choferViajes': 'Viajes',
@@ -53,11 +63,8 @@ export default function RootLayout() {
 
   const tituloHeader = titulosPorRuta[pathname] || 'V&V Reservas';
 
-  // === Animación: fade in del título ===
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
   useEffect(() => {
-    fadeAnim.setValue(0); // Reinicia la animación
+    fadeAnim.setValue(0);
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 500,
@@ -68,38 +75,51 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <StatusBar
-          style={isDark ? 'light' : 'dark'}
-          backgroundColor={isDark ? '#000' : '#fff'}
-          translucent={false}
-        />
-       <View style={styles.container}>
-                {!esPrincipal && (
-          <>
-            <View style={styles.header}>
-              <View style={styles.center}>
-                <Animated.Text style={[styles.title, { opacity: fadeAnim }]}>
-                  {tituloHeader}
-                </Animated.Text>
-              </View>
-            </View>
+        <StatusBar style={isDark ? 'light' : 'dark'} backgroundColor={isDark ? '#000' : '#fff'} />
 
-            {esPantallaSecundaria && (
-              <View style={styles.backFloating}>
-                <BackButton />
-              </View>
-            )}
-          </>
-        )}
-    <View style={styles.content}>
-      <Slot />
-    </View>
-  </View>
+        <View style={styles.container}>
+          {!esPrincipal && (
+            <>
+              <View style={styles.header}>
+                <View style={styles.side}>
+                  {/* BackButton está flotando, así que puede estar vacío acá */}
+                </View>
 
+                <View style={styles.center}>
+                  <Animated.Text style={[styles.title, { opacity: fadeAnim }]}>
+                    {tituloHeader}
+                  </Animated.Text>
+                </View>
+                 
+               
+                <View style={styles.side}>
+                  <Pressable
+                    onPress={() => router.push('/perfil')}
+                    style={{ padding: 5 }}
+                  >
+                    <Ionicons name="person-circle-outline" size={30} color="#fff" />
+                  </Pressable>
+                </View>
+               
+              </View>
+
+              {esPantallaSecundaria && (
+                <View style={styles.backFloating}>
+                  <BackButton />
+                </View>
+              )}
+            </>
+          )}
+
+          <View style={styles.content}>
+            <Slot />
+          </View>
+        </View>
       </SafeAreaView>
     </AuthProvider>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -112,12 +132,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // distribuye los elementos
+    justifyContent: 'space-between', 
     opacity: 0.95,
 },
 
   side: {
-    width: 40, // o lo que mida tu botón (ajustable)
+    width: 40, 
     alignItems: 'center',
     justifyContent: 'center',
 },
@@ -138,7 +158,7 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 4,
     fontStyle: 'italic',
-    fontFamily: 'System', // o una fuente personalizada si cargás una
+    fontFamily: 'System', 
 },
 
   content: {
@@ -150,22 +170,45 @@ const styles = StyleSheet.create({
   paddingTop: 12,
   width: 'auto',
   alignSelf: 'flex-start',
-  backgroundColor: 'transparent', // o '#111' si querés mantener el fondo
+  backgroundColor: 'transparent', 
 },
 backFloating: {
   position: 'absolute',
-  top: 3, // ajustalo según tus necesidades
+  top: 11, 
   left: 10,
   zIndex: 999,
   backgroundColor: 'transparent',
   borderRadius: 24,
   padding: 10,
-  elevation: 5, // Android
-  shadowColor: '#000', // iOS
+  elevation: 5, 
+  shadowColor: '#000', 
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.0,
+  shadowRadius: 0.0,
+},
+perfilButton: {
+  backgroundColor: 'transparente',
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  borderRadius: 20,
+  maxWidth: 120,
+  alignItems: 'center',
+  justifyContent: 'center',
+  
+},
+
+perfilText: {
+  color: '#ffffff',
+  fontSize: 14,
+  fontWeight: '600',
+  textShadowColor: '#000',
+  
+},
+icon:{
   shadowOffset: { width: 0, height: 2 },
   shadowOpacity: 1.25,
   shadowRadius: 2.5,
-},
-
+  borderRadius: 24,
+}
 
 });
