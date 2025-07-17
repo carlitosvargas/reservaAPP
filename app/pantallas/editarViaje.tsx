@@ -1,22 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-  Alert,
-  Pressable,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  Keyboard,
-} from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Platform, Alert, Pressable, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard,} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { actualizarViaje, obtenerViajesId } from '../../services/viajeServices';
+import { actualizarViaje, obtenerViajesId, existeReservaViaje } from '../../services/viajeServices';
 import { obtenerTransporteId } from '../../services/transporteService';
 import { useNavigation } from '@react-navigation/native';
 
@@ -26,6 +13,7 @@ import { obtenerUsuarioPorId, obtenerUsuariosChoferPorEmpresa } from '../../serv
 import { obtenerTransportePorEmpresa, obtenerViajesPorTransporte } from '../../services/transporteService';
 import { obtenerLocalidades, obtenerViajesPorChofer } from '../../services/viajeServices';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 
@@ -65,7 +53,7 @@ const EditarViaje = () => {
   const [sugerenciasDestino, setSugerenciasDestino] = useState<string[]>([]);
   const [sugerenciasChofer, setSugerenciasChofer] = useState<string[]>([]);
   const [sugerenciasTransporte, setSugerenciasTransporte] = useState<string[]>([]);
-
+  const [tieneReservas, setTieneReservas] = useState(false);
   const [localidades, setLocalidades] = useState<string[]>([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -123,7 +111,9 @@ const EditarViaje = () => {
         } else {
         setChoferInput(''); // o algún valor por defecto si no se encuentra
         }
-
+        const reservas = await existeReservaViaje(Number(id));
+        console.log('existe reserva: ', reservas)
+        setTieneReservas(reservas);
 
       } catch (err) {
         console.error(err);
@@ -226,7 +216,7 @@ const EditarViaje = () => {
   };
 
   const handleGuardar = async () => {
-  if (!origen || !destino || !hora || !fechaViaje || !precio || !usuarioEmpresa_id || !medioTransporte_id) {
+  if (!origen || !destino || !hora || !fechaViaje || !precio || !choferInput || !transporteInput) {
     const mensaje = 'Por favor, completa todos los campos';
     if (Platform.OS === 'web') {
       alert(mensaje);
@@ -287,30 +277,33 @@ const EditarViaje = () => {
 
 
   return (
-    
-  <KeyboardAvoidingView
-    style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-  >
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView
-        style={styles.container}
-        keyboardShouldPersistTaps="handled"
-      >
+<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAwareScrollView
+              style={styles.container}
+              contentContainerStyle={{ paddingBottom: 30 }}
+              keyboardShouldPersistTaps="handled"
+              enableOnAndroid={true}
+              extraScrollHeight={120} 
+            >
        
 
         <Text style={styles.label}>Origen</Text>
         {Platform.OS === 'web' ? (
                     <div ref={origenRef} style={styles.inputContainerWeb}>
                       <input
-                        style={styles.inputWeb}
+                         style={{
+                            ...styles.inputWeb,
+                            ...(tieneReservas ? { backgroundColor: '#eee', color: '#999' } : {}),
+                          }}
                         placeholder="Origen"
                         value={origen}
                         onChange={(e) => {
                           setOrigen(e.target.value);
                           filtrarSugerencias(e.target.value, 'origen');
                         }}
+                        disabled={tieneReservas}
                       />
-                      {origen.length > 0 && (
+                      {!tieneReservas && origen.length > 0 &&(
                         <button onClick={() => {
                           setOrigen('');
                           setSugerenciasOrigen([]);
@@ -331,7 +324,10 @@ const EditarViaje = () => {
                     <>
         <View style={styles.inputContainer}>
           <TextInput
-            style={styles.inputWithIcon}
+              style={[
+                  styles.inputWithIcon,
+                  tieneReservas && { backgroundColor: '#eee', color: '#999' },
+                ]}
             placeholder="Origen"
             placeholderTextColor="#888"
             value={origen}
@@ -340,8 +336,9 @@ const EditarViaje = () => {
               filtrarSugerencias(text, 'origen');
             }}
             onBlur={() => setSugerenciasOrigen([])}
+             editable={!tieneReservas}
           />
-          {origen.length > 0 && (
+          {!tieneReservas && origen.length > 0 && (
             <Pressable
               onPress={() => {
                 setOrigen('');
@@ -376,15 +373,19 @@ const EditarViaje = () => {
         {Platform.OS === 'web' ? (
             <div ref={destinoRef} style={styles.inputContainerWeb}>
               <input
-                style={styles.inputWeb}
+                style={{
+                    ...styles.inputWeb,
+                    ...(tieneReservas ? { backgroundColor: '#eee', color: '#999' } : {}),
+                  }}
                 placeholder="Destino"
                 value={destino}
                 onChange={(e) => {
                   setDestino(e.target.value);
                   filtrarSugerencias(e.target.value, 'destino');
                 }}
+                disabled={tieneReservas}
               />
-              {destino.length > 0 && (
+              {!tieneReservas && destino.length > 0 &&  (
                 <button onClick={() => {
                   setDestino('');
                   setSugerenciasDestino([]);
@@ -405,7 +406,10 @@ const EditarViaje = () => {
             <>
         <View style={styles.inputContainer}>
           <TextInput
-            style={styles.inputWithIcon}
+            style={[
+                  styles.inputWithIcon,
+                  tieneReservas && { backgroundColor: '#eee', color: '#999' },
+                ]}
             placeholder="Destino"
             placeholderTextColor="#888"
             value={destino}
@@ -414,8 +418,9 @@ const EditarViaje = () => {
               filtrarSugerencias(text, 'destino');
             }}
             onBlur={() => setSugerenciasDestino([])}
+            editable={!tieneReservas}
           />
-          {destino.length > 0 && (
+          {!tieneReservas && destino.length > 0 && (
             <Pressable
               onPress={() => {
                 setDestino('');
@@ -510,7 +515,7 @@ const EditarViaje = () => {
               style={{
                 padding: 10,
                 fontSize: 16,
-                width: '100%',
+                width: '98%',
                 borderWidth: 1,
                 borderColor: '#ccc',
                 borderRadius: 5,
@@ -524,187 +529,281 @@ const EditarViaje = () => {
           )}
 
        <Text style={styles.label}>Chofer</Text>
-                 <TextInput
-                   style={styles.input}
-                   placeholder="Buscar chofer"
-                   placeholderTextColor="#888"
-                   value={choferInput}
-                   
-                   onChangeText={(text) => {
-                     setChoferInput(text);
-                     filtrarChoferes(text);
-                     
-                   }}
-                   
-                   
-                 />
-                 
-                 {sugerenciasChofer.map((s, i) => (
-                <Pressable
-                   key={i}
-                   onPress={async () => {
-                     const chofer = choferes.find(c => ` ${c.nombre} ${c.apellido}` === s);
-                     if (chofer) {
-                       setChoferInput(s);
-                       setUsuarioEmpresa(chofer.UsuarioEmpresas[0]?.id.toString() ?? '');
-                       setSugerenciasChofer([]);
-        
-                       // Llamar al servicio para obtener los viajes del chofer
+
+       {Platform.OS === 'web' ? (
+  <div style={styles.inputContainerWeb}>
+    <input
+      style={styles.inputWeb}
+      placeholder="Buscar chofer"
+      value={choferInput}
+      onChange={(e) => {
+        setChoferInput(e.target.value);
+        filtrarChoferes(e.target.value);
+      }}
+    />
+    {choferInput.length > 0 && (
+      <button
+        onClick={() => {
+          setChoferInput('');
+          setSugerenciasChofer([]);
+        }}
+        style={styles.clearButton}
+      >
+        ✕
+      </button>
+    )}
+    {sugerenciasChofer.length > 0 && (
+      <div style={styles.suggestionBox}>
+        {sugerenciasChofer.map((s, i) => (
+          <div
+            key={i}
+            style={styles.suggestion}
+            onClick={async () => {
+              const chofer = choferes.find(c => ` ${c.nombre} ${c.apellido}` === s);
+              if (chofer) {
+                setChoferInput(s);
+                setUsuarioEmpresa(chofer.UsuarioEmpresas[0]?.id.toString() ?? '');
+                setSugerenciasChofer([]);
+
+                try {
+                  const dataChofer = await obtenerViajesPorChofer(chofer.id);
+                  const confirmar = window.confirm(
+                    (dataChofer.message || 'Viajes cargados correctamente.') +
+                      '\n\n¿Querés ver los viajes?'
+                  );
+                  if (confirmar) {
+                    router.push({
+                      pathname: '/pantallas/viajesChofer',
+                      params: { viajes: JSON.stringify(dataChofer.viajes) },
+                    });
+                  }
+                } catch (error: any) {
+                  window.alert(
+                    error.response?.data?.error ||
+                      'Error al obtener los viajes del chofer.'
+                  );
+                }
+              }
+            }}
+          >
+            {s}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+) : (
+  <>
+   <View style={styles.choferInputContainer}>
+    <TextInput
+      style={styles.input}
+      placeholder="Buscar chofer"
+      placeholderTextColor="#888"
+      value={choferInput}
+      onChangeText={(text) => {
+        setChoferInput(text);
+        filtrarChoferes(text);
+      }}
+    />
+      {choferInput.length > 0 && (
+                    <Pressable
+                      onPress={() => {
+                        setChoferInput('');
+                        setSugerenciasChofer([]);
+                      }}
+                      style={styles.clearIconChofer}
+                    >
+                      <Icon name="times-circle" size={20} color="#aaa" />
+                    </Pressable>
+                  )}
+                  </View>
+    {sugerenciasChofer.map((s, i) => (
+      <Pressable
+        key={i}
+        onPress={async () => {
+          const chofer = choferes.find(c => ` ${c.nombre} ${c.apellido}` === s);
+          if (chofer) {
+            setChoferInput(s);
+            setUsuarioEmpresa(chofer.UsuarioEmpresas[0]?.id.toString() ?? '');
+            setSugerenciasChofer([]);
+
+            try {
+              const dataChofer = await obtenerViajesPorChofer(chofer.id);
+
+              Alert.alert(
+                'Información del Chofer',
+                dataChofer.message || 'Viajes cargados correctamente',
+                [
+                  {
+                    text: 'Ver viajes',
+                    onPress: () => {
+                      router.push({
+                        pathname: '/pantallas/viajesChofer',
+                        params: {
+                          viajes: JSON.stringify(dataChofer.viajes),
+                        },
+                      });
+                    },
+                  },
+                  {
+                    text: 'Cerrar',
+                    style: 'cancel',
+                  },
+                ]
+              );
+            } catch (error: any) {
+              const mensajeError =
+                error.response?.data?.error || 'Error al obtener los viajes del chofer.';
+              Alert.alert('Error', mensajeError, [{ text: 'Cerrar' }]);
+            }
+          }
+        }}
+      >
+        <Text style={styles.suggestion}>{s}</Text>
+      </Pressable>
+    ))}
+  </>
+)}
+       <Text style={styles.label}>Transporte</Text>
+
+      {Platform.OS === 'web' ? (
+        <div style={styles.inputContainerWeb}>
+          <input
+            style={styles.inputWeb}
+            placeholder="Buscar transporte"
+            value={transporteInput}
+            onChange={(e) => {
+              setTransporteInput(e.target.value);
+              filtrarTransportes(e.target.value);
+            }}
+          />
+          {transporteInput.length > 0 && (
+            <button
+              onClick={() => {
+                setTransporteInput('');
+                setSugerenciasTransporte([]);
+              }}
+              style={styles.clearButton}
+            >
+              ✕
+            </button>
+          )}
+          {sugerenciasTransporte.length > 0 && (
+            <div style={styles.suggestionBox}>
+              {sugerenciasTransporte.map((s, i) => (
+                <div
+                  key={i}
+                  style={styles.suggestion}
+                  onClick={async () => {
+                    const transporte = transportes.find(t => ` ${t.nombre} - ${t.patente}` === s);
+                    if (transporte) {
+                      setTransporteInput(s);
+                      setMedioTransporte(transporte.id.toString());
+                      setSugerenciasTransporte([]);
+
                       try {
-                       console.log('ver choferes.id', chofer.id);
-                       const dataChofer = await obtenerViajesPorChofer(chofer.id);
-       
-                       console.log('ver informacion de la respuesta', dataChofer);
-       
-                       if (Platform.OS === 'web') {
-                       const confirmar = window.confirm(
-                         (dataChofer.message || 'Viajes cargados correctamente.') + '\n\n¿Querés ver los viajes?'
-                       );
-                       if (confirmar) {
-                         console.log('Viajes:', dataChofer.viajes);
-                         router.push({
-                           pathname: '/pantallas/viajesChofer',
-                           params: {
-                             viajes: JSON.stringify(dataChofer.viajes)
-                           }
-                         });
-                       }
-                     } else {
-                         Alert.alert(
-                           "Información del Chofer",
-                           dataChofer.message || 'Viajes cargados correctamente',
-                           [
-                             {
-                               text: "Ver viajes",
-                               onPress: () => {
-                                 console.log('Viajes:', dataChofer.viajes);
-                                 router.push({
-                                   pathname: '/pantallas/viajesChofer',
-                                   params: {
-                                     viajes: JSON.stringify(dataChofer.viajes)
-                                   }
-                                 });
-                               }
-                             },
-                             {
-                               text: "Cerrar",
-                               style: "cancel"
-                             }
-                           ]
-                         );
-                       }
-       
-                     } catch (error: any) {
-                       console.error('Error:', error);
-       
-                       const mensajeError =
-                         error.response?.data?.error || 'Error al obtener los viajes del chofer.';
-       
-                       if (Platform.OS === 'web') {
-                         window.alert(mensajeError);
-                       } else {
-                         Alert.alert('Error', mensajeError, [{ text: "Cerrar" }]);
-                       }
-                     }
-       
-                     }
-                   }}
-                 >
-                   <Text style={styles.suggestion}>{s}</Text>
-                   
-                 </Pressable>
-                 ))}
-       
-                 <Text style={styles.label}>Transporte</Text>
-                 <TextInput
-                   style={styles.input}
-                   placeholder="Buscar transporte"
-                   placeholderTextColor="#888"
-                   value={transporteInput}
-                   onChangeText={(text) => {
-                     setTransporteInput(text);
-                     filtrarTransportes(text);
-                   }}
-                 />
-                 {sugerenciasTransporte.map((s, i) => (
-                   <Pressable key={i} onPress={async () => {
-                     const transporte = transportes.find(t => ` ${t.nombre} - ${t.patente}` === s);
-                     if (transporte) {
-                       setTransporteInput(s);
-                       setMedioTransporte(transporte.id.toString());
-                       setSugerenciasTransporte([]);
-       
-       
-                               try {
-                   console.log('ver transporte.id', transporte.id);
-                   const dataTransporte = await obtenerViajesPorTransporte(transporte.id);
-       
-                   console.log('ver informacion de la respuesta', dataTransporte);
-       
-                   if (Platform.OS === 'web') {
-                     const confirmar = window.confirm(
-                       (dataTransporte.message || 'Viajes cargados correctamente.') + '\n\n¿Querés ver los viajes?'
-                     );
-                     if (confirmar) {
-                       console.log('Viajes:', dataTransporte.viajes);
-                       router.push({
-                         pathname: '/pantallas/viajesChofer',
-                         params: {
-                           viajes: JSON.stringify(dataTransporte.viajes)
-                         }
-                       });
-                     }
-                   } else {
-                     Alert.alert(
-                       "Información del Transporte",
-                       dataTransporte.message || 'Viajes cargados correctamente',
-                       [
-                         {
-                           text: "Ver viajes",
-                           onPress: () => {
-                             console.log('Viajes:', dataTransporte.viajes);
-                             router.push({
-                               pathname: '/pantallas/viajesChofer',
-                               params: {
-                                 viajes: JSON.stringify(dataTransporte.viajes)
-                               }
-                             });
-                           }
-                         },
-                         {
-                           text: "Cerrar",
-                           style: "cancel"
-                         }
-                       ]
-                     );
-                   }
-       
-                 } catch (error: any) {
-                   console.error('Error:', error);
-       
-                   const mensajeError =
-                     error.response?.data?.error || 'Error al obtener los viajes del transporte.';
-       
-                   if (Platform.OS === 'web') {
-                     window.alert(mensajeError);
-                   } else {
-                     Alert.alert('Error', mensajeError, [{ text: "Cerrar" }]);
-                   }
-                 }
-       
-                     }
-                   }}>
-                     <Text style={styles.suggestion}>{s}</Text>
-                   </Pressable>
-                 ))}
+                        const dataTransporte = await obtenerViajesPorTransporte(transporte.id);
+                        const confirmar = window.confirm(
+                          (dataTransporte.message || 'Viajes cargados correctamente.') +
+                            '\n\n¿Querés ver los viajes?'
+                        );
+                        if (confirmar) {
+                          router.push({
+                            pathname: '/pantallas/viajesChofer',
+                            params: { viajes: JSON.stringify(dataTransporte.viajes) },
+                          });
+                        }
+                      } catch (error: any) {
+                        window.alert(
+                          error.response?.data?.error ||
+                            'Error al obtener los viajes del transporte.'
+                        );
+                      }
+                    }
+                  }}
+                >
+                  {s}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+        <View style={styles.transporteInputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Buscar transporte"
+            placeholderTextColor="#888"
+            value={transporteInput}
+            onChangeText={(text) => {
+              setTransporteInput(text);
+              filtrarTransportes(text);
+            }}
+          />
+          {transporteInput.length > 0 && (
+                          <Pressable
+                            onPress={() => {
+                              setTransporteInput('');
+                              setSugerenciasTransporte([]);
+                            }}
+                            style={styles.clearIconTransporte}
+                          >
+                            <Icon name="times-circle" size={20} color="#aaa" />
+                          </Pressable>
+                        )}
+                        </View>
+          {sugerenciasTransporte.map((s, i) => (
+            <Pressable
+              key={i}
+              onPress={async () => {
+                const transporte = transportes.find(t => ` ${t.nombre} - ${t.patente}` === s);
+                if (transporte) {
+                  setTransporteInput(s);
+                  setMedioTransporte(transporte.id.toString());
+                  setSugerenciasTransporte([]);
+
+                  try {
+                    const dataTransporte = await obtenerViajesPorTransporte(transporte.id);
+                    Alert.alert(
+                      'Información del Transporte',
+                      dataTransporte.message || 'Viajes cargados correctamente',
+                      [
+                        {
+                          text: 'Ver viajes',
+                          onPress: () => {
+                            router.push({
+                              pathname: '/pantallas/viajesChofer',
+                              params: {
+                                viajes: JSON.stringify(dataTransporte.viajes),
+                              },
+                            });
+                          },
+                        },
+                        { text: 'Cerrar', style: 'cancel' },
+                      ]
+                    );
+                  } catch (error: any) {
+                    const mensajeError =
+                      error.response?.data?.error || 'Error al obtener los viajes del transporte.';
+                    Alert.alert('Error', mensajeError, [{ text: 'Cerrar' }]);
+                  }
+                }
+              }}
+            >
+              <Text style={styles.suggestion}>{s}</Text>
+            </Pressable>
+          ))}
+        </>
+      )}
+
        
 
         <TouchableOpacity style={styles.button} onPress={handleGuardar}>
           <Text style={styles.buttonText}>Guardar Viaje</Text>
         </TouchableOpacity>
-      </ScrollView>
-    </TouchableWithoutFeedback>
-  </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
+     </TouchableWithoutFeedback>
 );
 };
 
@@ -715,13 +814,22 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
   label: { fontSize: 16, marginBottom: 4, marginTop: 12 },
   input: {
-    borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 8, marginBottom: 8,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      paddingVertical: 10,
+      paddingLeft: 10,
+      paddingRight: 36, 
+      borderRadius: 8,
+      backgroundColor: '#fff',
+      fontSize: 16,
   },
   webInput: {
-    padding: 10, marginBottom: 8, borderWidth: 1, borderRadius: 8, width: '100%',
+    padding: 10, marginBottom: 8, borderWidth: 1, borderRadius: 8, width: '98%',
   },
   suggestion: {
-    backgroundColor: '#f0f0f0', padding: 10, borderBottomWidth: 1, borderColor: '#ccc',fontFamily: 'Arial',
+    backgroundColor: '#f0f0f0', padding: 10, borderBottomWidth: 1, borderColor: '#ccc',cursor: 'pointer',
+    fontFamily:'sans-serif',
+    fontWeight: 'bold'
   },
    button: {
   backgroundColor: '#4c68d7',
@@ -761,7 +869,7 @@ buttonText: {
     marginBottom: 12,
   },
   inputWeb: {
-    width: '100%',
+    width: '98%',
     padding: 10,
     borderWidth: 1,
     borderColor: '#ccc',
@@ -801,6 +909,30 @@ clearIconContainer: {
   padding: 1,
   zIndex: 1,
 },
+clearIconTransporte: {
+  position: 'absolute',
+  right: 10,
+  top: '50%',
+  transform: [{ translateY: -10 }],
+  zIndex: 1,
+  padding: 1,
+},
 
+clearIconChofer: {
+  position: 'absolute',
+  right: 10,
+  top: '50%',
+  transform: [{ translateY: -10 }],
+  zIndex: 1,
+  padding: 1,
+},
+choferInputContainer: {
+  position: 'relative',
+  marginBottom: 10,
+},
+transporteInputContainer: {
+  position: 'relative',
+  marginBottom: 10,
+},
 
 });

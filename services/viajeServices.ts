@@ -143,6 +143,24 @@ export const actualizarViaje = async (id: number, viajeData: any) => {
   }
 };
 
+export const existeReservaViaje = async (id: number): Promise<boolean> => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/viajes/existeReservaViaje/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    
+    return response.data.existe === true;
+  } catch (error) {
+    console.error('Error al verificar si existe la reserva para el viaje:', error);
+    // Si hay un error, asumimos que no existe viaje
+    return false;
+  }
+};
+
 
 
 

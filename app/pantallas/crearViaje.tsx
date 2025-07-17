@@ -148,7 +148,7 @@ const CrearViaje = () => {
   };
 
   const handleGuardar = async () => {
-  if (!origen || !destino || !hora || !fechaViaje || !precio || !usuarioEmpresa_id || !medioTransporte_id) {
+  if (!origen || !destino || !hora || !fechaViaje || !precio || !choferInput || !transporteInput) {
     const mensaje = 'Por favor, completa todos los campos';
     if (Platform.OS === 'web') {
       alert(mensaje);
@@ -685,14 +685,14 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
   label: { fontSize: 16, marginBottom: 4, marginTop: 12 },
   input: {
-     borderWidth: 1,
-  borderColor: '#ccc',
-  paddingVertical: 10,
-  paddingLeft: 10,
-  paddingRight: 36, 
-  borderRadius: 8,
-  backgroundColor: '#fff',
-  fontSize: 16,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      paddingVertical: 10,
+      paddingLeft: 10,
+      paddingRight: 36, 
+      borderRadius: 8,
+      backgroundColor: '#fff',
+      fontSize: 16,
   },
   webInput: {
     padding: 10, marginBottom: 8, borderWidth: 1, borderRadius: 8, width: '98%',

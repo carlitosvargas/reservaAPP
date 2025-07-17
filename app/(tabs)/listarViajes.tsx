@@ -174,7 +174,7 @@ const ViajesEmpresa = () => {
     return dentroRangoDesde && dentroRangoHasta;
   });
 
-  // 🔥 Dividir viajes en futuros y pasados
+  //  Dividir viajes en futuros y pasados
   const ahora = new Date();
   const viajesFuturos = viajesFiltrados.filter(
     (viaje) => new Date(viaje.fechaViaje) >= ahora
@@ -330,7 +330,7 @@ const ViajesEmpresa = () => {
 
       <Text style={styles.sectionTitle}>{nombreEmpresa} - Viajes</Text>
 
-      {/* 🔎 Input búsqueda */}
+      {/* Input búsqueda */}
       <TextInput
         style={styles.input}
         placeholder="Buscar por fecha, origen, destino, transporte..."
@@ -339,7 +339,7 @@ const ViajesEmpresa = () => {
         onChangeText={setBusqueda}
       />
 
-      {/* 📆 Filtros de fecha */}
+      {/* Filtros de fecha */}
       <View
         style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 23 }}
       >
@@ -418,10 +418,10 @@ const ViajesEmpresa = () => {
         </View>
       </View>
 
-      {/* 🚍 Viajes Futuros */}
+      {/*  Viajes Futuros */}
       {viajesFuturos.map((viaje) => renderViaje(viaje,false))}
 
-      {/* 🚫 Viajes Pasados */}
+      {/*  Viajes Pasados */}
       {viajesPasados.length > 0 && (
         <>
           <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 20 }}>
