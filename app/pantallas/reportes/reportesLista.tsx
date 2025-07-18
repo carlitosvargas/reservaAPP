@@ -1,49 +1,61 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function ReportesScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+
+  type RutaReporte =
+  | '/pantallas/reportes/reportesReservas'
+  | '/pantallas/reportes/pasajerosEmpresa'
+  | '/pantallas/reportes/viajesTransportes'
+  | '/pantallas/reportes/viajesReservados'
+  | '/pantallas/reportes/clienteMasReservas'
+  | '/pantallas/reportes/clientesVentasConfirmadas'
+  | '/pantallas/reportes/gananciaTotal'
+  | '/pantallas/reportes/gananciaPorViaje';
+
+const botones: { texto: string; ruta: RutaReporte }[] = [
+  { texto: 'Ventas Totales', ruta: '/pantallas/reportes/reportesReservas' },
+  { texto: 'Pasajeros por Empresa', ruta: '/pantallas/reportes/pasajerosEmpresa' },
+  { texto: 'Viajes por Transporte', ruta: '/pantallas/reportes/viajesTransportes' },
+  { texto: 'Viajes más Reservados', ruta: '/pantallas/reportes/viajesReservados' },
+  { texto: 'Cliente con más Reservas', ruta: '/pantallas/reportes/clienteMasReservas' },
+  { texto: 'Clientes con Ventas Confirmadas', ruta: '/pantallas/reportes/clientesVentasConfirmadas' },
+  { texto: 'Ganancia Total', ruta: '/pantallas/reportes/gananciaTotal' },
+  { texto: 'Ganancia Total por Viaje', ruta: '/pantallas/reportes/gananciaPorViaje' },
+];
 
   return (
     <View style={styles.container}>
-    <ScrollView >
-      <Text style={styles.title}>Seleccioná un tipo de reporte</Text>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.title}>Seleccioná un tipo de reporte</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/reportesReservas')}>
-        <Text style={styles.buttonText}>Ventas Totales</Text>
-      </TouchableOpacity>
+        <View style={[styles.grid, width > 600 && styles.gridWeb]}>
+          {botones.map((btn, i) => (
+            <Pressable
+              key={i}
+              style={({ pressed }) => [
+                styles.button,
+                pressed && { backgroundColor: '#3b55b3' }
+              ]}
+              onPress={() => router.push(btn.ruta)}
+            >
+              <Text style={styles.buttonText}>{btn.texto}</Text>
+            </Pressable>
+          ))}
+        </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/pasajerosEmpresa')}>
-        <Text style={styles.buttonText}>Pasajeros por Empresa</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/viajesTransportes')}>
-        <Text style={styles.buttonText}>Viajes por Transporte</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/viajesReservados') }>
-        <Text style={styles.buttonText}>Viajes más Reservados</Text> 
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/clienteMasReservas') }>
-        <Text style={styles.buttonText}>Cliente con más Reservas</Text> 
-      </TouchableOpacity>
-
-       <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/clientesVentasConfirmadas') }>
-        <Text style={styles.buttonText}>Clientes con Ventas Confirmadas</Text> 
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/gananciaTotal') }>
-        <Text style={styles.buttonText}>Ganancia Total</Text> 
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/pantallas/reportes/gananciaPorViaje') }>
-        <Text style={styles.buttonText}>Ganancia Total por Viaje</Text> 
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={() => router.back()}>
-        <Text style={styles.buttonText}>Volver</Text>
-      </TouchableOpacity>
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            styles.logoutButton,
+            pressed && { backgroundColor: '#5c636a' },
+          ]}
+          onPress={() => router.back()}
+        >
+          <Text style={styles.buttonText}>Volver</Text>
+        </Pressable>
       </ScrollView>
     </View>
   );
@@ -52,8 +64,12 @@ export default function ReportesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#f4f4f4',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  scrollContainer: {
+    paddingBottom: 40,
   },
   title: {
     fontSize: 26,
@@ -61,27 +77,40 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  grid: {
+    flexDirection: 'column',
+    gap: 12,
+  },
+  gridWeb: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
   button: {
     backgroundColor: '#4c68d7',
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 20,
-    borderRadius: 20,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    minWidth: 160,
+    marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.15,
     shadowRadius: 4,
-    elevation: 5,
-    marginVertical: 8,
+    elevation: 4,
   },
   logoutButton: {
     backgroundColor: '#6c757d',
+    marginTop: 50,
+    alignSelf: 'center',
+    width: '20%',
   },
   buttonText: {
     color: '#fff',
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 16,
-    letterSpacing: 0.5,
+    textAlign: 'center',
   },
 });

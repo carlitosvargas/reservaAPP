@@ -224,8 +224,7 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
           <Text style={styles.cambiarPerfilTexto}>Cambiar Perfil:</Text>
           <ModalSelector
             data={perfiles}
-            style={styles.editButton}
-            selectStyle={{ borderWidth: 0, backgroundColor: 'transparent' }}
+            selectStyle={styles.editButton}
             initValue={obtenerNombrePerfil(item.perfil_id)}
             initValueTextStyle={{
                   color: '#fff',
@@ -252,8 +251,8 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
             </Text>
 
             <ModalSelector
-               style={styles.editButton}
-              selectStyle={{ borderWidth: 0, backgroundColor: 'transparent' }}
+             
+              selectStyle={styles.editButton}
               data={empresas
                 .filter((empresa) => empresa.id !== empresaAsociadaMap[item.id]) 
                 .map((empresa) => ({
@@ -373,6 +372,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    top:-10
   },
   filtroBtn: {
      backgroundColor: '#4c68d7',
@@ -386,6 +386,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
+    marginLeft:4,
   },
   filtroBtnActivo: {
     backgroundColor: '#b2babb',
@@ -422,8 +423,8 @@ const styles = StyleSheet.create({
 
   deleteBotton:{
      backgroundColor: '#F44336',
-    paddingVertical: 12,
-    paddingHorizontal: 15,
+   paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -432,6 +433,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
+    marginLeft:4,
   },
    
 buttonContainer: {
@@ -441,12 +443,19 @@ buttonContainer: {
   marginTop: 16,
 },
 editButton: {
-  backgroundColor: '#4c68d7',
-  paddingVertical: 3,
-  paddingHorizontal: 25,
-  borderRadius: 20,
-  alignItems: 'flex-start',
-  justifyContent: 'center',
+   backgroundColor: '#4c68d7',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+    marginLeft:4,
+   alignItems: 'flex-start',
+    borderWidth: 0
 },
 
 });

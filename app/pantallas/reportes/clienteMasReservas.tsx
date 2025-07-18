@@ -7,9 +7,11 @@ interface Cliente {
   usuarios_id: number;
   cantidadReservas: number;
   Usuario: {
+    id:number;
     nombre: string;
     apellido: string;
     email: string;
+    usuario: string;
   };
 }
 
@@ -52,6 +54,8 @@ export default function TopClientesScreen() {
           <View style={styles.card}>
             <Text style={styles.nombre}>{item.Usuario.nombre} {item.Usuario.apellido}</Text>
             <Text>Email: {item.Usuario.email}</Text>
+            <Text>Usuario: {item.Usuario.usuario}</Text>
+            <Text>N° Usuario: {item.Usuario.id}</Text>
             <Text>Cantidad de reservas: {item.cantidadReservas}</Text>
           </View>
         )}

@@ -9,9 +9,11 @@ interface ClienteConVenta {
   usuarios_id: number;
   cantidadReservas: number;
   Usuario: {
+    id: number;
     nombre: string;
     apellido: string;
     email: string;
+    usuario: string;
   };
 }
 
@@ -52,7 +54,7 @@ export default function TopClientesConVentasScreen() {
           style={styles.iconButton}
           onPress={() => router.push('/pantallas/reportes/clientesVentasNoConfirmadas')}
         >
-          <Ionicons name="alert-circle-outline" size={24} color="#007aff" />
+          <Text style={styles.buttonText}>Ventas no Confirmadas</Text> 
         </TouchableOpacity>
       </View>
       <FlatList
@@ -62,6 +64,8 @@ export default function TopClientesConVentasScreen() {
           <View style={styles.card}>
             <Text style={styles.nombre}>{index + 1}. {item.Usuario.nombre} {item.Usuario.apellido}</Text>
             <Text>Email: {item.Usuario.email}</Text>
+            <Text>Usuario: {item.Usuario.usuario}</Text>
+            <Text>N° Usuario: {item.Usuario.id}</Text>
             <Text>Cantidad de reservas con venta: {item.cantidadReservas}</Text>
           </View>
         )}
@@ -107,7 +111,23 @@ const styles = StyleSheet.create({
   marginBottom: 16,
   },
   iconButton: {
-    padding: 4,
+    backgroundColor: '#4c68d7',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    marginVertical: 8,
   },
-
+   buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    letterSpacing: 0.5,
+  },
 });

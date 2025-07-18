@@ -119,13 +119,14 @@ export default function GananciaTotalScreen() {
           </View>
         )}
       />
+  
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: '#f2f2f2' },
-  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 16 },
+  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'right', marginBottom: 16 },
   card: { backgroundColor: '#fff', padding: 14, borderRadius: 10, marginBottom: 16, elevation: 2 },
   viajeTitulo: { fontSize: 18, fontWeight: 'bold' },
   sub: { fontStyle: 'italic', marginBottom: 6 },

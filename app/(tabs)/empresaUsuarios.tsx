@@ -149,7 +149,7 @@ const renderItem = ({ item }: { item: Usuario }) => {
       ]}
       activeOpacity={0.8}
     >
-      <Text style={styles.usuarioTitulo}>Usuario: {item.usuario}</Text>
+      <Text style={styles.usuarioTitulo}>Usuario: {item.usuario} - {item.id} </Text>
       <Text style={styles.usuarioInfo}>Nombre: {item.nombre} {item.apellido}</Text>
       <Text style={styles.usuarioInfo}>Perfil: {obtenerNombrePerfil(item.perfil_id)}</Text>
 
@@ -326,6 +326,7 @@ textoBotonDetalle: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    top:-10
   },
   filtroBtn: {
      backgroundColor: '#4c68d7',
@@ -339,6 +340,7 @@ textoBotonDetalle: {
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
+    marginLeft: 4
   },
   filtroBtnActivo: {
    backgroundColor: '#b2babb',
