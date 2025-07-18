@@ -137,25 +137,43 @@ export default function UsuarioScreen() {
     );
   };
 
-  const renderItem = ({ item }: { item: Usuario }) => (
-    <TouchableOpacity onPress={() => toggleExpand(item.id)} style={styles.usuarioContainer}>
-      <Text style={styles.nombre}>Usuario: {item.usuario}</Text>
-      <Text>Nombre: {item.nombre} {item.apellido}</Text>
-      <Text>Perfil: {obtenerNombrePerfil(item.perfil_id)}</Text>
+const renderItem = ({ item }: { item: Usuario }) => {
+  const estaExpandido = seleccionado === item.id;
 
-      {seleccionado === item.id && (
+  return (
+    <TouchableOpacity
+      onPress={() => toggleExpand(item.id)}
+      style={[
+        styles.usuarioCard,
+        estaExpandido && styles.usuarioCardExpandido,
+      ]}
+      activeOpacity={0.8}
+    >
+      <Text style={styles.usuarioTitulo}>Usuario: {item.usuario}</Text>
+      <Text style={styles.usuarioInfo}>Nombre: {item.nombre} {item.apellido}</Text>
+      <Text style={styles.usuarioInfo}>Perfil: {obtenerNombrePerfil(item.perfil_id)}</Text>
+
+      {estaExpandido && (
         <View style={styles.detalles}>
-          <Text>DNI: {item.dni}</Text>
-          <Text>Teléfono: {item.telefono}</Text>
-          <Text>Email: {item.email}</Text>
+          <Text style={styles.usuarioInfo}>DNI: {item.dni}</Text>
+          <Text style={styles.usuarioInfo}>Teléfono: {item.telefono}</Text>
+          <Text style={styles.usuarioInfo}>Email: {item.email}</Text>
 
           {userInfo.perfil === 'usuarioEmpresa' && (
             <>
-              <Text style={styles.cambiarPerfilTexto}>Cambiar perfil:</Text>
+            <Text style={styles.cambiarPerfilTexto}>Cambiar perfil:</Text>
+
+            <View style={styles.buttonContainer}>
               <ModalSelector
+                style={styles.editButton}
+                selectStyle={{ borderWidth: 0, backgroundColor: 'transparent' }}
                 data={perfiles}
                 initValue={obtenerNombrePerfil(item.perfil_id)}
-                initValueTextStyle={{ color: '#007AFF', fontWeight: 'bold' }}
+                initValueTextStyle={{
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                }}
                 onChange={(option) => {
                   const yaSeleccionado =
                     ultimaSeleccionRef.current &&
@@ -166,24 +184,26 @@ export default function UsuarioScreen() {
                     cambiarPerfilUsuario(item.id, option.key);
                   }
                 }}
-                
               />
+
               <TouchableOpacity
-                      
-                      style={[styles.botonEliminar, { marginTop: 16 }]}
-                      onPress={() => handleEliminarUsuario(item.id)}
-                    >
-                      <Text style={[styles.botonTexto]}>
-                        Eliminar Usuario
-                      </Text>
-                    </TouchableOpacity>
+                style={styles.botonEliminar}
+                onPress={() => handleEliminarUsuario(item.id)}
+              >
+                <Text style={styles.botonTexto}>Eliminar Usuario</Text>
+              </TouchableOpacity>
+            </View>
 
             </>
           )}
+          
         </View>
       )}
     </TouchableOpacity>
   );
+};
+
+
 
   return (
     <View style={styles.contenedor}>
@@ -233,6 +253,69 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
+  buttonContainer: {
+  flexDirection: 'row',          
+  justifyContent: 'space-between', 
+  alignItems: 'center',          
+  marginTop: 16,
+},
+
+
+editButton: {
+  backgroundColor: '#4c68d7',
+  paddingVertical: 3,
+  paddingHorizontal: 25,
+  borderRadius: 20,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+
+  usuarioCard: {
+  backgroundColor: '#ffffff',
+  borderRadius: 16,
+  padding: 18,
+  marginBottom: 16,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 3 },
+  shadowOpacity: 0.15,
+  shadowRadius: 6,
+  elevation: 5,
+  borderLeftWidth: 6,
+  borderLeftColor: '#4c68d7',
+},
+
+usuarioCardExpandido: {
+  backgroundColor: '#e8f0fe',
+},
+
+usuarioTitulo: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  color: '#2c3e50',
+  marginBottom: 8,
+},
+
+usuarioInfo: {
+  fontSize: 14,
+  color: '#333',
+  marginBottom: 4,
+},
+
+botonDetalle: {
+  backgroundColor: '#17a589',
+  paddingVertical: 10,
+  paddingHorizontal: 16,
+  borderRadius: 12,
+  marginTop: 10,
+  alignSelf: 'flex-start',
+},
+
+textoBotonDetalle: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 14,
+},
+
   titulo: {
     fontSize: 24,
     fontWeight: 'bold',

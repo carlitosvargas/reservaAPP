@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderColor: '#ddd',
-    color: '#007AFF',
+    color: 'black',
     fontWeight: 'bold'
   },
   button: {
@@ -640,7 +640,7 @@ const stylesWeb: { [key: string]: React.CSSProperties } = {
   suggestion: {
     padding: 10,
     borderBottom: '1px solid #ddd',
-    color: '#007AFF',
+    color: 'black',
     cursor: 'pointer',
     fontFamily:'sans-serif',
     fontWeight: 'bold'

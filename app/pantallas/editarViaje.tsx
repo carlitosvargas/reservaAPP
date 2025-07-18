@@ -307,7 +307,7 @@ const EditarViaje = () => {
                         <button onClick={() => {
                           setOrigen('');
                           setSugerenciasOrigen([]);
-                        }} style={styles.clearButton}>✕</button>
+                        }} style={clearButtonWeb}>✕</button>
                       )}
                       {sugerenciasOrigen.length > 0 && (
                         <div style={styles.suggestionBox}>
@@ -389,7 +389,7 @@ const EditarViaje = () => {
                 <button onClick={() => {
                   setDestino('');
                   setSugerenciasDestino([]);
-                }} style={styles.clearButton}>✕</button>
+                }} style={clearButtonWeb}>✕</button>
               )}
               {sugerenciasDestino.length > 0 && (
                 <div style={styles.suggestionBox}>
@@ -547,7 +547,7 @@ const EditarViaje = () => {
           setChoferInput('');
           setSugerenciasChofer([]);
         }}
-        style={styles.clearButton}
+        style={clearButtonWeb}
       >
         ✕
       </button>
@@ -683,7 +683,7 @@ const EditarViaje = () => {
                 setTransporteInput('');
                 setSugerenciasTransporte([]);
               }}
-              style={styles.clearButton}
+              style={clearButtonWeb}
             >
               ✕
             </button>
@@ -936,3 +936,13 @@ transporteInputContainer: {
 },
 
 });
+
+const clearButtonWeb: React.CSSProperties = {
+  position: 'absolute',
+  right: 8,
+  top: 9,
+  background: 'none',
+  border: 'none',
+  fontSize: 16,
+  cursor: 'pointer',
+};

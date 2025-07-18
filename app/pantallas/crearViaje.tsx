@@ -234,7 +234,7 @@ const CrearViaje = () => {
                 <button onClick={() => {
                   setOrigen('');
                   setSugerenciasOrigen([]);
-                }} style={styles.clearButton}>✕</button>
+                }} style={clearButtonWeb}>✕</button>
               )}
               {sugerenciasOrigen.length > 0 && (
                 <div style={styles.suggestionBox}>
@@ -308,7 +308,7 @@ const CrearViaje = () => {
                 <button onClick={() => {
                   setDestino('');
                   setSugerenciasDestino([]);
-                }} style={styles.clearButton}>✕</button>
+                }} style={clearButtonWeb}>✕</button>
               )}
               {sugerenciasDestino.length > 0 && (
                 <div style={styles.suggestionBox}>
@@ -458,7 +458,7 @@ const CrearViaje = () => {
                 <button onClick={() => {
                   setChoferInput('');
                   setSugerenciasChofer([]);
-                }} style={styles.clearButton}>✕</button>
+                }} style={clearButtonWeb}>✕</button>
               )}
               {sugerenciasChofer.length > 0 && (
                 <div style={styles.suggestionBox}>
@@ -573,7 +573,7 @@ const CrearViaje = () => {
                 <button onClick={() => {
                   setTransporteInput('');
                   setSugerenciasTransporte([]);
-                }} style={styles.clearButton}>✕</button>
+                }} style={clearButtonWeb}>✕</button>
               )}
               {sugerenciasTransporte.length > 0 && (
                 <div style={styles.suggestionBox}>
@@ -811,3 +811,13 @@ clearIconTransporte: {
 
 
 });
+
+const clearButtonWeb: React.CSSProperties = {
+  position: 'absolute',
+  right: 8,
+  top: 9,
+  background: 'none',
+  border: 'none',
+  fontSize: 16,
+  cursor: 'pointer',
+};

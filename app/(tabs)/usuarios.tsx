@@ -220,11 +220,18 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
           <Text>Teléfono: {item.telefono}</Text>
           <Text>Email: {item.email}</Text>
 
+          <View style={styles.buttonContainer}>
           <Text style={styles.cambiarPerfilTexto}>Cambiar Perfil:</Text>
           <ModalSelector
             data={perfiles}
+            style={styles.editButton}
+            selectStyle={{ borderWidth: 0, backgroundColor: 'transparent' }}
             initValue={obtenerNombrePerfil(item.perfil_id)}
-            initValueTextStyle={{ color: '#007AFF', fontWeight: 'bold' }}
+            initValueTextStyle={{
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                }}
             onChange={(option) => {
               const yaSeleccionado =
                 ultimaSeleccionRef.current &&
@@ -245,6 +252,8 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
             </Text>
 
             <ModalSelector
+               style={styles.editButton}
+              selectStyle={{ borderWidth: 0, backgroundColor: 'transparent' }}
               data={empresas
                 .filter((empresa) => empresa.id !== empresaAsociadaMap[item.id]) 
                 .map((empresa) => ({
@@ -257,7 +266,11 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
                   ? empresas.find((e) => e.id ===  empresaAsociadaMap[item.id])?.nombre || 'Seleccione una empresa'
                   : 'Seleccione una empresa'
               }
-              initValueTextStyle={{ color: '#007AFF', fontWeight: 'bold' }}
+             initValueTextStyle={{
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                }}
               onChange={(option) => {
                 asociarEmpresaUsuario(item.id, option.key);
                 //setEmpresaAsociadaMap((prev) => ({ ...prev, [item.id]: option.key }));
@@ -273,14 +286,11 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
           <TouchableOpacity
             onPress={() => desasociarUsuario(item.id)}
             style={{
-              marginTop: 10,
-              padding: 10,
-              borderRadius: 5,
-              alignSelf: 'flex-start',
-              backgroundColor: '#F44336',
+             backgroundColor: '#F44336',
               paddingVertical: 12,
               paddingHorizontal: 20,
-              alignItems: 'center',
+              borderRadius: 20,
+               alignItems: 'flex-end',
               justifyContent: 'center',
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 2 },
@@ -296,7 +306,7 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
                           letterSpacing: 0.5, }}>Desasociar Empresa</Text>
           </TouchableOpacity>
         )}
-
+    </View>
 
         </View>
       )}
@@ -422,5 +432,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
-  }
+  },
+   
+buttonContainer: {
+  flexDirection: 'column',   // <== CAMBIO PRINCIPAL
+  alignItems: 'flex-start',     // Hace que los hijos se estiren al 100%
+  gap: 12,                   // Opcional si tu versión lo soporta
+  marginTop: 16,
+},
+editButton: {
+  backgroundColor: '#4c68d7',
+  paddingVertical: 3,
+  paddingHorizontal: 25,
+  borderRadius: 20,
+  alignItems: 'flex-start',
+  justifyContent: 'center',
+},
+
 });
