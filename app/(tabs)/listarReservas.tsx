@@ -388,13 +388,13 @@ const styles = StyleSheet.create({
 label: {
   fontSize: 14,
   fontWeight: '600',
-  color: '#555',
+  
   marginBottom: 2,
 },
 
 value: {
   fontWeight: 'normal',
-  color: '#333',
+  
 },
 
 subTitle: {
