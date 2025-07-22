@@ -135,6 +135,7 @@ const CrearEmpresa = () => {
         <TextInput
           style={styles.input}
           placeholder="Nombre"
+          placeholderTextColor="#888"
           value={nombre}
           onChangeText={(text) => {
             setNombre(text);
@@ -147,6 +148,7 @@ const CrearEmpresa = () => {
         <TextInput
           style={styles.input}
           placeholder="Dirección"
+          placeholderTextColor="#888"
           value={direccion}
           onChangeText={(text) => {
             setDireccion(text);
@@ -159,6 +161,7 @@ const CrearEmpresa = () => {
         <TextInput
           style={styles.input}
           placeholder="CUIT"
+          placeholderTextColor="#888"
           keyboardType="numeric"
           value={cuit}
           onChangeText={(text) => {
@@ -172,6 +175,7 @@ const CrearEmpresa = () => {
         <TextInput
           style={styles.input}
           placeholder="Teléfono"
+          placeholderTextColor="#888"
           keyboardType="phone-pad"
           value={telefono}
           onChangeText={(text) => {
@@ -185,6 +189,7 @@ const CrearEmpresa = () => {
         <TextInput
           style={styles.input}
           placeholder="Email"
+          placeholderTextColor="#888"
           keyboardType="email-address"
           value={email}
           onChangeText={(text) => {
@@ -248,6 +253,7 @@ const CrearEmpresa = () => {
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
+                placeholderTextColor="#888"
                 placeholder="Buscar localidad"
                 value={localidadInput}
                 onChangeText={(text) => {
