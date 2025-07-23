@@ -4,9 +4,11 @@ import { obtenerUsuariosConReservasSinVenta } from '../../../services/reportesSe
 import { useAuth } from '../../../context/AuthContext';
 
 interface Usuario {
+  id: number;
   nombre: string;
   apellido: string;
   email: string;
+  usuario: string;
 }
 
 interface Pasajero {
@@ -70,6 +72,8 @@ export default function ReservasSinVentaScreen() {
           <View style={styles.card}>
             <Text style={styles.usuario}>{item.Usuario.nombre} {item.Usuario.apellido}</Text>
             <Text>Email: {item.Usuario.email}</Text>
+            <Text>Usuario: {item.Usuario.usuario}</Text>
+            <Text>N° Usuario: {item.Usuario.id}</Text>
             <Text>Fecha del viaje: {formatDate(item.Viaje.fechaViaje)}</Text>
             <Text style={styles.subtitulo}>Pasajeros:</Text>
             {item.Pasajeros.map((pasajero, index) => (

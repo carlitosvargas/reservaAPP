@@ -6,9 +6,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Platform,
+  Alert,
 } from 'react-native';
 import ModalSelector from 'react-native-modal-selector';
-import { obtenerUsuarios, actualizarPerfil } from '../../services/usuarioService';
+import { obtenerUsuarios, actualizarPerfil, eliminarUsuario } from '../../services/usuarioService';
 import { obtenerEmpresas, asociarUsuarioEmpresa, obtenerUsuarioEmpresaAsociado, desasociarUsuarioEmpresa} from '../../services/empresaService';
 import { useAuth } from '../../context/AuthContext';
 import { Redirect } from 'expo-router';
@@ -183,49 +185,111 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
 };
 
 
-  const desasociarUsuario = async (usuarioId: number) => {
-  try {
-    await desasociarUsuarioEmpresa(usuarioId); 
+ const desasociarUsuario = (usuarioId: number) => {
+  const ejecutarDesasociacion = async () => {
+    try {
+      await desasociarUsuarioEmpresa(usuarioId);
 
-    // Actualiza el estado de los usuarios y el mapa de empresas asociadas
-    const nuevosUsuarios = usuarios.map((u) =>
-      u.id === usuarioId ? { ...u, empresa_id: null } : u
-    );
-    setUsuarios(nuevosUsuarios);
-    setEmpresaAsociadaMap((prev) => ({ ...prev, [usuarioId]: null }));
-   setErroresAsociacion((prev) => ({ ...prev, [usuarioId]: null }));
-    if (filtro === null) {
-      setUsuariosFiltrados(nuevosUsuarios);
-    } else {
-      setUsuariosFiltrados(nuevosUsuarios.filter((u) => u.perfil_id === filtro));
+      const nuevosUsuarios = usuarios.map((u) =>
+        u.id === usuarioId ? { ...u, empresa_id: null } : u
+      );
+      setUsuarios(nuevosUsuarios);
+      setEmpresaAsociadaMap((prev) => ({ ...prev, [usuarioId]: null }));
+      setErroresAsociacion((prev) => ({ ...prev, [usuarioId]: null }));
+
+      if (filtro === null) {
+        setUsuariosFiltrados(nuevosUsuarios);
+      } else {
+        setUsuariosFiltrados(nuevosUsuarios.filter((u) => u.perfil_id === filtro));
+      }
+
+      if (Platform.OS === 'web') {
+        alert('Usuario desasociado con éxito');
+      } else {
+        Alert.alert('Éxito', 'Usuario desasociado con éxito');
+      }
+    } catch (error) {
+      console.error('Error al desasociar empresa:', error);
+      if (Platform.OS === 'web') {
+        alert('Error al desasociar empresa');
+      } else {
+        Alert.alert('Error', 'No se pudo desasociar el usuario');
+      }
     }
-  } catch (error) {
-    console.error('Error al desasociar empresa:', error);
+  };
+
+  if (Platform.OS === 'web') {
+    const confirmado = window.confirm('¿Estás seguro de desasociar este usuario de la empresa?');
+    if (confirmado) {
+      ejecutarDesasociacion();
+    }
+  } else {
+    Alert.alert(
+      'Confirmar acción',
+      '¿Estás seguro de desasociar este usuario de la empresa?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Aceptar', onPress: ejecutarDesasociacion },
+      ],
+      { cancelable: true }
+    );
+  }
+};
+
+const eliminarUsuarios = (usuarioId: number) => {
+  const confirmarEliminacion = async () => {
+    try {
+      console.log('ver id usuario eliminar: ', usuarioId)
+       await eliminarUsuario(usuarioId)
+      const nuevosUsuarios = usuarios.filter((u) => u.id !== usuarioId);
+      setUsuarios(nuevosUsuarios);
+      setUsuariosFiltrados(nuevosUsuarios);
+      setSeleccionado(null);
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+    }
+  };
+
+  if (Platform.OS === 'web') {
+    const confirmado = window.confirm('¿Estás seguro de que deseas eliminar este usuario?');
+    if (confirmado) confirmarEliminacion();
+  } else {
+    Alert.alert(
+      'Eliminar Usuario',
+      '¿Estás seguro de que deseas eliminar este usuario?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Eliminar', style: 'destructive', onPress: confirmarEliminacion },
+      ],
+      { cancelable: true }
+    );
   }
 };
 
 
-  const renderItem = ({ item }: { item: Usuario }) => (
+  const renderItem = ({ item }: { item: Usuario }) =>{ 
+    
+     const estaExpandido = seleccionado === item.id;
+    return (
     <TouchableOpacity
       onPress={() => toggleExpand(item.id)}
-      style={styles.usuarioContainer}
+      style={[styles.usuarioContainer, estaExpandido && styles.usuarioCardExpandido,]}
     >
       <Text style={styles.nombre}>Usuario: {item.usuario}</Text>
-      <Text>Nombre: {item.nombre} {item.apellido}</Text>
-      <Text>Perfil: {obtenerNombrePerfil(item.perfil_id)}</Text>
+      <Text  style={styles.usuarioInfo}>Nombre: {item.nombre} {item.apellido}</Text>
+      <Text  style={styles.usuarioInfo}>Perfil: {obtenerNombrePerfil(item.perfil_id)}</Text>
 
       {seleccionado === item.id && (
         <View style={styles.detalles}>
-          <Text>DNI: {item.dni}</Text>
-          <Text>Teléfono: {item.telefono}</Text>
-          <Text>Email: {item.email}</Text>
+          <Text  style={styles.usuarioInfo}>DNI: {item.dni}</Text>
+          <Text  style={styles.usuarioInfo}>Teléfono: {item.telefono}</Text>
+          <Text  style={styles.usuarioInfo}>Email: {item.email}</Text>
 
           <View style={styles.buttonContainer}>
           <Text style={styles.cambiarPerfilTexto}>Cambiar Perfil:</Text>
           <ModalSelector
             data={perfiles}
-            style={styles.editButton}
-            selectStyle={{ borderWidth: 0, backgroundColor: 'transparent' }}
+            selectStyle={styles.editButton}
             initValue={obtenerNombrePerfil(item.perfil_id)}
             initValueTextStyle={{
                   color: '#fff',
@@ -252,8 +316,8 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
             </Text>
 
             <ModalSelector
-               style={styles.editButton}
-              selectStyle={{ borderWidth: 0, backgroundColor: 'transparent' }}
+             
+              selectStyle={styles.editButton}
               data={empresas
                 .filter((empresa) => empresa.id !== empresaAsociadaMap[item.id]) 
                 .map((empresa) => ({
@@ -305,14 +369,25 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
                           fontSize: 16,
                           letterSpacing: 0.5, }}>Desasociar Empresa</Text>
           </TouchableOpacity>
+
+          
         )}
+        <TouchableOpacity
+          onPress={() => eliminarUsuarios(item.id)}
+          style={styles.deleteBotton}
+        >
+          <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
+            Eliminar Usuario
+          </Text>
+        </TouchableOpacity>
+
     </View>
 
         </View>
       )}
     </TouchableOpacity>
   );
-
+  }
   return (
     <View style={styles.contenedor}>
 
@@ -373,6 +448,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    top:-10
   },
   filtroBtn: {
      backgroundColor: '#4c68d7',
@@ -386,6 +462,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
+    marginLeft:4,
   },
   filtroBtnActivo: {
     backgroundColor: '#b2babb',
@@ -401,11 +478,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   usuarioContainer: {
-    padding: 15,
-    marginBottom: 10,
-    backgroundColor: '#f2f2f2',
-    borderRadius: 10,
+      backgroundColor: '#ffffff',
+      borderRadius: 16,
+      padding: 18,
+      marginBottom: 16,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.15,
+      shadowRadius: 6,
+      elevation: 5,
+      borderLeftWidth: 6,
+      borderLeftColor: '#4c68d7',
+      width: '99%'
   },
+  usuarioCardExpandido: {
+  backgroundColor: '#e8f0fe',
+},
+usuarioInfo: {
+  fontSize: 14,
+  color: '#333',
+  marginBottom: 4,
+},
   nombre: {
     fontWeight: 'bold',
     fontSize: 16,
@@ -421,17 +514,18 @@ const styles = StyleSheet.create({
   },
 
   deleteBotton:{
-     backgroundColor: '#F44336',
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
+      backgroundColor: '#d32f2f',
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 4,
+      marginLeft:4,
   },
    
 buttonContainer: {
@@ -441,12 +535,19 @@ buttonContainer: {
   marginTop: 16,
 },
 editButton: {
-  backgroundColor: '#4c68d7',
-  paddingVertical: 3,
-  paddingHorizontal: 25,
-  borderRadius: 20,
-  alignItems: 'flex-start',
-  justifyContent: 'center',
+   backgroundColor: '#4c68d7',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+    marginLeft:4,
+   alignItems: 'flex-start',
+    borderWidth: 0
 },
 
 });

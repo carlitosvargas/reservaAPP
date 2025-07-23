@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   Button,
+  Platform,
 } from 'react-native';
 import ModalSelector from 'react-native-modal-selector';
 import { obtenerUsuariosPorEmpresa, actualizarPerfil, eliminarUsuario } from '../../services/usuarioService';
@@ -111,31 +112,44 @@ export default function UsuarioScreen() {
       console.error('Error al actualizar perfil:', error);
     }
   };
+const handleEliminarUsuario = (id: number) => {
+  const eliminar = async () => {
+    try {
+      await eliminarUsuario(id);
+      const nuevosUsuarios = usuarios.filter((u) => u.id !== id);
+      setUsuarios(nuevosUsuarios);
+      setUsuariosFiltrados(nuevosUsuarios.filter(u => filtro === null || u.perfil_id === filtro));
 
-  const handleEliminarUsuario = (id: number) => {
+      if (Platform.OS === 'web') {
+        alert('Usuario eliminado con éxito');
+      } else {
+        Alert.alert('Éxito', 'Usuario eliminado con éxito');
+      }
+    } catch (error) {
+      if (Platform.OS === 'web') {
+        alert('Error: No se pudo eliminar el usuario');
+      } else {
+        Alert.alert('Error', 'No se pudo eliminar el usuario');
+      }
+    }
+  };
+
+  if (Platform.OS === 'web') {
+    const confirmado = window.confirm('¿Estás seguro que deseas eliminar este usuario?');
+    if (confirmado) {
+      eliminar();
+    }
+  } else {
     Alert.alert(
       'Confirmar eliminación',
       '¿Estás seguro que deseas eliminar este usuario?',
       [
         { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Eliminar',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await eliminarUsuario(id);
-              const nuevosUsuarios = usuarios.filter((u) => u.id !== id);
-              setUsuarios(nuevosUsuarios);
-              setUsuariosFiltrados(nuevosUsuarios.filter(u => filtro === null || u.perfil_id === filtro));
-              Alert.alert('Usuario eliminado con éxito');
-            } catch (error) {
-              Alert.alert('Error', 'No se pudo eliminar el usuario');
-            }
-          },
-        },
+        { text: 'Eliminar', style: 'destructive', onPress: eliminar },
       ]
     );
-  };
+  }
+};
 
 const renderItem = ({ item }: { item: Usuario }) => {
   const estaExpandido = seleccionado === item.id;
@@ -149,7 +163,7 @@ const renderItem = ({ item }: { item: Usuario }) => {
       ]}
       activeOpacity={0.8}
     >
-      <Text style={styles.usuarioTitulo}>Usuario: {item.usuario}</Text>
+      <Text style={styles.usuarioTitulo}>Usuario: {item.usuario} - {item.id} </Text>
       <Text style={styles.usuarioInfo}>Nombre: {item.nombre} {item.apellido}</Text>
       <Text style={styles.usuarioInfo}>Perfil: {obtenerNombrePerfil(item.perfil_id)}</Text>
 
@@ -207,7 +221,7 @@ const renderItem = ({ item }: { item: Usuario }) => {
 
   return (
     <View style={styles.contenedor}>
-      <Text style={styles.titulo}>Lista de Usuarios</Text>
+     
 
       {userInfo.perfil === 'usuarioEmpresa' && (
         <View style={{ marginBottom: 15 }}>
@@ -282,6 +296,7 @@ editButton: {
   elevation: 5,
   borderLeftWidth: 6,
   borderLeftColor: '#4c68d7',
+  width: '99%'
 },
 
 usuarioCardExpandido: {
@@ -289,10 +304,9 @@ usuarioCardExpandido: {
 },
 
 usuarioTitulo: {
-  fontSize: 18,
-  fontWeight: 'bold',
-  color: '#2c3e50',
-  marginBottom: 8,
+   fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 5,
 },
 
 usuarioInfo: {
@@ -326,6 +340,7 @@ textoBotonDetalle: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    top:-10
   },
   filtroBtn: {
      backgroundColor: '#4c68d7',
@@ -339,6 +354,7 @@ textoBotonDetalle: {
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
+    marginLeft: 4
   },
   filtroBtnActivo: {
    backgroundColor: '#b2babb',
