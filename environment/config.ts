@@ -7,7 +7,7 @@ const config = {
     API_URL: 'https://reserva-minubus.onrender.com',
   },
   production: {
-    API_URL: 'https://reserva-minubus.onrender.com',
+    API_URL: 'https://reserva-minubus-m39k.onrender.com',
   },
 };
 
