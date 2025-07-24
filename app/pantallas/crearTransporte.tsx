@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Platform } 
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/context/AuthContext';
 import { crearTransporte } from '../../services/transporteService';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 
 type ErroresTransporte = {
   nombre?: string;
@@ -20,6 +20,10 @@ const CrearTransporte = () => {
   const [errores, setErrores] = useState<ErroresTransporte>({});
   const { userInfo } = useAuth();
   
+
+if (userInfo?.perfil !== 'usuarioMostrador') {
+    return <Redirect href="/login" />;
+  }
 
   const mostrarAlerta = (titulo: string, mensaje: string) => {
     if (Platform.OS === 'web') {

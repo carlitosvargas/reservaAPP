@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator,TouchableOpacity, Alert, Platform, ToastAndroid  } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { obtenerPasajerosPorViaje } from '../../services/viajeServices'; 
 import { eliminarPasajero } from '../../services/reservaService';
@@ -28,7 +28,9 @@ const reservaConfirmada = tieneVenta === 'true';
   const { userInfo } = useAuth();
   const usuarios_id = userInfo?.id;
 
-
+if (userInfo?.perfil !== 'usuarioCliente') {
+    return <Redirect href="/login" />;
+  }
 
 
 useEffect(() => {

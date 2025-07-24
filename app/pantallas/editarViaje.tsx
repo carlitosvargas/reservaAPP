@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Platform, Alert, Pressable, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard,} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { actualizarViaje, obtenerViajesId, existeReservaViaje } from '../../services/viajeServices';
 import { obtenerTransporteId } from '../../services/transporteService';
 import { useNavigation } from '@react-navigation/native';
@@ -65,6 +65,11 @@ const EditarViaje = () => {
   const origenRef = useRef<HTMLDivElement | null>(null);
   const destinoRef = useRef<HTMLDivElement | null>(null);
 
+
+     if (userInfo?.perfil !== 'usuarioMostrador') {
+        return <Redirect href="/login" />;
+      }
+      
   useEffect(() => {
     const fetchData = async () => {
       if (!userInfo?.empresa_id) return;

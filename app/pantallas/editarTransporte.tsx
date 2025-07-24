@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'reac
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/context/AuthContext';
 import { editarTransporte, obtenerTransporteId, verificarTransporteSinReservas } from '../../services/transporteService';
-import { useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 
 const EditarTransporte = () => {
   const [transporte, setTransporte] = useState({
@@ -21,6 +21,11 @@ const EditarTransporte = () => {
   const [sinReservas, setSinReservas] = useState<boolean | null>(null);
   const [bloquearInput, setBloquearInput] = useState(false);
   const [mensajeBloqueo, setMensajeBloqueo] = useState('');
+
+ if (userInfo?.perfil !== 'usuarioMostrador') {
+    return <Redirect href="/login" />;
+  }
+  
 
   useEffect(() => {
     const cargarDatos = async () => {

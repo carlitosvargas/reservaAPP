@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, ScrollView, Button, Alert, Platform } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 import { obtenerVentaDetalle } from '../../services/ventaService';
 import { obtenerUsuarioPorId } from '../../services/usuarioService';
 import { generarHTMLComprobante } from '../../utils/imprimirComprobante';
@@ -57,7 +57,10 @@ export default function DetalleVenta() {
     usuario: Usuario;
   }
  const { userInfo } = useAuth();
-
+   if (userInfo?.perfil !== 'usuarioCliente') {
+        return <Redirect href="/login" />;
+      }
+      
 useEffect(() => {
   if (id && userInfo?.id) {
     setLoading(true);

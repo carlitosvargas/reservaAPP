@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity }
 import { useAuth }from '../../../context/AuthContext';
 import { obtenerClientesConVentasConfirmadasPorEmpresa } from '../../../services/reportesService';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 
 interface ClienteConVenta {
   usuarios_id: number;
@@ -23,6 +23,11 @@ export default function TopClientesConVentasScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
+     if (userInfo?.perfil !== 'usuarioEmpresa') {
+            return <Redirect href="/login" />;
+          }
+          
   useEffect(() => {
     const cargarClientes = async () => {
       try {

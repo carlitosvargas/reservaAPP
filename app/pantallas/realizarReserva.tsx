@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity, Platform , Image} from 'react-native';
 import { obtenerViajesId } from '../../services/viajeServices';
@@ -40,6 +40,11 @@ export default function DetalleViaje() {
   const { userInfo } = useAuth();
 
   const usuarios_id = userInfo?.id;
+
+ if (userInfo?.perfil !== 'usuarioCliente') {
+    return <Redirect href="/login" />;
+  }
+
 
   useEffect(() => {
     if (id) {

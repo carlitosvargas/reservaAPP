@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useAuth }from '../../../context/AuthContext';
 import { obtenerClientesConMasReservasPorEmpresa } from '../../../services/reportesService';
+import { Redirect } from 'expo-router';
 
 interface Cliente {
   usuarios_id: number;
@@ -21,6 +22,10 @@ export default function TopClientesScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+   if (userInfo?.perfil !== 'usuarioEmpresa') {
+        return <Redirect href="/login" />;
+      }
+      
   useEffect(() => {
     const cargarClientes = async () => {
       try {

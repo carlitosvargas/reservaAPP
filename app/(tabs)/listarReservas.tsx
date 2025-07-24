@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, TextInput, Platform, Button, ScrollView } from 'react-native';
 import { obtenerReservasPorEmpresa } from '../../services/reservaService';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 import Feather from 'react-native-vector-icons/Feather';
+
 
 interface Empresa {
   id: number;
@@ -58,6 +59,8 @@ interface Reserva {
 }
 
 const ListarReservas = () => {
+
+  
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [expanded, setExpanded] = useState<{
     [key: number]: { viaje: boolean; transporte: boolean; empresa: boolean; pasajeros: boolean; usuario: boolean };
@@ -73,6 +76,12 @@ const ListarReservas = () => {
   const { userInfo } = useAuth();
   const router = useRouter();
 
+
+   if (!userInfo || !['usuarioEmpresa', 'usuarioMostrador'].includes(userInfo.perfil)) {
+      return <Redirect href="/login" />;
+    }
+
+    
   useEffect(() => {
     const fetchReservas = async () => {
       try {
@@ -166,6 +175,9 @@ const limpiarFiltros = () => {
     return dentroRangoDesde && dentroRangoHasta;
     
   });
+
+  
+   
   return (
      <View style={styles.container}>
 

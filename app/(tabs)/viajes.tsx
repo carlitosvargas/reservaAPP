@@ -6,8 +6,9 @@ import {
   FlatList,Image
 } from 'react-native';
 import { listarViajes, obtenerLocalidades } from '../../services/viajeServices';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useAuth } from '../../context/AuthContext';
 
 interface Viaje {
   id: number;
@@ -40,8 +41,11 @@ export default function ViajesScreen() {
   const [mensaje, setMensaje] = useState('');
   const origenRef = useRef<HTMLDivElement | null>(null);
   const destinoRef = useRef<HTMLDivElement | null>(null);
+  const { userInfo } = useAuth();
 
-  
+   if (userInfo?.perfil !== 'usuarioCliente') {
+    return <Redirect href="/login" />;
+  }
   useEffect(() => {
     const cargarLocalidades = async () => {
       try {

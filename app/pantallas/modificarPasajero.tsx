@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity, Platform } from 'react-native';
 import { obtenerPasajeroPorId, actualizarReserva } from '../../services/reservaService'; // Asegúrate de tener estos servicios
@@ -21,6 +21,9 @@ export default function ModificarPasajero() {
 });
 const [erroresBackend, setErroresBackend] = useState<{ [key: string]: string }>({});
 
+ if (userInfo?.perfil !== 'usuarioCliente') {
+    return <Redirect href="/login" />;
+  }
 
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
+import { useAuth } from '../../context/AuthContext';
 
 interface Viaje {
   id: number;
@@ -13,8 +14,13 @@ interface Viaje {
 
 export default function ChoferListaViajes() {
   const { viajes } = useLocalSearchParams();
-
-
+ 
+  const { userInfo } = useAuth();
+if (userInfo?.perfil !== 'usuarioMostrador') {
+    return <Redirect href="/login" />;
+  }
+  
+  
   // Convertimos el string de JSON a un array real
   let listaViajes: Viaje[] = [];
 

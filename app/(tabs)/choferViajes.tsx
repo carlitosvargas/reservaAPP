@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { obtenerViajesPorChofer } from '../../services/viajeServices';
 import { useAuth } from '@/context/AuthContext';
 
@@ -36,6 +36,10 @@ const ViajesChofer = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+   if (userInfo?.perfil !== 'usuarioChofer') {
+         return <Redirect href="/login" />;
+       }
+       
   useEffect(() => {
     const fetchViajes = async () => {
       try {
