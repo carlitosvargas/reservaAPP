@@ -36,9 +36,10 @@ const CrearEmpresa = () => {
 
   const inputRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
-  const { userInfo } = useAuth();
+  const { logout,userInfo } = useAuth();
   
      if (userInfo?.perfil !== 'usuarioAdministrador') {
+      logout();
        return <Redirect href="/login" />;
      }
    
