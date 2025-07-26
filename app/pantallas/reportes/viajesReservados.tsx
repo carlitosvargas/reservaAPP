@@ -29,7 +29,7 @@ export default function ViajesMasReservadosScreen() {
   const [totalViajes, setTotalReservas] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { userInfo } = useAuth();
+  const {  logout, userInfo } = useAuth();
 
   const [busqueda, setBusqueda] = useState('');
   const [fechaDesde, setFechaDesde] = useState<Date | null>(null);
@@ -39,6 +39,7 @@ export default function ViajesMasReservadosScreen() {
 
 
      if (userInfo?.perfil !== 'usuarioEmpresa') {
+       logout();
              return <Redirect href="/login" />;
            }
 

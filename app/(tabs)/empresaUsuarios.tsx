@@ -33,9 +33,10 @@ const perfiles = [
 ];
 
 export default function UsuarioScreen() {
-  const { userInfo } = useAuth();
+  const { logout,userInfo } = useAuth();
 
   if (!userInfo || !['usuarioEmpresa', 'usuarioMostrador'].includes(userInfo.perfil)) {
+    logout();
     return <Redirect href="/login" />;
   }
 

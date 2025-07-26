@@ -27,7 +27,7 @@ interface PasajeroEmpresa {
 
 
 export default function PasajerosPorEmpresaScreen() {
-  const { userInfo } = useAuth();
+  const {logout, userInfo } = useAuth();
   const [pasajeros, setPasajeros] = useState<PasajeroEmpresa[]>([]);
   const [cantidad, setCantidad] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -35,6 +35,7 @@ export default function PasajerosPorEmpresaScreen() {
 
 
    if (userInfo?.perfil !== 'usuarioEmpresa') {
+           logout();
           return <Redirect href="/login" />;
         }
 

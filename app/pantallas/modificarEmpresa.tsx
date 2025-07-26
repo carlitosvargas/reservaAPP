@@ -9,7 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 export default function ModificarEmpresa() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
 
@@ -23,6 +23,7 @@ export default function ModificarEmpresa() {
   });
 
    if (userInfo?.perfil !== 'usuarioEmpresa') {
+     logout();
       return <Redirect href="/login" />;
     }
     

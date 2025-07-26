@@ -18,10 +18,11 @@ const CrearTransporte = () => {
   const [marca, setMarca] = useState('');
   const [cantLugares, setCantLugares] = useState('');
   const [errores, setErrores] = useState<ErroresTransporte>({});
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
   
 
 if (userInfo?.perfil !== 'usuarioMostrador') {
+   logout();
     return <Redirect href="/login" />;
   }
 

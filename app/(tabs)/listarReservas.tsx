@@ -73,11 +73,12 @@ const ListarReservas = () => {
 
   const [showPickerDesde, setShowPickerDesde] = useState(false);
   const [showPickerHasta, setShowPickerHasta] = useState(false);
-  const { userInfo } = useAuth();
+  const {logout, userInfo } = useAuth();
   const router = useRouter();
 
 
    if (!userInfo || !['usuarioEmpresa', 'usuarioMostrador'].includes(userInfo.perfil)) {
+    logout();
       return <Redirect href="/login" />;
     }
 

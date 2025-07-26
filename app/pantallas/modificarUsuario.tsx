@@ -17,7 +17,7 @@ type ErroresUsuario = {
 export default function ModificarUsuario() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
   const [perfilId, setPerfilId] = useState<any | null>(null);
   const [errores, setErrores] = useState<ErroresUsuario>({});
 
@@ -33,6 +33,7 @@ export default function ModificarUsuario() {
   });
 
    if (userInfo?.perfil == null) {
+     logout();
          return <Redirect href="/login" />;
        }
   useEffect(() => {

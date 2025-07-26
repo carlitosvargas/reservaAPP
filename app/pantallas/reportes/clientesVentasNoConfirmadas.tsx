@@ -33,10 +33,11 @@ export default function ReservasSinVentaScreen() {
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
 
 
     if (userInfo?.perfil !== 'usuarioEmpresa') {
+       logout();
            return <Redirect href="/login" />;
          }
          

@@ -5,9 +5,10 @@ import { useAuth } from '../../../context/AuthContext';
 export default function ReportesScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
 
    if (userInfo?.perfil !== 'usuarioEmpresa') {
+     logout();
            return <Redirect href="/login" />;
          }
 

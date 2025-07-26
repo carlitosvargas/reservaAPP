@@ -30,9 +30,10 @@ export default function ReservasYPasajerosScreen() {
   const [reservasConfirmadas, setReservasConfirmadas] = useState<ReservaConPasajeros[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
 
  if (userInfo?.perfil !== 'usuarioChofer') {
+   logout();
      return <Redirect href="/login" />;
    }
        

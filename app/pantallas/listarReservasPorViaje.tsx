@@ -25,9 +25,10 @@ const ReservasPorViaje = () => {
   const { id } = useLocalSearchParams();
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [loading, setLoading] = useState(true);
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
 
    if (userInfo?.perfil !== 'usuarioMostrador') {
+     logout();
          return <Redirect href="/login" />;
         }
 

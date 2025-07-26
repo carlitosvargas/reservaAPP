@@ -15,8 +15,9 @@ interface Viaje {
 export default function ChoferListaViajes() {
   const { viajes } = useLocalSearchParams();
  
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
 if (userInfo?.perfil !== 'usuarioMostrador') {
+   logout();
     return <Redirect href="/login" />;
   }
   

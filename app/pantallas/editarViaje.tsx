@@ -57,7 +57,7 @@ const EditarViaje = () => {
   const [localidades, setLocalidades] = useState<string[]>([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
   const navigation = useNavigation();
   const router = useRouter();
   const { id } = useLocalSearchParams();
@@ -67,6 +67,7 @@ const EditarViaje = () => {
 
 
      if (userInfo?.perfil !== 'usuarioMostrador') {
+       logout();
         return <Redirect href="/login" />;
       }
       

@@ -53,7 +53,7 @@ export interface RespuestaGananciaTotal {
 }
 
 export default function GananciaTotalScreen() {
-  const { userInfo } = useAuth();
+  const {  logout, userInfo } = useAuth();
   const [viajes, setViajes] = useState<ViajeConVentas[]>([]);
   const [totalGanancia, setTotalGanancia] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -67,6 +67,7 @@ export default function GananciaTotalScreen() {
 
 
       if (userInfo?.perfil !== 'usuarioEmpresa') {
+         logout();
              return <Redirect href="/login" />;
            }
            

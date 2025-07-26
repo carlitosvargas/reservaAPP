@@ -57,11 +57,12 @@ const CrearViaje = () => {
  
   const origenRef = useRef<HTMLDivElement | null>(null);
   const destinoRef = useRef<HTMLDivElement | null>(null);
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
   const navigation = useNavigation();
   const router = useRouter();
 
   if (userInfo?.perfil !== 'usuarioMostrador') {
+     logout();
     return <Redirect href="/login" />;
   }
   

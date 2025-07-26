@@ -17,12 +17,13 @@ const EditarTransporte = () => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
-  const { userInfo } = useAuth();
+  const {logout, userInfo } = useAuth();
   const [sinReservas, setSinReservas] = useState<boolean | null>(null);
   const [bloquearInput, setBloquearInput] = useState(false);
   const [mensajeBloqueo, setMensajeBloqueo] = useState('');
 
  if (userInfo?.perfil !== 'usuarioMostrador') {
+   logout();
     return <Redirect href="/login" />;
   }
   

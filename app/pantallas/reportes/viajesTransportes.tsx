@@ -32,7 +32,7 @@ interface TransporteConViajes {
 }
 
 export default function ViajesPorTransporteScreen() {
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
   const [data, setData] = useState<TransporteConViajes[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +44,7 @@ export default function ViajesPorTransporteScreen() {
   const [showHasta, setShowHasta] = useState(false);
 
    if (userInfo?.perfil !== 'usuarioEmpresa') {
+     logout();
            return <Redirect href="/login" />;
          }
 

@@ -56,8 +56,9 @@ export default function DetalleVenta() {
   interface DataComprobante extends VentaDetalleGeneral {
     usuario: Usuario;
   }
- const { userInfo } = useAuth();
+ const { logout, userInfo } = useAuth();
    if (userInfo?.perfil !== 'usuarioCliente') {
+     logout();
         return <Redirect href="/login" />;
       }
       
@@ -183,7 +184,7 @@ return (
     <Text style={styles.successMessage}>✅ ¡Compra realizada con éxito!</Text>
 
     {Platform.OS === 'web' ? (
-      // 👇 En web usamos un div nativo
+    
       <div
         style={{
           width: '100%',
@@ -195,7 +196,7 @@ return (
         dangerouslySetInnerHTML={{ __html: generarHTMLComprobante(data) }}
       />
     ) : (
-      // 👇 En móvil usamos WebView
+      
       <View style={{ flex: 1, height: 600, width: '100%' }}>
         <WebView
           originWhitelist={['*']}

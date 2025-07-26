@@ -23,9 +23,10 @@ export default function ModificarContrasenia() {
 
   const handleGuardar = async () => {
   const nuevosErrores: Errores = {};
-const { userInfo } = useAuth();
+const {logout, userInfo } = useAuth();
 
    if (userInfo?.perfil == null) {
+     logout();
          return <Redirect href="/login" />;
        }
        

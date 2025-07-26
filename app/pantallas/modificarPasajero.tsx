@@ -8,7 +8,7 @@ import BackButton from '../../components/BackButton';
 export default function ModificarPasajero() {
   const { id, idReserva, idViaje} = useLocalSearchParams();
   const router = useRouter();
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
 
   const [loading, setLoading] = useState(true);
  const [pasajero, setPasajero] = useState({
@@ -22,6 +22,7 @@ export default function ModificarPasajero() {
 const [erroresBackend, setErroresBackend] = useState<{ [key: string]: string }>({});
 
  if (userInfo?.perfil !== 'usuarioCliente') {
+   logout();
     return <Redirect href="/login" />;
   }
 

@@ -21,9 +21,10 @@ interface Pasajero {
 export default function ChoferListaPasajeros() {
   const { id, origen, destino } = useLocalSearchParams();
   const [pasajeros, setPasajeros] = useState<Pasajero[]>([]);
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
 
 if (userInfo?.perfil !== 'usuarioChofer') {
+    logout();
     return <Redirect href="/login" />;
   }
   useEffect(() => {

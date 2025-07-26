@@ -42,9 +42,10 @@ const MisReservas = () => {
   const [error, setError] = useState('');
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const animation = useRef(new Animated.Value(0)).current;
-  const { userInfo } = useAuth();
+  const {  logout,userInfo } = useAuth();
 
    if (userInfo?.perfil !== 'usuarioCliente') {
+     logout();
     return <Redirect href="/login" />;
   }
   useEffect(() => {

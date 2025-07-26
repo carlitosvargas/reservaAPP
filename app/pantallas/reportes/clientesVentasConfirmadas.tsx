@@ -18,13 +18,14 @@ interface ClienteConVenta {
 }
 
 export default function TopClientesConVentasScreen() {
-  const { userInfo } = useAuth();
+  const {  logout,userInfo } = useAuth();
   const [clientes, setClientes] = useState<ClienteConVenta[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
 
      if (userInfo?.perfil !== 'usuarioEmpresa') {
+       logout();
             return <Redirect href="/login" />;
           }
           

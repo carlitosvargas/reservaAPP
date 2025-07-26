@@ -21,13 +21,14 @@ interface MedioTransporte {
 const ListarTransportes = () => {
   const [transportes, setTransportes] = useState<MedioTransporte[]>([]);
   const [busqueda, setBusqueda] = useState('');
-  const { userInfo } = useAuth();
+  const { logout,userInfo } = useAuth();
   const navigation = useNavigation();
 
   const esMostrador = userInfo?.perfil === 'usuarioMostrador';
 
   
      if (!userInfo || !['usuarioEmpresa', 'usuarioMostrador'].includes(userInfo.perfil)) {
+      logout();
         return <Redirect href="/login" />;
       }
 

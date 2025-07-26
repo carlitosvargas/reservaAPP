@@ -38,7 +38,7 @@ const ViajesEmpresa = () => {
   const [error, setError] = useState('');
   const [nombreEmpresa, setNombreEmpresa] = useState('');
 
-  const { userInfo } = useAuth();
+  const { logout,userInfo } = useAuth();
   const router = useRouter();
   const [busqueda, setBusqueda] = useState('');
 
@@ -53,6 +53,7 @@ const ViajesEmpresa = () => {
 
 
  if (!userInfo || !['usuarioEmpresa', 'usuarioMostrador'].includes(userInfo.perfil)) {
+  logout();
       return <Redirect href="/login" />;
     }
     

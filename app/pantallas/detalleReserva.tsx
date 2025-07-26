@@ -25,10 +25,11 @@ const reservaConfirmada = tieneVenta === 'true';
   const [mensajeReserva, setMensajeReserva] = useState('');
   const [esError, setEsError] = useState(false);
   const router = useRouter();
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
   const usuarios_id = userInfo?.id;
 
 if (userInfo?.perfil !== 'usuarioCliente') {
+   logout();
     return <Redirect href="/login" />;
   }
 

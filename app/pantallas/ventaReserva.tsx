@@ -10,9 +10,10 @@ export default function CrearVenta() {
   const [formaPago, setFormaPago] = useState('');
   const [descuento, setDescuento] = useState('0');
   const router = useRouter();
-  const { userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
 
  if (userInfo?.perfil !== 'usuarioChofer') {
+   logout();
      return <Redirect href="/login" />;
    }
   const guardarVenta = async () => {

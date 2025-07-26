@@ -4,7 +4,7 @@ const ENV = 'development';
 
 const config = {
   development: {
-    API_URL: 'https://reserva-minubus.onrender.com',
+    API_URL: 'https://reserva-minubus-m39k.onrender.com',
   },
   production: {
     API_URL: 'https://reserva-minubus-m39k.onrender.com',

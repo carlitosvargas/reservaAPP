@@ -32,11 +32,12 @@ interface Viaje {
 
 const ViajesChofer = () => {
   const [viajes, setViajes] = useState<Viaje[]>([]);
-  const { userInfo } = useAuth();
+  const { logout,userInfo } = useAuth();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
    if (userInfo?.perfil !== 'usuarioChofer') {
+    logout();
          return <Redirect href="/login" />;
        }
        

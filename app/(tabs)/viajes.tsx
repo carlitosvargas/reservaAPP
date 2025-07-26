@@ -41,9 +41,10 @@ export default function ViajesScreen() {
   const [mensaje, setMensaje] = useState('');
   const origenRef = useRef<HTMLDivElement | null>(null);
   const destinoRef = useRef<HTMLDivElement | null>(null);
-  const { userInfo } = useAuth();
+  const {  logout,userInfo } = useAuth();
 
    if (userInfo?.perfil !== 'usuarioCliente') {
+     logout();
     return <Redirect href="/login" />;
   }
   useEffect(() => {

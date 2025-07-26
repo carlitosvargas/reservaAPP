@@ -33,12 +33,13 @@ interface Viaje {
 const ChoferReserva = () => {
   const [viajes, setViajes] = useState<Viaje[]>([]);
   const [loading, setLoading] = useState(true);
-  const { userInfo } = useAuth();
+  const { logout,userInfo } = useAuth();
   const router = useRouter();
 
     if (userInfo?.perfil !== 'usuarioChofer') {
-           return <Redirect href="/login" />;
-         }
+      logout();
+       return <Redirect href="/login" />;
+     }
          
 
   useEffect(() => {

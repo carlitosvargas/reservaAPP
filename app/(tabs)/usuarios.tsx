@@ -42,9 +42,10 @@ const perfiles = [
 ];
 
 export default function UsuariosScreen() {
-  const { userInfo } = useAuth();
+  const {  logout,userInfo } = useAuth();
 
   if (userInfo?.perfil !== 'usuarioAdministrador') {
+     logout();
     return <Redirect href="/login" />;
   }
 
