@@ -1,7 +1,8 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Text, View, StyleSheet, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { actualizarContraseña } from '../../services/usuarioService';
+import { useAuth } from '../../context/AuthContext';
 
 //errores
 type Errores = {
@@ -22,7 +23,12 @@ export default function ModificarContrasenia() {
 
   const handleGuardar = async () => {
   const nuevosErrores: Errores = {};
+const { userInfo } = useAuth();
 
+   if (userInfo?.perfil == null) {
+         return <Redirect href="/login" />;
+       }
+       
   // Validación de campos vacíos
   if (!contraseñaActual) {
     nuevosErrores.contrasenia = 'La contraseña actual es obligatoria';

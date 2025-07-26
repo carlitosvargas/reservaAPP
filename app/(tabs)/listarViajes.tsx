@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View,Text,StyleSheet,ActivityIndicator,Pressable,ScrollView,TouchableOpacity,Platform,Alert,TextInput,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { obtenerViajesPorEmpresa, eliminarViaje } from '../../services/viajeServices';
 import { useAuth } from '../../context/AuthContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -51,6 +51,11 @@ const ViajesEmpresa = () => {
 
   const esMostrador = userInfo?.perfil === 'usuarioMostrador';
 
+
+ if (!userInfo || !['usuarioEmpresa', 'usuarioMostrador'].includes(userInfo.perfil)) {
+      return <Redirect href="/login" />;
+    }
+    
   useEffect(() => {
     const fetchViajes = async () => {
       try {

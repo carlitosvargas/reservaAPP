@@ -1,19 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  TouchableOpacity,
-  Alert,
-  Platform,
-  ScrollView,
-} from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator,TouchableOpacity, Alert, Platform, ToastAndroid  } from 'react-native';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
-import { obtenerPasajerosPorViaje } from '../../services/viajeServices';
+import { obtenerPasajerosPorViaje } from '../../services/viajeServices'; 
 import { eliminarPasajero } from '../../services/reservaService';
+
 
 interface Pasajero {
   id: number;
@@ -25,235 +16,230 @@ interface Pasajero {
 }
 
 export default function DetalleReserva() {
-  const { id, updated, tieneVenta, idReserva } = useLocalSearchParams();
-  const reservaConfirmada = tieneVenta === 'true';
+ const { id, updated, tieneVenta, idReserva } = useLocalSearchParams();
+const reservaConfirmada = tieneVenta === 'true';
 
+ 
   const [pasajeros, setPasajeros] = useState<Pasajero[]>([]);
   const [loading, setLoading] = useState(false);
   const [mensajeReserva, setMensajeReserva] = useState('');
   const [esError, setEsError] = useState(false);
   const router = useRouter();
   const { userInfo } = useAuth();
+  const usuarios_id = userInfo?.id;
 
-  useEffect(() => {
-    if (id) {
-      setLoading(true);
-      obtenerPasajerosPorViaje(Number(idReserva))
-        .then((data) => {
-          setPasajeros(data);
-        })
-        .catch(() => {
-          setEsError(true);
-          setMensajeReserva('Error al obtener los pasajeros');
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+if (userInfo?.perfil !== 'usuarioCliente') {
+    return <Redirect href="/login" />;
+  }
+
+
+useEffect(() => {
+  if (id) {
+    setLoading(true);
+    obtenerPasajerosPorViaje(Number(idReserva))
+      .then((data) => {
+        setPasajeros(data);
+      })
+      .catch((error) => {
+        setEsError(true);
+        setMensajeReserva('Error al obtener los pasajeros');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+}, [id, updated]); 
+
+const handleEliminar = (idPasajero: number) => {
+  const cantidadPasajeros = pasajeros.length;
+
+  const mensaje = cantidadPasajeros === 1
+    ? 'Este es el último pasajero. Si lo eliminás, se eliminará la reserva completa. ¿Deseás continuar?'
+    : '¿Estás seguro de que querés eliminar este pasajero?';
+
+  if (Platform.OS === 'web') {
+    const confirmacion = window.confirm(mensaje);
+    if (confirmacion) {
+      eliminarYActualizar(idPasajero, cantidadPasajeros);
     }
-  }, [id, updated]);
+  } else {
+    Alert.alert(
+      'Confirmar eliminación',
+      mensaje,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: () => eliminarYActualizar(idPasajero, cantidadPasajeros),
+        },
+      ]
+    );
+  }
+};
 
-  const handleEliminar = (idPasajero: number) => {
-    const cantidadPasajeros = pasajeros.length;
+// Elimina y redirige si era el último
+const eliminarYActualizar = async (idPasajero: number, cantidadPasajeros: number) => {
+  try {
+    await eliminarPasajero(idPasajero);
 
-    const mensaje =
-      cantidadPasajeros === 1
-        ? 'Este es el último pasajero. Si lo eliminás, se eliminará la reserva completa. ¿Deseás continuar?'
-        : '¿Estás seguro de que querés eliminar este pasajero?';
+    // Mostrar mensaje de éxito
+    if (Platform.OS === 'web') {
+      alert('Pasajero eliminado correctamente'); 
+    } else {
+      Alert.alert('Pasajero eliminado correctamente');
+      
+    }
+
+    // Si era el último pasajero
+    if (cantidadPasajeros === 1) {
+     
+      router.replace('/(tabs)/reserva');
+      return;
+    }
+
+    // Si no era el último: actualiza la lista
+      router.push({ pathname: '/pantallas/detalleReserva', params: { id: id, tieneVenta: tieneVenta, idReserva: idReserva } })
+     
+  } catch (error) {
+    console.error('Error al eliminar pasajero:', error);
 
     if (Platform.OS === 'web') {
-      if (window.confirm(mensaje)) {
-        eliminarYActualizar(idPasajero, cantidadPasajeros);
-      }
+       alert('Error al eliminar pasajero');
     } else {
-      Alert.alert(
-        'Confirmar eliminación',
-        mensaje,
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Eliminar',
-            style: 'destructive',
-            onPress: () => eliminarYActualizar(idPasajero, cantidadPasajeros),
-          },
-        ]
-      );
-    }
-  };
-
-  const eliminarYActualizar = async (
-    idPasajero: number,
-    cantidadPasajeros: number
-  ) => {
-    try {
-      await eliminarPasajero(idPasajero);
-      if (cantidadPasajeros === 1) {
-        router.replace('/(tabs)/reserva');
-      } else {
-        router.push({
-          pathname: '/pantallas/detalleReserva',
-          params: { id, tieneVenta, idReserva },
-        });
-      }
-    } catch (error) {
       Alert.alert('Error al eliminar pasajero');
+     
     }
-  };
+  }
+};
+
+
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4c68d7" />
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }
 
   if (esError) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>{mensajeReserva}</Text>
+      <View style={styles.container}>
+        <Text>{mensajeReserva}</Text>
       </View>
     );
   }
 
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
+      
       <Text style={styles.subTitle}>Pasajeros:</Text>
-
-      <View style={styles.tableContainer}>
-        <View style={styles.tableHeader}>
-          <Text style={[styles.headerCell, { flex: 1 }]}>Nombre</Text>
-          <Text style={[styles.headerCell, { flex: 1 }]}>Apellido</Text>
-          <Text style={[styles.headerCell, { flex: 1 }]}>DNI</Text>
-          <Text style={[styles.headerCell, { flex: 1 }]}>Origen</Text>
-          <Text style={[styles.headerCell, { flex: 1 }]}>Destino</Text>
-          {!reservaConfirmada && (
-            <Text style={[styles.headerCell, { flex: 0.6 }]}>Acciones</Text>
-          )}
-        </View>
-
-        {pasajeros.map((item) => (
-      <View key={item.id} style={styles.tableRow}>
-        <View style={[styles.cell, { flex: 1 }]}>
-          <Text style={styles.cellText}>{item.nombre}</Text>
-        </View>
-        <View style={[styles.cell, { flex: 1 }]}>
-          <Text style={styles.cellText}>{item.apellido}</Text>
-        </View>
-        <View style={[styles.cell, { flex: 1 }]}>
-          <Text style={styles.cellText}>{item.dni}</Text>
-        </View>
-        <View style={[styles.cell, { flex: 1 }]}>
-          <Text style={styles.cellText}>{item.ubicacionOrigen}</Text>
-        </View>
-        <View style={[styles.cell, { flex: 1 }]}>
-          <Text style={styles.cellText}>{item.ubicacionDestino}</Text>
-        </View>
-
-        {!reservaConfirmada && (
-          <View style={[styles.cell, styles.actions, { flex: 0.6 }]}>
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() =>
-                router.push({
-                  pathname: '/pantallas/modificarPasajero',
-                  params: {
-                    id: item.id,
-                    idReserva: idReserva,
-                    idViaje: id,
-                  },
-                })
-              }
-            >
-              <Text style={styles.actionText}>Editar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => handleEliminar(item.id)}
-            >
-              <Text style={styles.actionText}>Eliminar</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+      <FlatList
+  data={pasajeros}
+  keyExtractor={(item, index) => index.toString()}
+  renderItem={({ item }) => (
+    <View style={styles.pasajeroCard}>
+      <View style={styles.infoContainer}>
+        <Text style={styles.nombre}>{item.nombre} {item.apellido}</Text>
+        <Text style={styles.dato}>DNI: <Text style={styles.valor}>{item.dni}</Text></Text>
+        <Text style={styles.dato}>Origen: <Text style={styles.valor}>{item.ubicacionOrigen}</Text></Text>
+        <Text style={styles.dato}>Destino: <Text style={styles.valor}>{item.ubicacionDestino}</Text></Text>
       </View>
 
-        ))}
-      </View>
-    </ScrollView>
-  );
+      {!reservaConfirmada && (
+        <View style={styles.botonesRow}>
+          <TouchableOpacity
+            style={styles.botonEditar}
+            onPress={() =>
+              router.push({
+                pathname: '/pantallas/modificarPasajero',
+                params: { id: item.id, idReserva: idReserva, idViaje: id },
+              })
+            }
+          >
+            <Text style={styles.botonTexto}>Editar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.botonEliminar}
+            onPress={() => handleEliminar(item.id)}
+          >
+            <Text style={styles.botonTexto}>Eliminar</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  )}
+/>
+
+    </View>
+  )
 }
-
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 16,
-    backgroundColor: '#f5f7fa',
+    backgroundColor: '#f4f6f8',
   },
   subTitle: {
-    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 12,
+    fontSize: 20,
+    marginBottom: 16,
     color: '#333',
   },
-  tableContainer: {
-    borderRadius: 8,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#ddd',
+
+  pasajeroCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  tableHeader: {
+  infoContainer: {
+    marginBottom: 12,
+  },
+  nombre: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+    marginBottom: 4,
+  },
+  dato: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 2,
+  },
+  valor: {
+    fontWeight: '600',
+    color: '#333',
+  },
+  botonesRow: {
     flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 10, 
+  },
+  botonEditar: {
     backgroundColor: '#4c68d7',
     paddingVertical: 10,
-  },
-  headerCell: {
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  tableRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    backgroundColor: '#fff',
-    paddingVertical: 8,
-  },
- cell: {
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-cellText: {
-  textAlign: 'center',
-  color: '#444',
-},
-
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  editButton: {
-    backgroundColor: '#4c68d7',
+    paddingHorizontal: 16,
     borderRadius: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
+    marginRight: 10,
   },
-  deleteButton: {
+  botonEliminar: {
     backgroundColor: '#f44336',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     borderRadius: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
   },
-  actionText: {
+  botonTexto: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 12,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 16,
+    fontSize: 14,
   },
 });

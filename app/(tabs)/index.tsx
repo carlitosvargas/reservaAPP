@@ -18,7 +18,7 @@ const colorScheme = useColorScheme();
   const esEmpresa = userInfo?.perfil === 'usuarioEmpresa';
   const esCliente =  userInfo?.perfil === 'usuarioCliente';
   
-
+//actualizacion a produccion
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>

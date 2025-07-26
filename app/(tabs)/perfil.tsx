@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,6 +15,9 @@ export default function PerfilesScreen() {
     console.log('Contenido de AsyncStorage perfil:', allData);
   };
 
+   if (userInfo?.perfil == null) {
+         return <Redirect href="/login" />;
+       }
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>

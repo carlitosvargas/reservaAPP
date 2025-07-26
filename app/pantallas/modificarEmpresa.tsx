@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { obtenerEmpresaPorId, actualizarEmpresa } from '../../services/empresaService';
+import { useAuth } from '../../context/AuthContext';
 
 
 export default function ModificarEmpresa() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-
+  const { userInfo } = useAuth();
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
 
@@ -21,8 +22,10 @@ export default function ModificarEmpresa() {
     
   });
 
-  
-
+   if (userInfo?.perfil !== 'usuarioEmpresa') {
+      return <Redirect href="/login" />;
+    }
+    
   useEffect(() => {
     const cargarDatos = async () => {
       try {

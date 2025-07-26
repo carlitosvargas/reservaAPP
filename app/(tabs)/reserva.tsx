@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { obtenerReservas, eliminarReserva } from '../../services/reservaService';
 import { useAuth } from '../../context/AuthContext';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { existeReservaVenta } from '../../services/ventaService';
 
 interface Viaje {
@@ -44,6 +44,9 @@ const MisReservas = () => {
   const animation = useRef(new Animated.Value(0)).current;
   const { userInfo } = useAuth();
 
+   if (userInfo?.perfil !== 'usuarioCliente') {
+    return <Redirect href="/login" />;
+  }
   useEffect(() => {
     const fetchReservas = async () => {
       if (!userInfo?.id) {

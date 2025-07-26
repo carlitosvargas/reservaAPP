@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 import { obtenerPasajerosPorViaje } from '../../../services/reportesService';
-
+import { useAuth } from '../../../context/AuthContext';
 
 interface Viaje {
   origenLocalidad: string;
@@ -33,7 +33,13 @@ export default function PasajerosPorViajeScreen() {
   const [cantidad, setCantidad] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { userInfo } = useAuth();
 
+
+    if (userInfo?.perfil !== 'usuarioEmpresa') {
+           return <Redirect href="/login" />;
+         }
+         
   useEffect(() => {
     const cargarPasajeros = async () => {
       try {

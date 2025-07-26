@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 import { obtenerViajesMasReservadosPorEmpresa } from '../../../services/reportesService';
 import { useAuth } from '../../../context/AuthContext';
 
@@ -37,6 +37,12 @@ export default function ViajesMasReservadosScreen() {
   const [showPickerDesde, setShowPickerDesde] = useState(false);
   const [showPickerHasta, setShowPickerHasta] = useState(false);
 
+
+     if (userInfo?.perfil !== 'usuarioEmpresa') {
+             return <Redirect href="/login" />;
+           }
+
+           
   useEffect(() => {
     const cargarViajes = async () => {
       try {

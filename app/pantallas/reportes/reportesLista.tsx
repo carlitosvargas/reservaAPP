@@ -1,9 +1,15 @@
 import { View, Text, StyleSheet, Pressable, ScrollView, useWindowDimensions } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function ReportesScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
+  const { userInfo } = useAuth();
+
+   if (userInfo?.perfil !== 'usuarioEmpresa') {
+           return <Redirect href="/login" />;
+         }
 
   type RutaReporte =
   | '/pantallas/reportes/reportesReservas'

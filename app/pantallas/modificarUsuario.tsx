@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity, Platform } from 'react-native';
 import { obtenerUsuarioPorId, actualizarUsuario } from '../../services/usuarioService'; 
@@ -32,6 +32,9 @@ export default function ModificarUsuario() {
     perfil_id: '',
   });
 
+   if (userInfo?.perfil == null) {
+         return <Redirect href="/login" />;
+       }
   useEffect(() => {
     const cargarDatos = async () => {
       try {

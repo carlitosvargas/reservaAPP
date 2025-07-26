@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Platform, Te
 import { useNavigation } from '@react-navigation/native';
 import { obtenerTransportePorEmpresa, eliminarTransporte } from '../../services/transporteService';
 import { useAuth } from '@/context/AuthContext';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 
 interface Empresa {
   nombre: string;
@@ -25,6 +25,11 @@ const ListarTransportes = () => {
   const navigation = useNavigation();
 
   const esMostrador = userInfo?.perfil === 'usuarioMostrador';
+
+  
+     if (!userInfo || !['usuarioEmpresa', 'usuarioMostrador'].includes(userInfo.perfil)) {
+        return <Redirect href="/login" />;
+      }
 
   useEffect(() => {
     const fetchTransportes = async () => {

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 import { listarReservasPorViaje } from '../../services/reservaService';
-
+import { useAuth } from '../../context/AuthContext';
 interface Usuario {
   nombre: string;
   apellido: string;
@@ -25,6 +25,11 @@ const ReservasPorViaje = () => {
   const { id } = useLocalSearchParams();
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [loading, setLoading] = useState(true);
+  const { userInfo } = useAuth();
+
+   if (userInfo?.perfil !== 'usuarioMostrador') {
+         return <Redirect href="/login" />;
+        }
 
   useEffect(() => {
     const fetchReservas = async () => {

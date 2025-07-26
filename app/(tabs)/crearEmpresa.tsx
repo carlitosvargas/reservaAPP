@@ -11,10 +11,11 @@ import {
   Pressable,
   KeyboardAvoidingView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { crearEmpresa } from '@/services/empresaService';
 import { obtenerLocalidades } from '../../services/viajeServices';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useAuth } from '../../context/AuthContext';
 
 type Localidad = {
   id: number;
@@ -35,7 +36,12 @@ const CrearEmpresa = () => {
 
   const inputRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
-
+  const { userInfo } = useAuth();
+  
+     if (userInfo?.perfil !== 'usuarioAdministrador') {
+       return <Redirect href="/login" />;
+     }
+   
   useEffect(() => {
     const cargarLocalidades = async () => {
       try {

@@ -12,7 +12,7 @@ import { obtenerUsuariosChoferPorEmpresa } from '../../services/usuarioService';
 import { obtenerTransportePorEmpresa, obtenerViajesPorTransporte } from '../../services/transporteService';
 import { obtenerLocalidades, obtenerViajesPorChofer } from '../../services/viajeServices';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useRouter } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
@@ -61,6 +61,10 @@ const CrearViaje = () => {
   const navigation = useNavigation();
   const router = useRouter();
 
+  if (userInfo?.perfil !== 'usuarioMostrador') {
+    return <Redirect href="/login" />;
+  }
+  
   useEffect(() => {
 
      const cargarLocalidades = async () => {

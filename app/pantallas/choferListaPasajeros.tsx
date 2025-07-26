@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ScrollView, Platform, Pressable, Image } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 import { listarPasajeroPorViaje } from '../../services/reservaService'; // Asegúrate de tener esta función en tu servicio
 import { listarReservasYPasajerosPorViaje, eliminarPasajero } from '../../services/reservaService';
 import { existeVentaPorPasajero } from '../../services/ventaService';
+import { useAuth } from '../../context/AuthContext';
 
 interface Pasajero {
   id: number;
@@ -20,7 +21,11 @@ interface Pasajero {
 export default function ChoferListaPasajeros() {
   const { id, origen, destino } = useLocalSearchParams();
   const [pasajeros, setPasajeros] = useState<Pasajero[]>([]);
+  const { userInfo } = useAuth();
 
+if (userInfo?.perfil !== 'usuarioChofer') {
+    return <Redirect href="/login" />;
+  }
   useEffect(() => {
     const fetchPasajeros = async () => {
       try {

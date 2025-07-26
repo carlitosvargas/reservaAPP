@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../../context/AuthContext';
 import { obtenerPasajerosPorEmpresa } from '../../../services/reportesService';
+import { Redirect } from 'expo-router';
 
 
 interface ReservaViaje {
@@ -32,6 +33,12 @@ export default function PasajerosPorEmpresaScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
+   if (userInfo?.perfil !== 'usuarioEmpresa') {
+          return <Redirect href="/login" />;
+        }
+
+        
   useEffect(() => {
     const cargarPasajeros = async () => {
       try {

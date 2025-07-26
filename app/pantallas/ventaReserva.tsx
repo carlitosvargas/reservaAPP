@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { crearVenta } from '../../services/ventaService';
 import { useAuth } from '../../context/AuthContext';
 
@@ -12,7 +12,9 @@ export default function CrearVenta() {
   const router = useRouter();
   const { userInfo } = useAuth();
 
-
+ if (userInfo?.perfil !== 'usuarioChofer') {
+     return <Redirect href="/login" />;
+   }
   const guardarVenta = async () => {
       try {
 

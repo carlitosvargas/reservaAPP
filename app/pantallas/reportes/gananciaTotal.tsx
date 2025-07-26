@@ -4,6 +4,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { obtenerGananciaTotalPorEmpresa } from '../../../services/reportesService';
 //import { ViajeConVentas } from '../../interfaces/GananciaTotalInterface';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Redirect } from 'expo-router';
 
 
 export interface DetalleVenta {
@@ -64,6 +65,11 @@ export default function GananciaTotalScreen() {
     const [showDesde, setShowDesde] = useState(false);
     const [showHasta, setShowHasta] = useState(false);
 
+
+      if (userInfo?.perfil !== 'usuarioEmpresa') {
+             return <Redirect href="/login" />;
+           }
+           
   useEffect(() => {
     const cargarDatos = async () => {
       try {

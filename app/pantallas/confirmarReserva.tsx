@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView, Platform, Pressable, Alert, Image } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { listarReservasYPasajerosPorViaje, eliminarPasajero } from '../../services/reservaService';
 import { existeReservaVenta } from '../../services/ventaService';
 import { Ionicons } from '@expo/vector-icons';
-
+import { useAuth } from '../../context/AuthContext';
 
 export interface Pasajero {
   id: number;
@@ -30,7 +30,12 @@ export default function ReservasYPasajerosScreen() {
   const [reservasConfirmadas, setReservasConfirmadas] = useState<ReservaConPasajeros[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { userInfo } = useAuth();
 
+ if (userInfo?.perfil !== 'usuarioChofer') {
+     return <Redirect href="/login" />;
+   }
+       
   useEffect(() => {
     const cargarDatos = async () => {
       try {

@@ -6,6 +6,7 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../../../context/AuthContext';
 import { obtenerGananciasPorViajePorEmpresa } from '../../../services/reportesService';
+import { Redirect } from 'expo-router';
 
 export interface MedioTransporte {
   id: number;
@@ -57,7 +58,11 @@ export default function GananciasPorViajeScreen() {
   const [fechaHasta, setFechaHasta] = useState<Date | null>(null);
   const [showDesde, setShowDesde] = useState(false);
   const [showHasta, setShowHasta] = useState(false);
-
+  
+   if (userInfo?.perfil !== 'usuarioEmpresa') {
+          return <Redirect href="/login" />;
+        }
+        
   useEffect(() => {
     const cargarDatos = async () => {
       try {
