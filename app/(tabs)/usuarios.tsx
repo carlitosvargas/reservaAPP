@@ -174,7 +174,7 @@ const asociarEmpresaUsuario = async (usuarioId: number, empresaId: number) => {
       setUsuariosFiltrados(nuevosUsuarios.filter((u) => u.perfil_id === filtro));
     }
 
-    setErroresAsociacion((prev) => ({ ...prev, [usuarioId]: null }));
+   // setErroresAsociacion((prev) => ({ ...prev, [usuarioId]: null }));
     setEmpresaAsociadaMap((prev) => ({ ...prev, [usuarioId]: empresaId })); 
 
   } catch (error: any) {
@@ -276,7 +276,7 @@ const eliminarUsuarios = (usuarioId: number) => {
       onPress={() => toggleExpand(item.id)}
       style={[styles.usuarioContainer, estaExpandido && styles.usuarioCardExpandido,]}
     >
-      <Text style={styles.nombre}>Usuario: {item.usuario}</Text>
+      <Text style={styles.nombre}>Usuario: {item.usuario} - {item.id}</Text>
       <Text  style={styles.usuarioInfo}>Nombre: {item.nombre} {item.apellido}</Text>
       <Text  style={styles.usuarioInfo}>Perfil: {obtenerNombrePerfil(item.perfil_id)}</Text>
 

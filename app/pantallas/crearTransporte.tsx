@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Platform, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/context/AuthContext';
 import { crearTransporte } from '../../services/transporteService';
@@ -18,13 +18,10 @@ const CrearTransporte = () => {
   const [marca, setMarca] = useState('');
   const [cantLugares, setCantLugares] = useState('');
   const [errores, setErrores] = useState<ErroresTransporte>({});
-  const { logout, userInfo } = useAuth();
+  const { isLoading, logout, userInfo } = useAuth();
   
 
-if (userInfo?.perfil !== 'usuarioMostrador') {
-   logout();
-    return <Redirect href="/login" />;
-  }
+
 
   const mostrarAlerta = (titulo: string, mensaje: string) => {
     if (Platform.OS === 'web') {
@@ -72,7 +69,20 @@ if (userInfo?.perfil !== 'usuarioMostrador') {
       }
     }
   };
-
+  useEffect(() => {
+    if (!isLoading && userInfo?.perfil !== 'usuarioMostrador') {
+      logout();
+      router.replace('/login');
+    }
+  }, [isLoading, userInfo]);
+  
+  if (isLoading || !userInfo) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Crear Nuevo Transporte</Text>

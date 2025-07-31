@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ScrollView, Platform, Pressable, Image } from 'react-native';
-import { Redirect, useLocalSearchParams } from 'expo-router';
+import { View, Text, FlatList, StyleSheet, ScrollView, Platform, Pressable, Image, ActivityIndicator } from 'react-native';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { listarPasajeroPorViaje } from '../../services/reservaService'; // Asegúrate de tener esta función en tu servicio
 import { listarReservasYPasajerosPorViaje, eliminarPasajero } from '../../services/reservaService';
 import { existeVentaPorPasajero } from '../../services/ventaService';
@@ -20,13 +20,11 @@ interface Pasajero {
 
 export default function ChoferListaPasajeros() {
   const { id, origen, destino } = useLocalSearchParams();
+  const router = useRouter();
   const [pasajeros, setPasajeros] = useState<Pasajero[]>([]);
-  const { logout, userInfo } = useAuth();
+  const {isLoading, logout, userInfo } = useAuth();
 
-if (userInfo?.perfil !== 'usuarioChofer') {
-    logout();
-    return <Redirect href="/login" />;
-  }
+
   useEffect(() => {
     const fetchPasajeros = async () => {
       try {
@@ -52,6 +50,20 @@ if (userInfo?.perfil !== 'usuarioChofer') {
     }
   }, [id]);
 
+  useEffect(() => {
+      if (!isLoading && userInfo?.perfil !== 'usuarioChofer') {
+        logout();
+        router.replace('/login');
+      }
+    }, [isLoading, userInfo]);
+    
+    if (isLoading || !userInfo) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color="#007AFF" />
+        </View>
+      
+    )}
 return (
   <ScrollView style={styles.container}>
     <Text style={styles.title}> {origen} ➜ {destino}</Text>

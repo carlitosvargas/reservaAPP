@@ -8,7 +8,7 @@ import BackButton from '../../components/BackButton';
 export default function ModificarPasajero() {
   const { id, idReserva, idViaje} = useLocalSearchParams();
   const router = useRouter();
-  const { logout, userInfo } = useAuth();
+  const { logout, userInfo, isLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
  const [pasajero, setPasajero] = useState({
@@ -21,11 +21,20 @@ export default function ModificarPasajero() {
 });
 const [erroresBackend, setErroresBackend] = useState<{ [key: string]: string }>({});
 
- if (userInfo?.perfil !== 'usuarioCliente') {
-   logout();
-    return <Redirect href="/login" />;
+useEffect(() => {
+  if (!isLoading && userInfo?.perfil !== 'usuarioCliente') {
+    logout();
+    router.replace('/login');
   }
+}, [isLoading, userInfo]);
 
+if (isLoading || !userInfo) {
+  return (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="#007AFF" />
+    </View>
+  );
+}
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -158,6 +167,12 @@ const [erroresBackend, setErroresBackend] = useState<{ [key: string]: string }>(
 }
 
 const styles = StyleSheet.create({
+    loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
   container: {
     padding: 20,
   },

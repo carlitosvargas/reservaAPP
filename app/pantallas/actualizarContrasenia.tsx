@@ -25,11 +25,7 @@ export default function ModificarContrasenia() {
   const nuevosErrores: Errores = {};
 const {logout, userInfo } = useAuth();
 
-   if (userInfo?.perfil == null) {
-     logout();
-         return <Redirect href="/login" />;
-       }
-       
+  
   // Validación de campos vacíos
   if (!contraseñaActual) {
     nuevosErrores.contrasenia = 'La contraseña actual es obligatoria';

@@ -20,7 +20,7 @@
         "ITSAppUsesNonExemptEncryption": false
       }
     },
-    "android": { 
+    "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -43,8 +43,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "913357af-e666-4f63-92bb-2a7bbd9a05f8"
+        "projectId": "56b0edc3-ba17-403e-b11d-8dfc2ca3b693"
       }
-    }
+    },
+    "owner": "carlosvargas"
   }
 }

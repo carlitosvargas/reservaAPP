@@ -9,7 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 export default function ModificarEmpresa() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { logout, userInfo } = useAuth();
+  const { isLoading, logout, userInfo } = useAuth();
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
 
@@ -22,11 +22,7 @@ export default function ModificarEmpresa() {
     
   });
 
-   if (userInfo?.perfil !== 'usuarioEmpresa') {
-     logout();
-      return <Redirect href="/login" />;
-    }
-    
+
   useEffect(() => {
     const cargarDatos = async () => {
       try {
@@ -53,6 +49,8 @@ export default function ModificarEmpresa() {
     cargarDatos();
   }, []);
 
+
+  
   const handleChange = (campo: string, valor: string) => {
     setEmpresa(prev => ({ ...prev, [campo]: valor }));
   };
@@ -69,7 +67,20 @@ export default function ModificarEmpresa() {
       setGuardando(false);
     }
   };
-
+      useEffect(() => {
+    if (!isLoading && userInfo?.perfil !== 'usuarioEmpresa') {
+      logout();
+      router.replace('/login');
+    }
+  }, [isLoading, userInfo]);
+  
+  if (isLoading || !userInfo) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
   if (loading) {
     return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
   }

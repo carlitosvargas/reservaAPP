@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { crearVenta } from '../../services/ventaService';
 import { useAuth } from '../../context/AuthContext';
@@ -10,12 +10,22 @@ export default function CrearVenta() {
   const [formaPago, setFormaPago] = useState('');
   const [descuento, setDescuento] = useState('0');
   const router = useRouter();
-  const { logout, userInfo } = useAuth();
+  const {isLoading, logout, userInfo } = useAuth();
 
- if (userInfo?.perfil !== 'usuarioChofer') {
-   logout();
-     return <Redirect href="/login" />;
-   }
+ useEffect(() => {
+        if (!isLoading && userInfo?.perfil !== 'usuarioChofer') {
+          logout();
+          router.replace('/login');
+        }
+      }, [isLoading, userInfo]);
+      
+      if (isLoading || !userInfo) {
+        return (
+          <View style={styles.container}>
+            <ActivityIndicator size="large" color="#007AFF" />
+          </View>
+        
+      )}
   const guardarVenta = async () => {
       try {
 

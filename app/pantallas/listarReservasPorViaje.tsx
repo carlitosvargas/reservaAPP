@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
-import { Redirect, useLocalSearchParams } from 'expo-router';
+import { Redirect, useRouter, useLocalSearchParams } from 'expo-router';
 import { listarReservasPorViaje } from '../../services/reservaService';
 import { useAuth } from '../../context/AuthContext';
 interface Usuario {
@@ -23,15 +23,14 @@ interface Reserva {
 
 const ReservasPorViaje = () => {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [loading, setLoading] = useState(true);
-  const { logout, userInfo } = useAuth();
+  const { isLoading, logout, userInfo } = useAuth();
 
-   if (userInfo?.perfil !== 'usuarioMostrador') {
-     logout();
-         return <Redirect href="/login" />;
-        }
 
+  
+        
   useEffect(() => {
     const fetchReservas = async () => {
       try {
@@ -60,6 +59,21 @@ const ReservasPorViaje = () => {
     const [hours, minutes] = timeString.split(':');
     return `${hours}:${minutes}`;
   };
+
+  useEffect(() => {
+    if (!isLoading &&  userInfo?.perfil !== 'usuarioEmpresa' &&  userInfo?.perfil !== 'usuarioMostrador') {
+        logout();
+        router.replace('/login');
+       }
+       }, [isLoading, userInfo]);
+        
+    if (isLoading || !userInfo) {
+        return (
+          <View style={styles.centered}>
+            <ActivityIndicator size="large" color="#007AFF" />
+          </View>
+        );
+        }
 
   if (loading) {
     return (

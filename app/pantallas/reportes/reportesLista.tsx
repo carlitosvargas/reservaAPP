@@ -1,16 +1,27 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, useWindowDimensions, ActivityIndicator } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { useAuth } from '../../../context/AuthContext';
+import { useEffect } from 'react';
 
 export default function ReportesScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
-  const { logout, userInfo } = useAuth();
+  const {isLoading, logout, userInfo } = useAuth();
 
-   if (userInfo?.perfil !== 'usuarioEmpresa') {
-     logout();
-           return <Redirect href="/login" />;
-         }
+useEffect(() => {
+  if (!isLoading && userInfo?.perfil !== 'usuarioEmpresa') {
+    logout();
+    router.replace('/login');
+  }
+}, [isLoading, userInfo]);
+
+if (isLoading || !userInfo) {
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color="#007AFF" />
+    </View>
+  );
+}
 
   type RutaReporte =
   | '/pantallas/reportes/reportesReservas'

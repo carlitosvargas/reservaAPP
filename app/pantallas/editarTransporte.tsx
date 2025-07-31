@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/context/AuthContext';
 import { editarTransporte, obtenerTransporteId, verificarTransporteSinReservas } from '../../services/transporteService';
-import { Redirect, useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 
 const EditarTransporte = () => {
   const [transporte, setTransporte] = useState({
@@ -13,19 +13,16 @@ const EditarTransporte = () => {
     marca: '',
     cantLugares: '',
   });
-
+ const router = useRouter(); 
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
-  const {logout, userInfo } = useAuth();
+  const {isLoading, logout, userInfo } = useAuth();
   const [sinReservas, setSinReservas] = useState<boolean | null>(null);
   const [bloquearInput, setBloquearInput] = useState(false);
   const [mensajeBloqueo, setMensajeBloqueo] = useState('');
 
- if (userInfo?.perfil !== 'usuarioMostrador') {
-   logout();
-    return <Redirect href="/login" />;
-  }
+
   
 
   useEffect(() => {
@@ -60,6 +57,21 @@ const EditarTransporte = () => {
     cargarDatos();
   }, []);
 
+
+   useEffect(() => {
+      if (!isLoading && userInfo?.perfil !== 'usuarioMostrador') {
+        logout();
+        router.replace('/login');
+      }
+    }, [isLoading, userInfo]);
+    
+    if (isLoading || !userInfo) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color="#007AFF" />
+        </View>
+      );
+    }
   const handleChange = (campo: string, valor: string) => {
     setTransporte(prev => ({ ...prev, [campo]: valor }));
   };

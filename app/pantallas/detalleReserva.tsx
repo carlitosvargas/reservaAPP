@@ -25,13 +25,9 @@ const reservaConfirmada = tieneVenta === 'true';
   const [mensajeReserva, setMensajeReserva] = useState('');
   const [esError, setEsError] = useState(false);
   const router = useRouter();
-  const { logout, userInfo } = useAuth();
+  const {isLoading, logout, userInfo } = useAuth();
   const usuarios_id = userInfo?.id;
 
-if (userInfo?.perfil !== 'usuarioCliente') {
-   logout();
-    return <Redirect href="/login" />;
-  }
 
 
 useEffect(() => {
@@ -114,6 +110,21 @@ const eliminarYActualizar = async (idPasajero: number, cantidadPasajeros: number
   }
 };
 
+
+useEffect(() => {
+  if (!isLoading && userInfo?.perfil !== 'usuarioCliente') {
+    logout();
+    router.replace('/login');
+  }
+}, [isLoading, userInfo]);
+
+if (isLoading || !userInfo) {
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color="#007AFF" />
+    </View>
+  );
+}
 
 
   if (loading) {

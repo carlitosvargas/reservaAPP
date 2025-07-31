@@ -56,7 +56,7 @@ const ViajesEmpresa = () => {
   logout();
       return <Redirect href="/login" />;
     }
-    
+    console.log('ver userinfo listar viajes', userInfo)
   useEffect(() => {
     const fetchViajes = async () => {
       try {

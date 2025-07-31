@@ -57,15 +57,11 @@ const CrearViaje = () => {
  
   const origenRef = useRef<HTMLDivElement | null>(null);
   const destinoRef = useRef<HTMLDivElement | null>(null);
-  const { logout, userInfo } = useAuth();
+  const { isLoading, logout, userInfo } = useAuth();
   const navigation = useNavigation();
   const router = useRouter();
 
-  if (userInfo?.perfil !== 'usuarioMostrador') {
-     logout();
-    return <Redirect href="/login" />;
-  }
-  
+
   useEffect(() => {
 
      const cargarLocalidades = async () => {
@@ -211,7 +207,21 @@ const CrearViaje = () => {
     }
   }
 };
-
+  useEffect(() => {
+    if (!isLoading && userInfo?.perfil !== 'usuarioMostrador') {
+      logout();
+      router.replace('/login');
+    }
+  }, [isLoading, userInfo]);
+  
+  if (isLoading || !userInfo) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
+ // console.log('ver en crear viaje user info:', userInfo)
   return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAwareScrollView

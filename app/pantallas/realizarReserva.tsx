@@ -26,6 +26,7 @@ interface Viaje {
 }
 
 export default function DetalleViaje() {
+  const router = useRouter();
   const { id } = useLocalSearchParams();
   const [viaje, setViaje] = useState<Viaje | null>(null);
   const [pasajeros, setPasajeros] = useState<Pasajero[]>([
@@ -35,16 +36,10 @@ export default function DetalleViaje() {
 
   const [erroresBackend, setErroresBackend] = useState<{ [key: string]: string }>({});
 
- 
-  const router = useRouter();
-  const { logout, userInfo } = useAuth();
+  const {isLoading, logout, userInfo } = useAuth();
 
   const usuarios_id = userInfo?.id;
 
- if (userInfo?.perfil !== 'usuarioCliente') {
-   logout();
-    return <Redirect href="/login" />;
-  }
 
 
   useEffect(() => {
@@ -208,6 +203,20 @@ const reservar = async () => {
   }
 };
 
+useEffect(() => {
+  if (!isLoading && userInfo?.perfil !== 'usuarioCliente') {
+    logout();
+    router.replace('/login');
+  }
+}, [isLoading, userInfo]);
+
+if (isLoading || !userInfo) {
+  return (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="#007AFF" />
+    </View>
+  );
+}
 
   if (!viaje) {
     return (

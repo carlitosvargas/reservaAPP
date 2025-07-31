@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { Redirect, useLocalSearchParams } from 'expo-router';
+import React, { useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 
 interface Viaje {
@@ -14,12 +14,9 @@ interface Viaje {
 
 export default function ChoferListaViajes() {
   const { viajes } = useLocalSearchParams();
- 
-  const { logout, userInfo } = useAuth();
-if (userInfo?.perfil !== 'usuarioMostrador') {
-   logout();
-    return <Redirect href="/login" />;
-  }
+  const router = useRouter();
+  const {isLoading, logout, userInfo } = useAuth();
+
   
   
   // Convertimos el string de JSON a un array real
@@ -42,7 +39,20 @@ if (userInfo?.perfil !== 'usuarioMostrador') {
     return `${hours}:${minutes}`;
   };
 
-  
+    useEffect(() => {
+      if (!isLoading && userInfo?.perfil !== 'usuarioMostrador') {
+        logout();
+        router.replace('/login');
+      }
+    }, [isLoading, userInfo]);
+    
+    if (isLoading || !userInfo) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator size="large" color="#007AFF" />
+        </View>
+      );
+    }
 
  return (
     <View style={styles.container}>

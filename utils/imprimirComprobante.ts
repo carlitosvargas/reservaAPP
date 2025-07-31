@@ -1,4 +1,15 @@
 export const generarHTMLComprobante = (data: any) => {
+   const formatDate = (fechaISO: string) => {
+  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+};
+
+  
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    return `${hours}:${minutes}`;
+  };
   return `
   <html>
     <head>
@@ -132,8 +143,8 @@ export const generarHTMLComprobante = (data: any) => {
         </div>
 
           <div class="factura">
-            <strong>Factura B Nº 0001-${data.ventas_id}</strong><br />
-            Fecha: ${data.fecha}<br />
+            <strong>Factura  Nº 0001-${data.ventas_id}</strong><br />
+            Fecha: ${formatDate(data.fecha)}<br />
             Forma de Pago: ${data.formaPago ?? 'N/A'}
           </div>
         </div>
@@ -149,16 +160,16 @@ export const generarHTMLComprobante = (data: any) => {
         <table class="info-table">
           <tr><td>Origen:</td><td>${data.origenLocalidad}</td></tr>
           <tr><td>Destino:</td><td>${data.destinoLocalidad}</td></tr>
-          <tr><td>Fecha:</td><td>${data.fechaViaje.split('T')[0]}</td></tr>
-          <tr><td>Hora de salida:</td><td>${data.horarioSalida}</td></tr>
+          <tr><td>Fecha:</td><td>${formatDate(data.fechaViaje)}</td></tr>
+          <tr><td>Hora de salida:</td><td>${formatTime(data.horarioSalida)}</td></tr>
         </table>
 
         <div class="section-title">CONCEPTOS</div>
        <table class="conceptos">
         <tr>
-          <th>Pasajero</th>
-          <th>Origen</th>
-          <th>Destino</th>
+          <th>Pasajero/s</th>
+          <th>Ubi. Origen</th>
+          <th>Ubi. Destino</th>
           <th>Precio</th>
         </tr>
         ${data.pasajeros.map((p: any) => `

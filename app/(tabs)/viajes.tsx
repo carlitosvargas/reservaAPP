@@ -43,6 +43,7 @@ export default function ViajesScreen() {
   const destinoRef = useRef<HTMLDivElement | null>(null);
   const {  logout,userInfo } = useAuth();
 
+   console.log('ver user info viajes: ', userInfo?.perfil)
    if (userInfo?.perfil !== 'usuarioCliente') {
      logout();
     return <Redirect href="/login" />;

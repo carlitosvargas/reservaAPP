@@ -69,7 +69,7 @@ export default function RecuperarContrasenia() {
 
           <Text style={styles(isDark).volverLink}>
             ¿Ya recordaste tu contraseña?{' '}
-            <Text style={styles(isDark).linkText} onPress={() => router.replace('/')}>
+            <Text style={styles(isDark).linkText} onPress={() => router.replace('/login')}>
               Iniciar sesión
             </Text>
           </Text>

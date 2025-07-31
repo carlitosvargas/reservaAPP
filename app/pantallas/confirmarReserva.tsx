@@ -30,12 +30,9 @@ export default function ReservasYPasajerosScreen() {
   const [reservasConfirmadas, setReservasConfirmadas] = useState<ReservaConPasajeros[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { logout, userInfo } = useAuth();
+  const { isLoading, logout, userInfo } = useAuth();
 
- if (userInfo?.perfil !== 'usuarioChofer') {
-   logout();
-     return <Redirect href="/login" />;
-   }
+ 
        
   useEffect(() => {
     const cargarDatos = async () => {
@@ -61,6 +58,21 @@ export default function ReservasYPasajerosScreen() {
     cargarDatos();
   }, [id]);
 
+
+  useEffect(() => {
+        if (!isLoading && userInfo?.perfil !== 'usuarioChofer') {
+          logout();
+          router.replace('/login');
+        }
+      }, [isLoading, userInfo]);
+      
+      if (isLoading || !userInfo) {
+        return (
+          <View style={styles.container}>
+            <ActivityIndicator size="large" color="#007AFF" />
+          </View>
+        
+      )}
   const formatDate = (fechaISO: string) => {
     const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
     return ` ${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;

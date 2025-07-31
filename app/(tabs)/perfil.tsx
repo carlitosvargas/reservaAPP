@@ -15,9 +15,6 @@ export default function PerfilesScreen() {
     console.log('Contenido de AsyncStorage perfil:', allData);
   };
 
-   if (userInfo?.perfil == null) {
-         return <Redirect href="/login" />;
-       }
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>

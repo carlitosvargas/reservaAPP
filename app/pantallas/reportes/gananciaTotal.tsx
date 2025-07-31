@@ -23,7 +23,7 @@ export interface Venta {
   DetalleVenta: DetalleVenta[];
 }
 
-export interface Reserva {
+export interface Reservas {
   id: number;
   usuarios_id: number;
   Ventas: Venta[];
@@ -44,7 +44,7 @@ export interface ViajeConVentas {
   horarioSalida: string;
   precio: number;
   MedioTransporte: MedioTransporte;
-  Reservas: Reserva[];
+  Reservas: Reservas[];
 }
 
 export interface RespuestaGananciaTotal {
@@ -86,16 +86,19 @@ export default function GananciaTotalScreen() {
 
     cargarDatos();
   }, []);
- const formatDate = (fechaISO: string) => {
+const formatDate = (fechaISO?: string) => {
+  if (!fechaISO || !fechaISO.includes('T')) return 'Fecha inválida';
   const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
   return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
 };
 
-  const formatTime = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':');
-    return `${hours}:${minutes}`;
-  };
 
+
+const formatTime = (timeString: string | undefined) => {
+  if (!timeString || !timeString.includes(':')) return 'Hora inválida';
+  const [hours, minutes] = timeString.split(':');
+  return `${hours}:${minutes}`;
+};
 
    const limpiarFiltros = () => {
     setBusqueda('');
@@ -113,10 +116,10 @@ export default function GananciaTotalScreen() {
       item.MedioTransporte.nombre.toLowerCase().includes(texto) ||
       item.MedioTransporte.patente.toLowerCase().includes(texto) ||
       formatDate(item.fechaViaje).includes(texto);
+  
 
     const dentroDesde = fechaDesde ? fechaViaje >= fechaDesde : true;
     const dentroHasta = fechaHasta ? fechaViaje <= fechaHasta : true;
-
     return coincideTexto && dentroDesde && dentroHasta;
   });
 

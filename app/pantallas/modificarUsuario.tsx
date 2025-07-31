@@ -32,10 +32,7 @@ export default function ModificarUsuario() {
     perfil_id: '',
   });
 
-   if (userInfo?.perfil == null) {
-     logout();
-         return <Redirect href="/login" />;
-       }
+ 
   useEffect(() => {
     const cargarDatos = async () => {
       try {

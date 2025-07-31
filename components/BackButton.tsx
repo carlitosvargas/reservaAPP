@@ -26,8 +26,7 @@ export default function BackButton() {
     '/pantallas/modificarEmpresa': '/perfil',
     '/pantallas/modificarUsuario': '/perfil',
     '/pantallas/realizarReserva': '/viajes',
-    '/pantallas/ventaReserva' : '/reserva',
-    
+    '/empresaUsuarios' : '/listarTransportes',
     
     // más rutas si necesitás
   };

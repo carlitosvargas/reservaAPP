@@ -62,7 +62,7 @@ export default function ResetearContraseniaScreen() {
     setNuevaContrasenia('');
 
     // Redirigir luego de unos segundos (opcional)
-    setTimeout(() => router.replace('/'), 2000);
+    setTimeout(() => router.replace('/login'), 2000);
   } catch (err) {
     setError('Error al actualizar la contraseña. Asegurate de que el enlace sea válido.');
   }

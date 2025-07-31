@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, ScrollView, Button, Alert, Platform } from 'react-native';
-import { Redirect, useLocalSearchParams } from 'expo-router';
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
 import { obtenerVentaDetalle } from '../../services/ventaService';
 import { obtenerUsuarioPorId } from '../../services/usuarioService';
 import { generarHTMLComprobante } from '../../utils/imprimirComprobante';
@@ -13,6 +13,7 @@ import { WebView } from 'react-native-webview';
 
 export default function DetalleVenta() {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
   const [data, setData] = useState<DataComprobante | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -56,12 +57,8 @@ export default function DetalleVenta() {
   interface DataComprobante extends VentaDetalleGeneral {
     usuario: Usuario;
   }
- const { logout, userInfo } = useAuth();
-   if (userInfo?.perfil !== 'usuarioCliente') {
-     logout();
-        return <Redirect href="/login" />;
-      }
-      
+ const { isLoading, logout, userInfo } = useAuth();
+
 useEffect(() => {
   if (id && userInfo?.id) {
     setLoading(true);
@@ -82,6 +79,20 @@ useEffect(() => {
   }
 }, [id, userInfo]);
 
+useEffect(() => {
+  if (!isLoading && userInfo?.perfil !== 'usuarioCliente') {
+    logout();
+    router.replace('/login');
+  }
+}, [isLoading, userInfo]);
+
+if (isLoading || !userInfo) {
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color="#007AFF" />
+    </View>
+  );
+}
   const formatDate = (fechaISO: string) => {
   const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
   return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;

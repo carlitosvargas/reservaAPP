@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Platform, Alert, Pressable, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard,} from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Platform, Alert, Pressable, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, ActivityIndicator,} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -57,7 +57,7 @@ const EditarViaje = () => {
   const [localidades, setLocalidades] = useState<string[]>([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const { logout, userInfo } = useAuth();
+  const {isLoading, logout, userInfo } = useAuth();
   const navigation = useNavigation();
   const router = useRouter();
   const { id } = useLocalSearchParams();
@@ -66,11 +66,6 @@ const EditarViaje = () => {
   const destinoRef = useRef<HTMLDivElement | null>(null);
 
 
-     if (userInfo?.perfil !== 'usuarioMostrador') {
-       logout();
-        return <Redirect href="/login" />;
-      }
-      
   useEffect(() => {
     const fetchData = async () => {
       if (!userInfo?.empresa_id) return;
@@ -172,6 +167,21 @@ const EditarViaje = () => {
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [userInfo?.empresa_id]);
+
+    useEffect(() => {
+    if (!isLoading && userInfo?.perfil !== 'usuarioMostrador') {
+      logout();
+      router.replace('/login');
+    }
+  }, [isLoading, userInfo]);
+  
+  if (isLoading || !userInfo) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
   if (!viaje) {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -280,6 +290,7 @@ const EditarViaje = () => {
     }
   }
 };
+
 
 
   return (

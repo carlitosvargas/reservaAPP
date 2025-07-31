@@ -67,7 +67,7 @@ export default function RootLayout() {
     fadeAnim.setValue(0);
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 500,
+      duration: 300,
       useNativeDriver: true,
     }).start();
   }, [tituloHeader]);
