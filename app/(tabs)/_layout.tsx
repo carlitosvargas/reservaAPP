@@ -79,6 +79,9 @@ export default function TabLayout() {
     case 'crearEmpresa':
       iconName = 'business-outline';
       break;
+    case 'listarEmpresas':
+      iconName = 'clipboard-outline';
+      break;
   }
         return <Ionicons name={iconName} size={size} color={color} />;
       },
@@ -111,7 +114,14 @@ export default function TabLayout() {
         lazy: true,
         }} />
      
-
+        <Tabs.Screen 
+        name="listarEmpresas" 
+        options={{ 
+          title: 'Listar Empresas',
+          href: (userInfo?.perfil === 'usuarioAdministrador') ? undefined : null,
+          lazy: true,
+        }} />
+     
     
       <Tabs.Screen
         name="usuarios"

@@ -14,6 +14,8 @@ import { obtenerUsuarios, actualizarPerfil, eliminarUsuario } from '../../servic
 import { obtenerEmpresas, asociarUsuarioEmpresa, obtenerUsuarioEmpresaAsociado, desasociarUsuarioEmpresa} from '../../services/empresaService';
 import { useAuth } from '../../context/AuthContext';
 import { Redirect } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 interface Usuario {
   id: number;
@@ -62,10 +64,12 @@ export default function UsuariosScreen() {
 
   const ultimaSeleccionRef = useRef<{ usuarioId: number; perfilId: number } | null>(null);
 
-  useEffect(() => {
+useFocusEffect(
+  React.useCallback(() => {
     obtenerUsuario();
     obtenerEmpresa();
-  }, []);
+  }, [])
+);
 
   const obtenerUsuario = async () => {
     try {

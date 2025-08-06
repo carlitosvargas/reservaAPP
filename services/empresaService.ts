@@ -106,3 +106,19 @@ export const desasociarUsuarioEmpresa = async (id: number) => {
     throw error;
   }
 };
+
+
+export const eliminarEmpresa = async (id: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.put(`${API_URL}/empresa/eliminarEmpresa/${id}`,{},{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error al eliminar empresa:', error.response?.data || error.message);
+    throw error;
+  }
+};

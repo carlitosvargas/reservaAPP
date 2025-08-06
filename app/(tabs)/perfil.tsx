@@ -21,8 +21,9 @@ export default function PerfilesScreen() {
         <Text style={styles.title}>Hola {userInfo?.nombre}!</Text>
 
         <View style={styles.profileBox}>
-          <Text style={styles.label}>Nombre:</Text>
-          <Text style={styles.value}>{userInfo?.nombre}</Text>
+          <Text style={styles.label}>Usuario:</Text>
+          <Text style={styles.value}>{userInfo?.usuario}</Text>
+          
         </View>
 
         <View style={styles.buttonGroup}>

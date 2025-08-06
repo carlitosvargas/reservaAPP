@@ -38,6 +38,7 @@ export default function RootLayout() {
     '/choferViajes': 'Viajes',
     '/crearEmpresa': 'Crear una Empresa',
     '/empresaUsuarios': 'Empleados',
+    '/listarEmpresas': 'Empresas',
     '/listarReservas': 'Reservas',
     '/listarTransportes': 'Transportes',
     '/listarViajes': 'Viajes',
@@ -64,13 +65,8 @@ export default function RootLayout() {
   const tituloHeader = titulosPorRuta[pathname] || 'V&V Reservas';
 
   useEffect(() => {
-    fadeAnim.setValue(0);
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [tituloHeader]);
+  fadeAnim.setValue(1); // Opacidad directa al máximo
+}, [tituloHeader]);
 
   return (
     <AuthProvider>

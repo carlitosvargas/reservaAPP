@@ -59,6 +59,27 @@ export const listarViajes = async (origen: string, destino: string) => {
     return response.data;
   };
 
+  
+    export const obtenerLocalidadesId = async (id: number) => {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/ubicacion/obtenerLocalidadesId/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  };
+
+   export const obtenerProvinciasId = async (id: number) => {
+    const token = await AsyncStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/ubicacion/obtenerProvinciasId/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  };
+
 
   export const obtenerVentaDetalle = async (id: number) => {
   const token = await AsyncStorage.getItem('token');
