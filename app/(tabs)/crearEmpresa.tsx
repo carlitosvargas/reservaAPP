@@ -368,6 +368,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 20,
     alignItems: 'center',
+    paddingHorizontal: 30,
+    alignSelf: 'center',
   },
   botonTexto: {
     color: '#fff',

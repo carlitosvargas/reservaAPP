@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   },
   mensaje: {
     textAlign: 'center',
-    color: '#ff3333',
+    color: '#b2babb',
     marginTop: 40,
     fontSize: 16,
   },

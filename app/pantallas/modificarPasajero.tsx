@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#4c68d7',
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -203,6 +203,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
+    alignSelf: 'center',
   },
   buttonText: {
     color: '#fff',

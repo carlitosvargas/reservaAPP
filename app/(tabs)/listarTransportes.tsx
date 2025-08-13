@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 8,
-    marginBottom: 40,
+    marginBottom: 12,
   },
 
   filtrosHeader: {

@@ -9,12 +9,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ImageBackground,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../context/AuthContext';
 import { loginUsuario } from '../services/authService';
-import { Ionicons } from '@expo/vector-icons'; // 👈 Importación del ícono
+import { Ionicons } from '@expo/vector-icons'; 
 
 export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
   const { login } = useAuth();
@@ -24,7 +26,7 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () =>
   const [usuario, setUsuario] = useState('');
   const [contrasenia, setPassword] = useState('');
   const [errorMensaje, setErrorMensaje] = useState('');
-  const [mostrarPassword, setMostrarPassword] = useState(false); // 👈 Nuevo estado
+  const [mostrarPassword, setMostrarPassword] = useState(false); 
 
   const passwordInputRef = useRef<TextInput>(null);
 
@@ -33,7 +35,6 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () =>
       const { token } = await loginUsuario(usuario, contrasenia);
       await login(token);
       await AsyncStorage.setItem('token', token);
-      console.log(token);
 
       if (onLoginSuccess) {
         onLoginSuccess();
@@ -64,8 +65,28 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () =>
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? '#000' : '#fff',
       paddingHorizontal: 20,
+    },
+    containerWeb: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 40,
+    },
+    sideImageContainer: {
+      flex: 1,
+      paddingRight: 20,
+    },
+    sideImage: {
+      width: '100%',
+      height: 400,
+      resizeMode: 'cover',
+      borderRadius: 12,
+    },
+    formWrapper: {
+      flex: 1,
+      alignItems: 'center',
     },
     formContainer: {
       width: '100%',
@@ -104,7 +125,6 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () =>
       shadowOpacity: 0.3,
       shadowRadius: 4,
       elevation: 5,
-      transform: [{ scale: 1 }],
     },
     buttonText: {
       color: '#fff',
@@ -121,6 +141,14 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () =>
       color: '#007AFF',
       fontWeight: 'bold',
     },
+    backgroundImage: {
+      flex: 1,
+      resizeMode: 'cover',
+    },
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: 'rgba(0,0,0,0.3)',
+    },
   });
 
   return (
@@ -129,72 +157,156 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () =>
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
     >
-      <ScrollView contentContainerStyle={styles.wrapper} keyboardShouldPersistTaps="handled">
-        <View style={styles.formContainer}>
-          <Text style={styles.title}>Iniciar sesión</Text>
+      <ImageBackground
+        source={require('../assets/images/fondo1.jpg')} 
+        style={styles.backgroundImage}
+      >
+        <View style={styles.overlay} />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Usuario"
-            placeholderTextColor={isDark ? '#ccc' : '#888'}
-            value={usuario}
-            onChangeText={handleUsuarioChange}
-            returnKeyType="next"
-            onSubmitEditing={() => passwordInputRef.current?.focus()}
-          />
-
-          <View style={{ position: 'relative' }}>
-            <TextInput
-              ref={passwordInputRef}
-              style={[styles.input, { paddingRight: 40 }]} // espacio para el ícono
-              placeholder="Contraseña"
-              placeholderTextColor={isDark ? '#ccc' : '#888'}
-              secureTextEntry={!mostrarPassword}
-              value={contrasenia}
-              onChangeText={handlePasswordChange}
-              onSubmitEditing={handleLogin}
-              returnKeyType="done"
-            />
-            <Pressable
-              onPress={() => setMostrarPassword(!mostrarPassword)}
-              style={{
-                position: 'absolute',
-                right: 10,
-                top: 12,
-              }}
-            >
-              <Ionicons
-                name={mostrarPassword ? 'eye-off' : 'eye'}
-                size={22}
-                color={isDark ? '#ccc' : '#555'}
+        {Platform.OS === 'web' ? (
+          <View style={styles.containerWeb}>
+            <View style={styles.sideImageContainer}>
+              <Image
+                source={require('../assets/images/letra-v5.jpg')}
+                style={styles.sideImage}
               />
-            </Pressable>
+            </View>
+            <View style={styles.formWrapper}>
+              <View style={styles.formContainer}>
+                <Text style={styles.title}>Iniciar sesión</Text>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Usuario"
+                  placeholderTextColor={isDark ? '#ccc' : '#888'}
+                  value={usuario}
+                  onChangeText={handleUsuarioChange}
+                  returnKeyType="next"
+                  onSubmitEditing={() => passwordInputRef.current?.focus()}
+                />
+
+                <View style={{ position: 'relative' }}>
+                  <TextInput
+                    ref={passwordInputRef}
+                    style={[styles.input, { paddingRight: 40 }]} 
+                    placeholder="Contraseña"
+                    placeholderTextColor={isDark ? '#ccc' : '#888'}
+                    secureTextEntry={!mostrarPassword}
+                    value={contrasenia}
+                    onChangeText={handlePasswordChange}
+                    onSubmitEditing={handleLogin}
+                    returnKeyType="done"
+                  />
+                  <Pressable
+                    onPress={() => setMostrarPassword(!mostrarPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: 10,
+                      top: 12,
+                    }}
+                  >
+                    <Ionicons
+                      name={mostrarPassword ? 'eye-off' : 'eye'}
+                      size={22}
+                      color={isDark ? '#ccc' : '#555'}
+                    />
+                  </Pressable>
+                </View>
+
+                {errorMensaje !== '' && (
+                  <Text style={{ color: 'red', marginBottom: 10, textAlign: 'center' }}>
+                    {errorMensaje}
+                  </Text>
+                )}
+
+                <Pressable style={styles.button} onPress={handleLogin}>
+                  <Text style={styles.buttonText}>Ingresar</Text>
+                </Pressable>
+
+                <Text style={styles.registroLink}>
+                  ¿No tenés cuenta?{' '}
+                  <Text style={styles.linkText} onPress={() => router.push('/registro')}>
+                    Registrarse
+                  </Text>
+                </Text>
+                <Text
+                  style={[styles.registroLink, { marginTop: 12 }]}
+                  onPress={() => router.push('/recuperarContrasenia')}
+                >
+                  ¿Olvidaste tu contraseña?
+                </Text>
+              </View>
+            </View>
           </View>
+        ) : (
+          <ScrollView contentContainerStyle={styles.wrapper} keyboardShouldPersistTaps="handled">
+            <View style={styles.formContainer}>
+              <Text style={styles.title}>Iniciar sesión</Text>
 
-          {errorMensaje !== '' && (
-            <Text style={{ color: 'red', marginBottom: 10, textAlign: 'center' }}>
-              {errorMensaje}
-            </Text>
-          )}
+              <TextInput
+                style={styles.input}
+                placeholder="Usuario"
+                placeholderTextColor={isDark ? '#ccc' : '#888'}
+                value={usuario}
+                onChangeText={handleUsuarioChange}
+                returnKeyType="next"
+                onSubmitEditing={() => passwordInputRef.current?.focus()}
+              />
 
-          <Pressable style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Ingresar</Text>
-          </Pressable>
+              <View style={{ position: 'relative' }}>
+                <TextInput
+                  ref={passwordInputRef}
+                  style={[styles.input, { paddingRight: 40 }]} 
+                  placeholder="Contraseña"
+                  placeholderTextColor={isDark ? '#ccc' : '#888'}
+                  secureTextEntry={!mostrarPassword}
+                  value={contrasenia}
+                  onChangeText={handlePasswordChange}
+                  onSubmitEditing={handleLogin}
+                  returnKeyType="done"
+                />
+                <Pressable
+                  onPress={() => setMostrarPassword(!mostrarPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: 10,
+                    top: 12,
+                  }}
+                >
+                  <Ionicons
+                    name={mostrarPassword ? 'eye-off' : 'eye'}
+                    size={22}
+                    color={isDark ? '#ccc' : '#555'}
+                  />
+                </Pressable>
+              </View>
 
-          <Text style={styles.registroLink}>
-            ¿No tenés cuenta?{' '}
-            <Text style={styles.linkText} onPress={() => router.push('/registro')}>
-              Registrarse
-            </Text>
-            
-          </Text>
-          <Text style={[styles.registroLink, { marginTop: 12 }]}onPress={() => router.push('/recuperarContrasenia')}>
-          ¿Olvidaste tu contraseña?
-        </Text>
+              {errorMensaje !== '' && (
+                <Text style={{ color: 'red', marginBottom: 10, textAlign: 'center' }}>
+                  {errorMensaje}
+                </Text>
+              )}
 
-         
-        </View>
-      </ScrollView>
+              <Pressable style={styles.button} onPress={handleLogin}>
+                <Text style={styles.buttonText}>Ingresar</Text>
+              </Pressable>
+
+              <Text style={styles.registroLink}>
+                ¿No tenés cuenta?{' '}
+                <Text style={styles.linkText} onPress={() => router.push('/registro')}>
+                  Registrarse
+                </Text>
+              </Text>
+              <Text
+                style={[styles.registroLink, { marginTop: 12 }]}
+                onPress={() => router.push('/recuperarContrasenia')}
+              >
+                ¿Olvidaste tu contraseña?
+              </Text>
+            </View>
+          </ScrollView>
+        )}
+      </ImageBackground>
     </KeyboardAvoidingView>
   );
 }

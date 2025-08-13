@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
   agregarButton: {
     backgroundColor: '#28a745',
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -477,6 +477,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1 }],
     transitionDuration: '200ms', 
      marginVertical: 8,
+     alignSelf: 'center',
   },
   agregarButtonText: {
      color: '#fff',
@@ -487,7 +488,7 @@ const styles = StyleSheet.create({
   reservarButton: {
    backgroundColor: '#4c68d7',
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -499,6 +500,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1 }],
     transitionDuration: '200ms', 
     marginVertical: 8,
+    alignSelf: 'center',
   },
   reservarButtonText: {
     color: '#fff',

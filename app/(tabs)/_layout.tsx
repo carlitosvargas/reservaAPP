@@ -18,19 +18,20 @@ export default function TabLayout() {
       tabBarActiveTintColor: '#007AFF',
       tabBarInactiveTintColor: '#888',
       headerShown: false,
+      tabBarHideOnKeyboard: false,
       tabBarStyle: {
-        position: 'relative', 
-        bottom: 20,           
+        position: 'relative', // antes 'relative'
+        bottom: 0,             // antes 20
         left: 0,
-        right: 20,
-        backgroundColor: '#111',
-        borderTopColor: '#111',
-        height: 58,
-        paddingBottom: 3,
+        right: 0,              // antes 20
+        backgroundColor: '#000',
+        borderTopColor: '#000',
+        height: 65,          
+        paddingBottom: 4,
         paddingTop: 4,
         borderRadius: 0,
         elevation: 10,
-        shadowColor: '#111',
+        shadowColor: '#000',
         shadowOpacity: 0.3,
         shadowOffset: { width: 0, height: -1 },
         shadowRadius: 2,

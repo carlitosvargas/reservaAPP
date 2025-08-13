@@ -2,19 +2,18 @@ import React, { useEffect, useRef } from 'react';
 import { Slot, usePathname, useRouter } from 'expo-router';
 import {
   View,
-  Text,
+  Animated,
+  Pressable,
   StyleSheet,
   useColorScheme,
-  Animated,
-  TouchableOpacity,
-  Platform,
-  Pressable,
+  ImageBackground
 } from 'react-native';
-import { AuthProvider, useAuth } from '../context/AuthContext';
+import { AuthProvider } from '../context/AuthContext';
 import BackButton from '@/components/BackButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { Ionicons} from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -22,8 +21,6 @@ export default function RootLayout() {
   const pathname = usePathname();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const router = useRouter();
-
- // const { userInfo } = useAuth();
 
   const esPrincipal =
     pathname === '/login' ||
@@ -36,7 +33,7 @@ export default function RootLayout() {
   const titulosPorRuta: Record<string, string> = {
     '/choferReserva': 'Reservas',
     '/choferViajes': 'Viajes',
-    '/crearEmpresa': 'Crear una Empresa',
+    '/crearEmpresa': 'Crear Empresa',
     '/empresaUsuarios': 'Empleados',
     '/listarEmpresas': 'Empresas',
     '/listarReservas': 'Reservas',
@@ -60,34 +57,53 @@ export default function RootLayout() {
     '/pantallas/modificarPasajero': 'Modificar Pasajero',
     '/pantallas/modificarUsuario': 'Modificar Usuario',
     '/pantallas/realizarReserva': 'Nueva reserva',
+    '/pantallas/reportes/reportesLista': 'Reportes'
   };
 
   const tituloHeader = titulosPorRuta[pathname] || 'V&V Reservas';
 
-  useEffect(() => {
-  fadeAnim.setValue(1); // Opacidad directa al máximo
+ useEffect(() => {
+  fadeAnim.setValue(1); 
 }, [tituloHeader]);
+
 
   return (
     <AuthProvider>
-      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <StatusBar style={isDark ? 'light' : 'dark'} backgroundColor={isDark ? '#000' : '#fff'} />
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <StatusBar
+          style={isDark ? 'light' : 'dark'}
+          backgroundColor="transparent"
+        />
 
-        <View style={styles.container}>
+        {/* Imagen de fondo */}
+        <ImageBackground
+          source={require('../assets/images/fondo1.jpg')} // coloca tu imagen aquí
+          style={styles.background}
+          resizeMode="cover"
+        >
+          <View style={styles.overlay} /> {/* Oscurece un poco la imagen para mejorar el contraste */}
+
           {!esPrincipal && (
             <>
-              <View style={styles.header}>
-                <View style={styles.side}>
-                  {/* BackButton está flotando, así que puede estar vacío acá */}
-                </View>
-
+              <LinearGradient
+                colors={[
+                  'rgba(76, 104, 215, 0.85)',
+                  'rgba(76, 104, 215, 0.3)'
+                ]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={styles.header}
+              >
+                <View style={styles.side} />
                 <View style={styles.center}>
-                  <Animated.Text style={[styles.title, { opacity: fadeAnim }]}>
+                  <Animated.Text
+                    style={[styles.title, { opacity: fadeAnim }]}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
                     {tituloHeader}
                   </Animated.Text>
                 </View>
-                 
-               
                 <View style={styles.side}>
                   <Pressable
                     onPress={() => router.push('/perfil')}
@@ -96,8 +112,7 @@ export default function RootLayout() {
                     <Ionicons name="person-circle-outline" size={30} color="#fff" />
                   </Pressable>
                 </View>
-               
-              </View>
+              </LinearGradient>
 
               {esPantallaSecundaria && (
                 <View style={styles.backFloating}>
@@ -110,43 +125,45 @@ export default function RootLayout() {
           <View style={styles.content}>
             <Slot />
           </View>
-        </View>
+        </ImageBackground>
       </SafeAreaView>
     </AuthProvider>
   );
 }
 
-
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: '#111'
+    backgroundColor: '#000',
   },
-    header: {
-    backgroundColor: '#4c68d7',
+  background: {
+    flex: 1,
+    position: 'relative',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.3)', // oscurece el fondo para mejor contraste
+  },
+  header: {
     paddingVertical: 15,
     paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', 
-    opacity: 0.95,
-},
-
+    justifyContent: 'space-between',
+  },
   side: {
-    width: 40, 
+    width: 40,
     alignItems: 'center',
     justifyContent: 'center',
-},
-
+  },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-},
-
+  },
   title: {
     color: '#ffffff',
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 1.2,
@@ -154,57 +171,17 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 4,
     fontStyle: 'italic',
-    fontFamily: 'System', 
-},
-
+    fontFamily: 'System',
+  },
   content: {
     flex: 1,
     padding: 0,
   },
- backContainer: {
-  paddingHorizontal: 10,
-  paddingTop: 12,
-  width: 'auto',
-  alignSelf: 'flex-start',
-  backgroundColor: 'transparent', 
-},
-backFloating: {
+ backFloating: {
   position: 'absolute',
-  top: 11, 
+  top: 22,
   left: 10,
   zIndex: 999,
-  backgroundColor: 'transparent',
-  borderRadius: 24,
-  padding: 10,
-  elevation: 5, 
-  shadowColor: '#000', 
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.0,
-  shadowRadius: 0.0,
 },
-perfilButton: {
-  backgroundColor: 'transparente',
-  paddingVertical: 6,
-  paddingHorizontal: 12,
-  borderRadius: 20,
-  maxWidth: 120,
-  alignItems: 'center',
-  justifyContent: 'center',
-  
-},
-
-perfilText: {
-  color: '#ffffff',
-  fontSize: 14,
-  fontWeight: '600',
-  textShadowColor: '#000',
-  
-},
-icon:{
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 1.25,
-  shadowRadius: 2.5,
-  borderRadius: 24,
-}
 
 });

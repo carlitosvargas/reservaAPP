@@ -34,7 +34,7 @@ if (isLoading || !userInfo) {
   | '/pantallas/reportes/gananciaPorViaje';
 
 const botones: { texto: string; ruta: RutaReporte }[] = [
-  { texto: 'Ventas Totales', ruta: '/pantallas/reportes/reportesReservas' },
+
   { texto: 'Pasajeros por Empresa', ruta: '/pantallas/reportes/pasajerosEmpresa' },
   { texto: 'Viajes por Transporte', ruta: '/pantallas/reportes/viajesTransportes' },
   { texto: 'Viajes más Reservados', ruta: '/pantallas/reportes/viajesReservados' },

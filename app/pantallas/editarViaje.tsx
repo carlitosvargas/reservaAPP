@@ -851,7 +851,7 @@ const styles = StyleSheet.create({
    button: {
   backgroundColor: '#4c68d7',
   paddingVertical: 12,
-  paddingHorizontal: 20,
+  paddingHorizontal: 30,
   borderRadius: 20,
   alignItems: 'center',
   justifyContent: 'center',
@@ -862,6 +862,7 @@ const styles = StyleSheet.create({
   elevation: 5, 
   transform: [{ scale: 1 }],
   transitionDuration: '200ms', 
+  alignSelf: 'center',
 },
 buttonText: {
   color: '#fff',

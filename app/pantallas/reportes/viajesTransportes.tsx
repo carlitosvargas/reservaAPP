@@ -146,7 +146,7 @@ export default function ViajesPorTransporteScreen() {
             <>
               <TouchableOpacity style={styles.fechaButton} onPress={() => setShowDesde(true)}>
                 <Text style={styles.fechaButtonText}>
-                  {fechaDesde ? formatDate(fechaDesde.toISOString()) : 'Desde'}
+                  {fechaDesde ? formatDate(fechaDesde.toISOString()) : 'Fecha Desde'}
                 </Text>
               </TouchableOpacity>
               {showDesde && (
@@ -179,7 +179,7 @@ export default function ViajesPorTransporteScreen() {
             <>
               <TouchableOpacity style={styles.fechaButton} onPress={() => setShowHasta(true)}>
                 <Text style={styles.fechaButtonText}>
-                  {fechaHasta ? formatDate(fechaHasta.toISOString()) : 'Hasta'}
+                  {fechaHasta ? formatDate(fechaHasta.toISOString()) : 'Fecha Hasta'}
                 </Text>
               </TouchableOpacity>
               {showHasta && (
