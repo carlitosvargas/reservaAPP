@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, useColorScheme, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, useColorScheme, ScrollView, Alert, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
 import { registrarUsuario } from '../services/authService'; 
 
@@ -82,14 +82,14 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: isDark ? '#000' : '#fff',
+   // backgroundColor: isDark ? '#000' : '#fff',
     paddingHorizontal: 20,
     paddingVertical: 40, // para espacio arriba/abajo
   },
   formContainer: {
     width: '100%',
     maxWidth: 380,
-    backgroundColor: isDark ? '#111' : '#f2f2f2',
+    backgroundColor: isDark ? 'rgba(17,17,17,0.9)' : 'rgba(242,242,242,0.9)',
     padding: 24,
     borderRadius: 12,
     elevation: 3,
@@ -146,6 +146,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 5,
   },
+   backgroundImage: {
+      flex: 1,
+      resizeMode: 'cover',
+    },
+       overlay: {
+          ...StyleSheet.absoluteFillObject,
+          backgroundColor: 'rgba(0,0,0,0.3)',
+        },
 });
 
 
@@ -155,14 +163,18 @@ const styles = StyleSheet.create({
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
+      <ImageBackground
+            source={require('../assets/images/fondo1.jpg')} 
+            style={styles.backgroundImage}
+        >
+
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { backgroundColor: isDark ? '#000' : '#fff' }
         ]}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={[styles.formContainer, { backgroundColor: isDark ? '#111' : '#f2f2f2' }]}>
+        <View style={styles.formContainer}>
           <Text style={styles.title}>Registrarse</Text>
 
           {errores.nombre && <Text style={styles.errorText}>{errores.nombre}</Text>}
@@ -262,6 +274,7 @@ const styles = StyleSheet.create({
           </Text>
         </View>
       </ScrollView>
+        </ImageBackground>
     </KeyboardAvoidingView>
   );
 }

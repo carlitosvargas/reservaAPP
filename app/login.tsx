@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../context/AuthContext';
 import { loginUsuario } from '../services/authService';
 import { Ionicons } from '@expo/vector-icons'; 
+import * as Animatable from 'react-native-animatable';
 
 export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
   const { login } = useAuth();
@@ -29,6 +30,37 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () =>
   const [mostrarPassword, setMostrarPassword] = useState(false); 
 
   const passwordInputRef = useRef<TextInput>(null);
+  const frases = [
+    "Tu viaje comienza aquí",
+    "Reservá rápido",
+    "Viajá seguro",
+    "Comodidad garantizada",
+  ];
+
+  const [displayText, setDisplayText] = useState("");
+  const [fraseIndex, setFraseIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+
+
+useEffect(() => {
+  let timeout;
+
+  if (charIndex < frases[fraseIndex].length) {
+    timeout = setTimeout(() => {
+      setDisplayText((prev) => prev + frases[fraseIndex][charIndex]);
+      setCharIndex((prev) => prev + 1);
+    }, 100);
+  } else {
+    // espera 2 segundos antes de borrar y pasar a la siguiente
+    timeout = setTimeout(() => {
+      setDisplayText("");
+      setCharIndex(0);
+      setFraseIndex((prev) => (prev + 1) % frases.length);
+    }, 2000);
+  }
+
+  return () => clearTimeout(timeout);
+}, [charIndex, fraseIndex]);
 
   const handleLogin = async () => {
     try {
@@ -91,7 +123,7 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () =>
     formContainer: {
       width: '100%',
       maxWidth: 360,
-      backgroundColor: isDark ? '#111' : '#f2f2f2',
+      backgroundColor: isDark ? 'rgba(17,17,17,0.9)' : 'rgba(242,242,242,0.9)',
       padding: 24,
       borderRadius: 12,
       elevation: 3,
@@ -149,6 +181,41 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () =>
       ...StyleSheet.absoluteFillObject,
       backgroundColor: 'rgba(0,0,0,0.3)',
     },
+  sideTextContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 20,
+      backgroundColor: "rgba(0,0,0,0.1)", // fondo sutil translúcido
+      borderRadius: 16,
+  },
+  sideText: {
+    fontSize: 22,
+    fontWeight: "600",
+    textAlign: "center",
+    color: "#00E5FF",
+    letterSpacing: 1,
+    textShadowColor: "rgba(0,229,255,0.4)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
+  },
+    icon: {
+    width: 90,
+    height: 90,
+    marginBottom: 15,
+    tintColor: "#00C4FF",
+  },
+   titulo: {
+      fontSize: 34,
+      fontWeight: "900",
+      color: "#fff",
+      letterSpacing: 2,
+      textTransform: "uppercase",
+      marginBottom: 10,
+      textShadowColor: "rgba(0,0,0,0.6)", // efecto glow
+      textShadowOffset: { width: 2, height: 2 },
+      textShadowRadius: 6,
+  },
   });
 
   return (
@@ -163,82 +230,104 @@ export default function LoginScreen({ onLoginSuccess }: { onLoginSuccess?: () =>
       >
         <View style={styles.overlay} />
 
-        {Platform.OS === 'web' ? (
-          <View style={styles.containerWeb}>
-            <View style={styles.sideImageContainer}>
-              <Image
-                source={require('../assets/images/letra-v5.jpg')}
-                style={styles.sideImage}
-              />
-            </View>
-            <View style={styles.formWrapper}>
-              <View style={styles.formContainer}>
-                <Text style={styles.title}>Iniciar sesión</Text>
+        {Platform.OS === "web" ? (
+        <View style={styles.containerWeb}>
+          {/* 🔹 Texto animado en lugar de la imagen */}
+          <View style={styles.sideTextContainer}>
+              <Animatable.Image
+                        animation="swing"
+                        iterationCount="infinite"
+                        source={require('../assets/images/bus-icon.png')}
+                        style={styles.icon}
+                      />
+           <Text style={styles.titulo}>V&V Reservas</Text>
+            <Animatable.Text
+              animation="pulse"
+              iterationCount="infinite"
+              duration={1200}
+              style={styles.sideText}
+            >
+              {displayText}
+               <Text> </Text>
+              
+            </Animatable.Text>
+          </View>
 
-                <TextInput
-                  style={styles.input}
-                  placeholder="Usuario"
-                  placeholderTextColor={isDark ? '#ccc' : '#888'}
-                  value={usuario}
-                  onChangeText={handleUsuarioChange}
-                  returnKeyType="next"
-                  onSubmitEditing={() => passwordInputRef.current?.focus()}
-                />
+          {/* 🔹 Formulario */}
+          <View style={styles.formWrapper}>
+            <View style={styles.formContainer}>
+              <Text style={styles.title}>Iniciar sesión</Text>
 
-                <View style={{ position: 'relative' }}>
-                  <TextInput
-                    ref={passwordInputRef}
-                    style={[styles.input, { paddingRight: 40 }]} 
-                    placeholder="Contraseña"
-                    placeholderTextColor={isDark ? '#ccc' : '#888'}
-                    secureTextEntry={!mostrarPassword}
-                    value={contrasenia}
-                    onChangeText={handlePasswordChange}
-                    onSubmitEditing={handleLogin}
-                    returnKeyType="done"
-                  />
-                  <Pressable
-                    onPress={() => setMostrarPassword(!mostrarPassword)}
-                    style={{
-                      position: 'absolute',
-                      right: 10,
-                      top: 12,
-                    }}
-                  >
-                    <Ionicons
-                      name={mostrarPassword ? 'eye-off' : 'eye'}
-                      size={22}
-                      color={isDark ? '#ccc' : '#555'}
-                    />
-                  </Pressable>
-                </View>
+              <TextInput style={styles.input}
+               placeholder="Usuario" placeholderTextColor={isDark ? '#ccc' : '#888'} 
+               value={usuario} 
+               onChangeText={handleUsuarioChange} 
+               returnKeyType="next" 
+               onSubmitEditing={() => passwordInputRef.current?.focus()} />
 
-                {errorMensaje !== '' && (
-                  <Text style={{ color: 'red', marginBottom: 10, textAlign: 'center' }}>
-                    {errorMensaje}
-                  </Text>
-                )}
+              <View style={{ position: "relative" }}>
+                <TextInput ref={passwordInputRef} 
+                style={[styles.input, { paddingRight: 40 }]} 
+                placeholder="Contraseña"
+                 placeholderTextColor={isDark ? '#ccc' : '#888'} 
+                 secureTextEntry={!mostrarPassword} 
+                 value={contrasenia} 
+                 onChangeText={handlePasswordChange} 
+                 onSubmitEditing={handleLogin} 
+                 returnKeyType="done" />
 
-                <Pressable style={styles.button} onPress={handleLogin}>
-                  <Text style={styles.buttonText}>Ingresar</Text>
-                </Pressable>
-
-                <Text style={styles.registroLink}>
-                  ¿No tenés cuenta?{' '}
-                  <Text style={styles.linkText} onPress={() => router.push('/registro')}>
-                    Registrarse
-                  </Text>
-                </Text>
-                <Text
-                  style={[styles.registroLink, { marginTop: 12 }]}
-                  onPress={() => router.push('/recuperarContrasenia')}
+                <Pressable
+                  onPress={() => setMostrarPassword(!mostrarPassword)}
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: 12,
+                  }}
                 >
-                  ¿Olvidaste tu contraseña?
-                </Text>
+                  <Ionicons
+                    name={mostrarPassword ? "eye-off" : "eye"}
+                    size={22}
+                    color={"#555"}
+                  />
+                </Pressable>
               </View>
+
+              {errorMensaje !== "" && (
+                <Text
+                  style={{
+                    color: "red",
+                    marginBottom: 10,
+                    textAlign: "center",
+                  }}
+                >
+                  {errorMensaje}
+                </Text>
+              )}
+
+              <Pressable style={styles.button} onPress={handleLogin}>
+                <Text style={styles.buttonText}>Ingresar</Text>
+              </Pressable>
+
+              <Text style={styles.registroLink}>
+                ¿No tenés cuenta?{" "}
+                <Text
+                  style={styles.linkText}
+                  onPress={() => router.push("/registro")}
+                >
+                  Registrarse
+                </Text>
+              </Text>
+
+              <Text
+                style={[styles.registroLink, { marginTop: 12 }]}
+                onPress={() => router.push("/recuperarContrasenia")}
+              >
+                ¿Olvidaste tu contraseña?
+              </Text>
             </View>
           </View>
-        ) : (
+        </View>
+      ) : (
           <ScrollView contentContainerStyle={styles.wrapper} keyboardShouldPersistTaps="handled">
             <View style={styles.formContainer}>
               <Text style={styles.title}>Iniciar sesión</Text>

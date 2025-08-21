@@ -57,6 +57,7 @@ export default function RootLayout() {
     '/pantallas/modificarPasajero': 'Modificar Pasajero',
     '/pantallas/modificarUsuario': 'Modificar Usuario',
     '/pantallas/realizarReserva': 'Nueva reserva',
+    '/pantallas/ventaReserva': 'Nueva venta',
     '/pantallas/reportes/reportesLista': 'Reportes'
   };
 

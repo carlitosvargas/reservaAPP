@@ -56,12 +56,15 @@ export default function TopClientesConVentasScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Clientes con Ventas Confirmadas</Text>
-        <TouchableOpacity
-          style={styles.iconButton}
-          onPress={() => router.push('/pantallas/reportes/clientesVentasNoConfirmadas')}
-        >
-          <Text style={styles.buttonText}>Ventas no Confirmadas</Text> 
-        </TouchableOpacity>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => router.push('/pantallas/reportes/clientesVentasNoConfirmadas')}
+          >
+            <Text style={styles.buttonText}>Ventas no Confirmadas</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <FlatList
         data={clientes}
@@ -136,4 +139,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 0.5,
   },
+  buttonContainer: {
+  marginTop: 10,       
+  alignItems: 'stretch' 
+}
 });

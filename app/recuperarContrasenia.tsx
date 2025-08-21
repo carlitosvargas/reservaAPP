@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert, useColorScheme, KeyboardAvoidingView, Platform, ScrollView,} from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert, useColorScheme, KeyboardAvoidingView, Platform, ScrollView, ImageBackground,} from 'react-native';
 import { useRouter } from 'expo-router';
 import { enviarEmailRecuperacion } from '../services/authService';
 
@@ -46,6 +46,10 @@ export default function RecuperarContrasenia() {
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
+       <ImageBackground
+                  source={require('../assets/images/fondo1.jpg')} 
+                   style={styles(isDark).backgroundImage}
+              >
       <ScrollView contentContainerStyle={styles(isDark).wrapper} keyboardShouldPersistTaps="handled">
         <View style={styles(isDark).formContainer}>
           <Text style={styles(isDark).title}>Recuperar contraseña</Text>
@@ -75,6 +79,7 @@ export default function RecuperarContrasenia() {
           </Text>
         </View>
       </ScrollView>
+      </ImageBackground>
     </KeyboardAvoidingView>
   );
 }
@@ -85,13 +90,13 @@ const styles = (isDark: boolean) =>
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? '#000' : '#fff',
+      //backgroundColor: isDark ? '#000' : '#fff',
       paddingHorizontal: 20,
     },
     formContainer: {
       width: '100%',
       maxWidth: 360,
-      backgroundColor: isDark ? '#111' : '#f2f2f2',
+      backgroundColor: isDark ? 'rgba(17,17,17,0.9)' : 'rgba(242,242,242,0.9)',
       padding: 24,
       borderRadius: 12,
       elevation: 3,
@@ -143,5 +148,10 @@ const styles = (isDark: boolean) =>
     linkText: {
       color: '#007AFF',
       fontWeight: 'bold',
+    },
+       backgroundImage: {
+      flex: 1,
+      resizeMode: 'cover',
+      justifyContent: 'center',
     },
   });
