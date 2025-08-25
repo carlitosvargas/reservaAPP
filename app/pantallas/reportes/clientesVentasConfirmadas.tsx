@@ -56,7 +56,7 @@ export default function TopClientesConVentasScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Clientes con Ventas Confirmadas</Text>
-
+      </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.iconButton}
@@ -65,7 +65,6 @@ export default function TopClientesConVentasScreen() {
             <Text style={styles.buttonText}>Ventas no Confirmadas</Text>
           </TouchableOpacity>
         </View>
-      </View>
       <FlatList
         data={clientes}
         keyExtractor={(item) => item.usuarios_id.toString()}
@@ -141,6 +140,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
   marginTop: 10,       
-  alignItems: 'stretch' 
+  alignItems: 'flex-start' 
 }
 });
