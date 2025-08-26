@@ -1,17 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  StyleSheet,
-  useColorScheme,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  ImageBackground,
-  Image,
-} from 'react-native';
+import {View,Text,TextInput,Pressable,StyleSheet,useColorScheme,KeyboardAvoidingView,Platform,ScrollView,ImageBackground,Image} from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../context/AuthContext';
@@ -105,10 +93,12 @@ useEffect(() => {
       alignItems: 'center',
       justifyContent: 'center',
       paddingHorizontal: 40,
-    },
+      
+        },
     sideImageContainer: {
       flex: 1,
       paddingRight: 20,
+    
     },
     sideImage: {
       width: '100%',
@@ -174,8 +164,11 @@ useEffect(() => {
       fontWeight: 'bold',
     },
     backgroundImage: {
-      flex: 1,
-      resizeMode: 'cover',
+       flex: 1,
+  width: '100%',
+  height: '100%',
+  resizeMode: 'cover', 
+      
     },
     overlay: {
       ...StyleSheet.absoluteFillObject,
@@ -220,7 +213,7 @@ useEffect(() => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
     >
