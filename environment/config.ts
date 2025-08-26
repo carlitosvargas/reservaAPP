@@ -5,7 +5,7 @@ const ENV = 'development';
 
 const config = {
   development: {
-    API_URL: 'http://192.168.1.101:3000',
+    API_URL: 'https://reserva-minubus-m39k.onrender.com',
   },
   production: {
     API_URL: 'https://reserva-minubus-m39k.onrender.com',

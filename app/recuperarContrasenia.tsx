@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Alert, useColorScheme, KeyboardAvoidingView, Platform, ScrollView, ImageBackground,} from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert, useColorScheme, KeyboardAvoidingView, Platform, ScrollView, ImageBackground, ActivityIndicator,} from 'react-native';
 import { useRouter } from 'expo-router';
 import { enviarEmailRecuperacion } from '../services/authService';
 
@@ -9,12 +9,15 @@ export default function RecuperarContrasenia() {
   const [error, setError] = useState('');
   const colorScheme = useColorScheme();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const isDark = colorScheme === 'dark';
 
   const handleRecuperar = async () => {
     setError('');
     setMensaje('');
+     setLoading(true); // mostrar spinner
+     
 
     if (!email || !email.includes('@')) {
       setError('Por favor, ingresá un email válido.');
@@ -23,6 +26,7 @@ export default function RecuperarContrasenia() {
 
     try {
       let plataforma = ''
+       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       if (Platform.OS === 'web') {
          plataforma = 'web'
@@ -38,6 +42,9 @@ export default function RecuperarContrasenia() {
     } catch (err) {
       console.error(err);
       setError('Hubo un problema al intentar enviar el correo.');
+    }
+    finally {
+      setLoading(false); // ocultar spinner
     }
   };
 
@@ -67,9 +74,17 @@ export default function RecuperarContrasenia() {
           {error !== '' && <Text style={styles(isDark).error}>{error}</Text>}
           {mensaje !== '' && <Text style={styles(isDark).mensaje}>{mensaje}</Text>}
 
-          <Pressable style={styles(isDark).button} onPress={handleRecuperar}>
-            <Text style={styles(isDark).buttonText}>Enviar</Text>
-          </Pressable>
+           <Pressable
+        style={styles(isDark).button}
+        onPress={handleRecuperar}
+        disabled={loading} // desactivar botón mientras carga
+      >
+        {loading ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles(isDark).buttonText}>Enviar</Text>
+        )}
+      </Pressable>
 
           <Text style={styles(isDark).volverLink}>
             ¿Ya recordaste tu contraseña?{' '}
