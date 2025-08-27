@@ -1,48 +1,73 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, useWindowDimensions, ActivityIndicator } from 'react-native';
-import { Redirect, useRouter } from 'expo-router';
-import { useAuth } from '../../../context/AuthContext';
-import { useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  ScrollView,
+  useWindowDimensions,
+  ActivityIndicator,
+} from "react-native";
+import { Redirect, useRouter } from "expo-router";
+import { useAuth } from "../../../context/AuthContext";
+import { useEffect } from "react";
 
 export default function ReportesScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
-  const {isLoading, logout, userInfo } = useAuth();
+  const { isLoading, logout, userInfo } = useAuth();
 
-useEffect(() => {
-  if (!isLoading && userInfo?.perfil !== 'usuarioEmpresa') {
-    logout();
-    router.replace('/login');
+  useEffect(() => {
+    if (!isLoading && userInfo?.perfil !== "usuarioEmpresa") {
+      logout();
+      router.replace("/login");
+    }
+  }, [isLoading, userInfo]);
+
+  if (isLoading || !userInfo) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
   }
-}, [isLoading, userInfo]);
-
-if (isLoading || !userInfo) {
-  return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#007AFF" />
-    </View>
-  );
-}
 
   type RutaReporte =
-  | '/pantallas/reportes/reportesReservas'
-  | '/pantallas/reportes/pasajerosEmpresa'
-  | '/pantallas/reportes/viajesTransportes'
-  | '/pantallas/reportes/viajesReservados'
-  | '/pantallas/reportes/clienteMasReservas'
-  | '/pantallas/reportes/clientesVentasConfirmadas'
-  | '/pantallas/reportes/gananciaTotal'
-  | '/pantallas/reportes/gananciaPorViaje';
+    | "/pantallas/reportes/reportesReservas"
+    | "/pantallas/reportes/pasajerosEmpresa"
+    | "/pantallas/reportes/viajesTransportes"
+    | "/pantallas/reportes/viajesReservados"
+    | "/pantallas/reportes/clienteMasReservas"
+    | "/pantallas/reportes/clientesVentasConfirmadas"
+    | "/pantallas/reportes/gananciaTotal"
+    | "/pantallas/reportes/gananciaPorViaje";
 
-const botones: { texto: string; ruta: RutaReporte }[] = [
-
-  { texto: 'Pasajeros por Empresa', ruta: '/pantallas/reportes/pasajerosEmpresa' },
-  { texto: 'Viajes por Transporte', ruta: '/pantallas/reportes/viajesTransportes' },
-  { texto: 'Viajes más Reservados', ruta: '/pantallas/reportes/viajesReservados' },
-  { texto: 'Cliente con más Reservas', ruta: '/pantallas/reportes/clienteMasReservas' },
-  { texto: 'Clientes con Ventas Confirmadas', ruta: '/pantallas/reportes/clientesVentasConfirmadas' },
-  { texto: 'Ganancia Total', ruta: '/pantallas/reportes/gananciaTotal' },
-  { texto: 'Ganancia Total por Viaje', ruta: '/pantallas/reportes/gananciaPorViaje' },
-];
+  const botones: { texto: string; ruta: RutaReporte }[] = [
+    {
+      texto: "Pasajeros por Empresa",
+      ruta: "/pantallas/reportes/pasajerosEmpresa",
+    },
+    {
+      texto: "Viajes por Transporte",
+      ruta: "/pantallas/reportes/viajesTransportes",
+    },
+    {
+      texto: "Viajes más Reservados",
+      ruta: "/pantallas/reportes/viajesReservados",
+    },
+    {
+      texto: "Cliente con más Reservas",
+      ruta: "/pantallas/reportes/clienteMasReservas",
+    },
+    {
+      texto: "Clientes con Ventas Confirmadas",
+      ruta: "/pantallas/reportes/clientesVentasConfirmadas",
+    },
+    { texto: "Ganancia Total", ruta: "/pantallas/reportes/gananciaTotal" },
+    {
+      texto: "Ganancia Total por Viaje",
+      ruta: "/pantallas/reportes/gananciaPorViaje",
+    },
+  ];
 
   return (
     <View style={styles.container}>
@@ -55,7 +80,7 @@ const botones: { texto: string; ruta: RutaReporte }[] = [
               key={i}
               style={({ pressed }) => [
                 styles.button,
-                pressed && { backgroundColor: '#3b55b3' }
+                pressed && { backgroundColor: "#3b55b3" },
               ]}
               onPress={() => router.push(btn.ruta)}
             >
@@ -68,7 +93,7 @@ const botones: { texto: string; ruta: RutaReporte }[] = [
           style={({ pressed }) => [
             styles.button,
             styles.logoutButton,
-            pressed && { backgroundColor: '#5c636a' },
+            pressed && { backgroundColor: "#5c636a" },
           ]}
           onPress={() => router.back()}
         >
@@ -82,7 +107,7 @@ const botones: { texto: string; ruta: RutaReporte }[] = [
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: "#f4f4f4",
     paddingHorizontal: 20,
     paddingTop: 20,
   },
@@ -91,44 +116,44 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 26,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   grid: {
-    flexDirection: 'column',
+    flexDirection: "column",
     gap: 12,
   },
   gridWeb: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   button: {
-    backgroundColor: '#4c68d7',
+    backgroundColor: "#4c68d7",
     paddingVertical: 14,
     paddingHorizontal: 20,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     minWidth: 160,
     marginBottom: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 4,
   },
   logoutButton: {
-    backgroundColor: '#6c757d',
+    backgroundColor: "#6c757d",
     marginTop: 50,
-    alignSelf: 'center',
-    width: '20%',
+    alignSelf: "center",
+    width: "20%",
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

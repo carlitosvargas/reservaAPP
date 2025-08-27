@@ -1,10 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, ActivityIndicator, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
-import { obtenerEmpresaPorId, actualizarEmpresa } from '../../services/empresaService';
-import { useAuth } from '../../context/AuthContext';
-
+import React, { useEffect, useState } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  ScrollView,
+  TextInput,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import {
+  obtenerEmpresaPorId,
+  actualizarEmpresa,
+} from "../../services/empresaService";
+import { useAuth } from "../../context/AuthContext";
 
 export default function ModificarEmpresa() {
   const { id } = useLocalSearchParams();
@@ -14,14 +24,12 @@ export default function ModificarEmpresa() {
   const [guardando, setGuardando] = useState(false);
 
   const [empresa, setEmpresa] = useState({
-    nombre: '',
-    direccion: '',
-    cuit: '',
-    telefono: '',
-    email: '',
-    
+    nombre: "",
+    direccion: "",
+    cuit: "",
+    telefono: "",
+    email: "",
   });
-
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -30,17 +38,14 @@ export default function ModificarEmpresa() {
         const empresaData = datos[0];
 
         setEmpresa({
-          nombre: empresaData.nombre ?? '',
-          direccion: empresaData.direccion ?? '',
-          cuit: empresaData.cuit?.toString() ?? '',
-          telefono: empresaData.telefono?.toString() ?? '',
-          email: empresaData.email ?? '',
-          
+          nombre: empresaData.nombre ?? "",
+          direccion: empresaData.direccion ?? "",
+          cuit: empresaData.cuit?.toString() ?? "",
+          telefono: empresaData.telefono?.toString() ?? "",
+          email: empresaData.email ?? "",
         });
-
-       
       } catch (error) {
-        Alert.alert('Error', 'No se pudo cargar la empresa');
+        Alert.alert("Error", "No se pudo cargar la empresa");
       } finally {
         setLoading(false);
       }
@@ -49,31 +54,29 @@ export default function ModificarEmpresa() {
     cargarDatos();
   }, []);
 
-
-  
   const handleChange = (campo: string, valor: string) => {
-    setEmpresa(prev => ({ ...prev, [campo]: valor }));
+    setEmpresa((prev) => ({ ...prev, [campo]: valor }));
   };
 
   const handleGuardar = async () => {
     setGuardando(true);
     try {
       await actualizarEmpresa(Number(id), empresa);
-      Alert.alert('Éxito', 'Empresa actualizada correctamente');
+      Alert.alert("Éxito", "Empresa actualizada correctamente");
       router.back();
     } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar la empresa');
+      Alert.alert("Error", "No se pudo actualizar la empresa");
     } finally {
       setGuardando(false);
     }
   };
-      useEffect(() => {
-    if (!isLoading && userInfo?.perfil !== 'usuarioEmpresa') {
+  useEffect(() => {
+    if (!isLoading && userInfo?.perfil !== "usuarioEmpresa") {
       logout();
-      router.replace('/login');
+      router.replace("/login");
     }
   }, [isLoading, userInfo]);
-  
+
   if (isLoading || !userInfo) {
     return (
       <View style={styles.container}>
@@ -87,64 +90,65 @@ export default function ModificarEmpresa() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-
       <View style={styles.inputGroup}>
-      <Text style={styles.label}>Nombre</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre"
-        value={empresa.nombre ?? ""}
-        onChangeText={text => handleChange('nombre', text)}
-      />
+        <Text style={styles.label}>Nombre</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre"
+          value={empresa.nombre ?? ""}
+          onChangeText={(text) => handleChange("nombre", text)}
+        />
       </View>
 
       <View style={styles.inputGroup}>
-      <Text style={styles.label}>Dirección</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Dirección"
-        value={empresa.direccion}
-        onChangeText={text => handleChange('direccion', text)}
-      />
+        <Text style={styles.label}>Dirección</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Dirección"
+          value={empresa.direccion}
+          onChangeText={(text) => handleChange("direccion", text)}
+        />
       </View>
 
       <View style={styles.inputGroup}>
-      <Text style={styles.label}>CUIT</Text>
-      <TextInput
-        style={[styles.input, { backgroundColor: '#eee' }]}
-        placeholder="CUIT"
-        value={empresa.cuit}
-        
-      />
+        <Text style={styles.label}>CUIT</Text>
+        <TextInput
+          style={[styles.input, { backgroundColor: "#eee" }]}
+          placeholder="CUIT"
+          value={empresa.cuit}
+        />
       </View>
-
 
       <View style={styles.inputGroup}>
-      <Text style={styles.label}>Teléfono</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Teléfono"
-        value={empresa.telefono}
-        onChangeText={text => handleChange('telefono', text)}
-        keyboardType="phone-pad"
-      />
+        <Text style={styles.label}>Teléfono</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Teléfono"
+          value={empresa.telefono}
+          onChangeText={(text) => handleChange("telefono", text)}
+          keyboardType="phone-pad"
+        />
       </View>
-
 
       <View style={styles.inputGroup}>
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={empresa.email}
-        onChangeText={text => handleChange('email', text)}
-        keyboardType="email-address"
-      />
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={empresa.email}
+          onChangeText={(text) => handleChange("email", text)}
+          keyboardType="email-address"
+        />
       </View>
-   
 
-      <TouchableOpacity style={styles.button} onPress={handleGuardar} disabled={guardando}>
-        <Text style={styles.buttonText}>{guardando ? "Guardando..." : "Guardar Cambios"}</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleGuardar}
+        disabled={guardando}
+      >
+        <Text style={styles.buttonText}>
+          {guardando ? "Guardando..." : "Guardar Cambios"}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -156,55 +160,54 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#999',
+    borderColor: "#999",
     padding: 10,
     borderRadius: 8,
     marginBottom: 15,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
 
   button: {
-  backgroundColor: '#4c68d7',
-  paddingVertical: 12,
-  paddingHorizontal: 30,
-  borderRadius: 20,
-  alignItems: 'center',
-  justifyContent: 'center',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 5, 
-  transform: [{ scale: 1 }],
-  transitionDuration: '200ms', 
-  alignSelf: 'center',
-},
-buttonText: {
-  color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 16,
-  letterSpacing: 0.5,
-},
+    backgroundColor: "#4c68d7",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    transform: [{ scale: 1 }],
+    transitionDuration: "200ms",
+    alignSelf: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+    letterSpacing: 0.5,
+  },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 5,
     marginBottom: 15,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   picker: {
     height: 50,
-    width: '100%',
-    color: '#000',
+    width: "100%",
+    color: "#000",
   },
   inputGroup: {
-  marginBottom: 8,
-},
-label: {
-  fontSize: 14,
-  fontWeight: 'bold',
-  marginBottom: 4,
-  color: '#333',
-},
-
+    marginBottom: 8,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 4,
+    color: "#333",
+  },
 });

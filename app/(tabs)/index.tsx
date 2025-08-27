@@ -1,24 +1,31 @@
-import React from 'react';
-import {View,Text,ImageBackground,StyleSheet,Pressable,ActivityIndicator,Dimensions,useColorScheme} from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAuth } from '../../context/AuthContext';
-import Login from '../login';
-import * as Animatable from 'react-native-animatable';
+import React from "react";
+import {
+  View,
+  Text,
+  ImageBackground,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+  Dimensions,
+  useColorScheme,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { useAuth } from "../../context/AuthContext";
+import Login from "../login";
+import * as Animatable from "react-native-animatable";
 
-const { width, height } = Dimensions.get('window');
- 
- 
+const { width, height } = Dimensions.get("window");
+
 export default function Index() {
- 
-const colorScheme = useColorScheme();
- const isDark = colorScheme === 'dark';
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
   const { isLoggedIn, isLoading } = useAuth();
   const router = useRouter();
   const { userInfo } = useAuth();
-  const esEmpresa = userInfo?.perfil === 'usuarioEmpresa';
-  const esCliente =  userInfo?.perfil === 'usuarioCliente';
-  
-//actualizacion a produccion
+  const esEmpresa = userInfo?.perfil === "usuarioEmpresa";
+  const esCliente = userInfo?.perfil === "usuarioCliente";
+
+  //actualizacion a produccion
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
@@ -33,7 +40,7 @@ const colorScheme = useColorScheme();
 
   return (
     <ImageBackground
-      source={require('../../assets/images/fondo1.jpg')}
+      source={require("../../assets/images/fondo1.jpg")}
       style={styles.background}
       resizeMode="cover"
     >
@@ -47,7 +54,7 @@ const colorScheme = useColorScheme();
           <Animatable.Image
             animation="bounceIn"
             duration={1500}
-            source={require('../../assets/images/bus-icon.png')}
+            source={require("../../assets/images/bus-icon.png")}
             style={styles.icon}
           />
 
@@ -62,30 +69,29 @@ const colorScheme = useColorScheme();
           </Animatable.Text>
 
           <Animatable.View animation="zoomIn" delay={800} duration={1000}>
-        {userInfo?.perfil === 'usuarioEmpresa' && (
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
-          ]}
-          onPress={() => router.push('/pantallas/reportes/reportesLista')}
-        >
-          <Text style={styles.buttonText}>Ver reportes</Text>
-        </Pressable>
-      )}
+            {userInfo?.perfil === "usuarioEmpresa" && (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.button,
+                  pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
+                ]}
+                onPress={() => router.push("/pantallas/reportes/reportesLista")}
+              >
+                <Text style={styles.buttonText}>Ver reportes</Text>
+              </Pressable>
+            )}
 
-      {userInfo?.perfil === 'usuarioCliente' && (
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
-          ]}
-          onPress={() => router.push('/(tabs)/viajes')}
-        >
-          <Text style={styles.buttonText}>Reservar ahora</Text>
-        </Pressable>
-      )}
-
+            {userInfo?.perfil === "usuarioCliente" && (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.button,
+                  pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
+                ]}
+                onPress={() => router.push("/(tabs)/viajes")}
+              >
+                <Text style={styles.buttonText}>Reservar ahora</Text>
+              </Pressable>
+            )}
           </Animatable.View>
         </Animatable.View>
       </View>
@@ -93,13 +99,11 @@ const colorScheme = useColorScheme();
   );
 }
 
- 
 const styles = StyleSheet.create({
   loaderContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    
+    justifyContent: "center",
+    alignItems: "center",
   },
   /*background: {
     width: width,
@@ -139,51 +143,50 @@ const styles = StyleSheet.create({
   },
    */
 
-
-   background: {
+  background: {
     flex: 1,
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 24,
   },
   content: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   icon: {
     width: 80,
     height: 80,
     marginBottom: 20,
-    tintColor: '#fff',
+    tintColor: "#fff",
   },
   title: {
     fontSize: 38,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    fontWeight: "bold",
+    color: "#ffffff",
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 18,
-    color: '#dddddd',
+    color: "#dddddd",
     marginBottom: 30,
   },
   button: {
-    backgroundColor: '#00c2ff',
+    backgroundColor: "#00c2ff",
     paddingVertical: 14,
     paddingHorizontal: 40,
     borderRadius: 30,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

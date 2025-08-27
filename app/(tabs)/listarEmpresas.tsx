@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,13 +7,18 @@ import {
   TouchableOpacity,
   Alert,
   Platform,
-} from 'react-native';
-import { obtenerEmpresas, eliminarEmpresa } from '../../services/empresaService';
-import {obtenerLocalidadesId, obtenerProvinciasId,} from '../../services/viajeServices';
-import { useAuth } from '../../context/AuthContext';
-import { Redirect } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-
+} from "react-native";
+import {
+  obtenerEmpresas,
+  eliminarEmpresa,
+} from "../../services/empresaService";
+import {
+  obtenerLocalidadesId,
+  obtenerProvinciasId,
+} from "../../services/viajeServices";
+import { useAuth } from "../../context/AuthContext";
+import { Redirect } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface Empresa {
   id: number;
@@ -30,43 +35,48 @@ interface Empresa {
 export default function EmpresaScreen() {
   const { logout, userInfo } = useAuth();
 
- 
-      if (userInfo?.perfil !== 'usuarioAdministrador') {
-       logout();
-        return <Redirect href="/login" />;
-      }
+  if (userInfo?.perfil !== "usuarioAdministrador") {
+    logout();
+    return <Redirect href="/login" />;
+  }
 
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [cargando, setCargando] = useState(true);
   const [seleccionado, setSeleccionado] = useState<number | null>(null);
 
-
-useFocusEffect(
-  React.useCallback(() => {
-    obtenerListado();
-  }, [])
-);
+  useFocusEffect(
+    React.useCallback(() => {
+      obtenerListado();
+    }, [])
+  );
   const obtenerListado = async () => {
     try {
       const data = await obtenerEmpresas();
 
       const empresasConUbicacion = await Promise.all(
         data.map(async (empresa: Empresa) => {
-          let localidad_nombre = 'Desconocida';
-          let provincia_nombre = 'Desconocida';
+          let localidad_nombre = "Desconocida";
+          let provincia_nombre = "Desconocida";
 
           try {
-            const localidadData = await obtenerLocalidadesId(empresa.localidad_id);
+            const localidadData = await obtenerLocalidadesId(
+              empresa.localidad_id
+            );
             if (localidadData?.length > 0) {
               localidad_nombre = localidadData[0].nombre;
 
-              const provinciaData = await obtenerProvinciasId(localidadData[0].provincia_id);
+              const provinciaData = await obtenerProvinciasId(
+                localidadData[0].provincia_id
+              );
               if (provinciaData?.length > 0) {
                 provincia_nombre = provinciaData[0].nombre;
               }
             }
           } catch (e) {
-            console.warn(`Error obteniendo ubicación para empresa ${empresa.id}:`, e);
+            console.warn(
+              `Error obteniendo ubicación para empresa ${empresa.id}:`,
+              e
+            );
           }
 
           return {
@@ -79,7 +89,7 @@ useFocusEffect(
 
       setEmpresas(empresasConUbicacion);
     } catch (error) {
-      console.error('Error al obtener empresas:', error);
+      console.error("Error al obtener empresas:", error);
     } finally {
       setCargando(false);
     }
@@ -91,30 +101,35 @@ useFocusEffect(
 
   const renderItem = ({ item }: { item: Empresa }) => {
     const estaExpandido = seleccionado === item.id;
-const confirmarEliminacion = (id: number) => {
-  const mensaje = '¿Estás seguro que querés eliminar esta empresa? Esta acción no se puede deshacer.';
+    const confirmarEliminacion = (id: number) => {
+      const mensaje =
+        "¿Estás seguro que querés eliminar esta empresa? Esta acción no se puede deshacer.";
 
-  if (Platform.OS === 'web') {
-    const confirmacion = window.confirm(mensaje);
-    if (confirmacion) handleEliminar(id);
-  } else {
-    Alert.alert('Confirmar eliminación', mensaje, [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Eliminar', style: 'destructive', onPress: () => handleEliminar(id) },
-    ]);
-  }
-};
+      if (Platform.OS === "web") {
+        const confirmacion = window.confirm(mensaje);
+        if (confirmacion) handleEliminar(id);
+      } else {
+        Alert.alert("Confirmar eliminación", mensaje, [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Eliminar",
+            style: "destructive",
+            onPress: () => handleEliminar(id),
+          },
+        ]);
+      }
+    };
 
-const handleEliminar = async (id: number) => {
-  try {
-    await eliminarEmpresa(id);
-    setEmpresas((prev) => prev.filter((e) => e.id !== id));
-    if (seleccionado === id) setSeleccionado(null);
-  } catch (error) {
-    console.error('Error al eliminar la empresa:', error);
-    Alert.alert('Error', 'No se pudo eliminar la empresa.');
-  }
-};
+    const handleEliminar = async (id: number) => {
+      try {
+        await eliminarEmpresa(id);
+        setEmpresas((prev) => prev.filter((e) => e.id !== id));
+        if (seleccionado === id) setSeleccionado(null);
+      } catch (error) {
+        console.error("Error al eliminar la empresa:", error);
+        Alert.alert("Error", "No se pudo eliminar la empresa.");
+      }
+    };
 
     return (
       <TouchableOpacity
@@ -122,7 +137,9 @@ const handleEliminar = async (id: number) => {
         style={[styles.card, estaExpandido && styles.cardExpandido]}
         activeOpacity={0.8}
       >
-        <Text style={styles.tituloCard}>Empresa: {item.nombre} - {item.id}</Text>
+        <Text style={styles.tituloCard}>
+          Empresa: {item.nombre} - {item.id}
+        </Text>
         <Text style={styles.info}>CUIT: {item.cuit}</Text>
 
         {estaExpandido && (
@@ -134,11 +151,11 @@ const handleEliminar = async (id: number) => {
             <Text style={styles.info}>Provincia: {item.provincia_nombre}</Text>
 
             <TouchableOpacity
-                onPress={() => confirmarEliminacion(item.id)}
-                style={styles.botonEliminar}
-                >
-                <Text style={styles.textoBotonEliminar}>Eliminar</Text>
-                </TouchableOpacity>
+              onPress={() => confirmarEliminacion(item.id)}
+              style={styles.botonEliminar}
+            >
+              <Text style={styles.textoBotonEliminar}>Eliminar</Text>
+            </TouchableOpacity>
           </View>
         )}
       </TouchableOpacity>
@@ -164,50 +181,49 @@ const styles = StyleSheet.create({
   contenedor: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 16,
     padding: 18,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
     elevation: 5,
     borderLeftWidth: 6,
-    borderLeftColor: '#4c68d7',
-    width: '99%',
+    borderLeftColor: "#4c68d7",
+    width: "99%",
   },
   cardExpandido: {
-    backgroundColor: '#e8f0fe',
+    backgroundColor: "#e8f0fe",
   },
   tituloCard: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 16,
     marginBottom: 5,
   },
   info: {
     fontSize: 14,
-    color: '#333',
+    color: "#333",
     marginBottom: 4,
   },
   detalles: {
     marginTop: 10,
   },
   botonEliminar: {
-  backgroundColor: '#d32f2f',
-  paddingVertical: 8,
-  paddingHorizontal: 12,
-  borderRadius: 8,
-  marginTop: 12,
-  alignSelf: 'flex-start',
-},
-textoBotonEliminar: {
-  color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 14,
-},
-
+    backgroundColor: "#d32f2f",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginTop: 12,
+    alignSelf: "flex-start",
+  },
+  textoBotonEliminar: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
 });

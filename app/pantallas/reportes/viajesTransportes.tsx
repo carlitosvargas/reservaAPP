@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,11 +8,11 @@ import {
   TextInput,
   TouchableOpacity,
   Platform,
-} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { useAuth } from '../../../context/AuthContext';
-import { obtenerViajesPorTransporteDeEmpresa } from '../../../services/reportesService';
-import { Redirect } from 'expo-router';
+} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useAuth } from "../../../context/AuthContext";
+import { obtenerViajesPorTransporteDeEmpresa } from "../../../services/reportesService";
+import { Redirect } from "expo-router";
 
 interface Viaje {
   id: number;
@@ -37,24 +37,26 @@ export default function ViajesPorTransporteScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [busqueda, setBusqueda] = useState('');
+  const [busqueda, setBusqueda] = useState("");
   const [fechaDesde, setFechaDesde] = useState<Date | null>(null);
   const [fechaHasta, setFechaHasta] = useState<Date | null>(null);
   const [showDesde, setShowDesde] = useState(false);
   const [showHasta, setShowHasta] = useState(false);
 
-   if (userInfo?.perfil !== 'usuarioEmpresa') {
-     logout();
-           return <Redirect href="/login" />;
-         }
+  if (userInfo?.perfil !== "usuarioEmpresa") {
+    logout();
+    return <Redirect href="/login" />;
+  }
 
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const respuesta = await obtenerViajesPorTransporteDeEmpresa(userInfo.empresa_id);
+        const respuesta = await obtenerViajesPorTransporteDeEmpresa(
+          userInfo.empresa_id
+        );
         setData(respuesta);
       } catch (err: any) {
-        setError(err?.response?.data?.error || 'Error al obtener los viajes');
+        setError(err?.response?.data?.error || "Error al obtener los viajes");
       } finally {
         setLoading(false);
       }
@@ -64,19 +66,22 @@ export default function ViajesPorTransporteScreen() {
   }, []);
 
   const formatDate = (fechaISO: string) => {
-    const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
-    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+    const [year, month, day] = fechaISO.split("T")[0].split("-").map(Number);
+    return `${String(day).padStart(2, "0")}/${String(month).padStart(
+      2,
+      "0"
+    )}/${year}`;
   };
 
   const formatTime = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':');
+    const [hours, minutes] = timeString.split(":");
     return `${hours}:${minutes}`;
   };
 
-  const hayFiltros = busqueda !== '' || fechaDesde || fechaHasta;
+  const hayFiltros = busqueda !== "" || fechaDesde || fechaHasta;
 
   const limpiarFiltros = () => {
-    setBusqueda('');
+    setBusqueda("");
     setFechaDesde(null);
     setFechaHasta(null);
   };
@@ -102,14 +107,19 @@ export default function ViajesPorTransporteScreen() {
           return desdeOK && hastaOK;
         });
 
-        return { ...t, viajes: viajesFiltrados, cantidadViajes: viajesFiltrados.length };
+        return {
+          ...t,
+          viajes: viajesFiltrados,
+          cantidadViajes: viajesFiltrados.length,
+        };
       })
       .filter((t) => t.viajes.length > 0);
   };
 
   const datosFiltrados = filtrarDatos();
 
-  if (loading) return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
+  if (loading)
+    return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
   if (error) return <Text style={styles.error}>{error}</Text>;
 
   return (
@@ -130,23 +140,34 @@ export default function ViajesPorTransporteScreen() {
         onChangeText={setBusqueda}
       />
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginBottom: 16,
+        }}
+      >
         <View style={{ flex: 1, marginRight: 8 }}>
-          {Platform.OS === 'web' ? (
+          {Platform.OS === "web" ? (
             <>
               <Text style={styles.fechaLabel}>Fecha Desde:</Text>
               <input
                 type="date"
-                value={fechaDesde ? fechaDesde.toISOString().split('T')[0] : ''}
+                value={fechaDesde ? fechaDesde.toISOString().split("T")[0] : ""}
                 onChange={(e) => setFechaDesde(new Date(e.target.value))}
                 style={styles.dateInputWeb}
               />
             </>
           ) : (
             <>
-              <TouchableOpacity style={styles.fechaButton} onPress={() => setShowDesde(true)}>
+              <TouchableOpacity
+                style={styles.fechaButton}
+                onPress={() => setShowDesde(true)}
+              >
                 <Text style={styles.fechaButtonText}>
-                  {fechaDesde ? formatDate(fechaDesde.toISOString()) : 'Fecha Desde'}
+                  {fechaDesde
+                    ? formatDate(fechaDesde.toISOString())
+                    : "Fecha Desde"}
                 </Text>
               </TouchableOpacity>
               {showDesde && (
@@ -165,21 +186,26 @@ export default function ViajesPorTransporteScreen() {
         </View>
 
         <View style={{ flex: 1, marginLeft: 8 }}>
-          {Platform.OS === 'web' ? (
+          {Platform.OS === "web" ? (
             <>
               <Text style={styles.fechaLabel}>Fecha Hasta:</Text>
               <input
                 type="date"
-                value={fechaHasta ? fechaHasta.toISOString().split('T')[0] : ''}
+                value={fechaHasta ? fechaHasta.toISOString().split("T")[0] : ""}
                 onChange={(e) => setFechaHasta(new Date(e.target.value))}
                 style={styles.dateInputWeb}
               />
             </>
           ) : (
             <>
-              <TouchableOpacity style={styles.fechaButton} onPress={() => setShowHasta(true)}>
+              <TouchableOpacity
+                style={styles.fechaButton}
+                onPress={() => setShowHasta(true)}
+              >
                 <Text style={styles.fechaButtonText}>
-                  {fechaHasta ? formatDate(fechaHasta.toISOString()) : 'Fecha Hasta'}
+                  {fechaHasta
+                    ? formatDate(fechaHasta.toISOString())
+                    : "Fecha Hasta"}
                 </Text>
               </TouchableOpacity>
               {showHasta && (
@@ -203,7 +229,9 @@ export default function ViajesPorTransporteScreen() {
       ) : (
         datosFiltrados.map((transporte) => (
           <View key={transporte.transporteId} style={styles.transporteCard}>
-            <Text style={styles.subTitle}>🚍 {transporte.nombre} ({transporte.patente})</Text>
+            <Text style={styles.subTitle}>
+              🚍 {transporte.nombre} ({transporte.patente})
+            </Text>
             <Text>Marca: {transporte.marca}</Text>
             <Text>Total de viajes: {transporte.cantidadViajes}</Text>
 
@@ -225,85 +253,85 @@ export default function ViajesPorTransporteScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: "#f4f4f4",
     flex: 1,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 16,
   },
   subTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 6,
   },
   transporteCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 14,
     borderRadius: 10,
     marginBottom: 20,
     elevation: 2,
   },
   viajeCard: {
-    backgroundColor: '#e9ecef',
+    backgroundColor: "#e9ecef",
     padding: 10,
     borderRadius: 8,
     marginTop: 10,
   },
   error: {
-    color: 'gray',
+    color: "gray",
     marginTop: 20,
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 10,
     borderRadius: 8,
     marginBottom: 12,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
   },
   fechaButton: {
-    backgroundColor: '#4c68d7',
+    backgroundColor: "#4c68d7",
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 8,
   },
   fechaButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 14,
   },
   fechaLabel: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
-    color: '#333',
+    color: "#333",
   },
   dateInputWeb: {
-    width: '100%',
+    width: "100%",
     padding: 8,
     fontSize: 16,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   botonLimpiar: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#999',
+    alignSelf: "flex-end",
+    backgroundColor: "#999",
     padding: 8,
     borderRadius: 20,
     marginBottom: 8,
   },
   limpiarTexto: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
