@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
   ImageBackground,
+  ActivityIndicator,
   Image,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -32,6 +33,7 @@ export default function LoginScreen({
   const [contrasenia, setPassword] = useState("");
   const [errorMensaje, setErrorMensaje] = useState("");
   const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const passwordInputRef = useRef<TextInput>(null);
   const frases = [
@@ -67,6 +69,7 @@ export default function LoginScreen({
 
   const handleLogin = async () => {
     try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       const { token } = await loginUsuario(usuario, contrasenia);
       await login(token);
       await AsyncStorage.setItem("token", token);
@@ -84,6 +87,8 @@ export default function LoginScreen({
       const mensaje =
         error.response?.data?.mensaje || "Usuario o contraseña incorrectos";
       setErrorMensaje(mensaje);
+    } finally {
+      setLoading(false); // ocultar spinner
     }
   };
 
@@ -241,7 +246,7 @@ export default function LoginScreen({
 
         {Platform.OS === "web" ? (
           <View style={styles.containerWeb}>
-            {/* 🔹 Texto animado en lugar de la imagen */}
+            {/*Texto animado en lugar de la imagen */}
             <View style={styles.sideTextContainer}>
               <Animatable.Image
                 animation="swing"
@@ -261,7 +266,7 @@ export default function LoginScreen({
               </Animatable.Text>
             </View>
 
-            {/* 🔹 Formulario */}
+            {/* Formulario */}
             <View style={styles.formWrapper}>
               <View style={styles.formContainer}>
                 <Text style={styles.title}>Iniciar sesión</Text>
@@ -317,8 +322,16 @@ export default function LoginScreen({
                   </Text>
                 )}
 
-                <Pressable style={styles.button} onPress={handleLogin}>
-                  <Text style={styles.buttonText}>Ingresar</Text>
+                <Pressable
+                  style={styles.button}
+                  onPress={handleLogin}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Text style={styles.buttonText}>Ingresar</Text>
+                  )}
                 </Pressable>
 
                 <Text style={styles.registroLink}>

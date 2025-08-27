@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/trafic.png",
-    "scheme": "myapp",
+    "scheme": "minibus",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
