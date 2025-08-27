@@ -68,6 +68,7 @@ export default function LoginScreen({
   }, [charIndex, fraseIndex]);
 
   const handleLogin = async () => {
+    setLoading(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       const { token } = await loginUsuario(usuario, contrasenia);
@@ -87,6 +88,7 @@ export default function LoginScreen({
       const mensaje =
         error.response?.data?.mensaje || "Usuario o contraseña incorrectos";
       setErrorMensaje(mensaje);
+      setLoading(false);
     } finally {
       setLoading(false); // ocultar spinner
     }
@@ -412,7 +414,11 @@ export default function LoginScreen({
               )}
 
               <Pressable style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Ingresar</Text>
+                {loading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={styles.buttonText}>Ingresar</Text>
+                )}
               </Pressable>
 
               <Text style={styles.registroLink}>

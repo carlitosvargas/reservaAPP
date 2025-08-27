@@ -26,13 +26,39 @@ export default function RecuperarContrasenia() {
 
   const isDark = colorScheme === "dark";
 
+  function esEmailValido(email: string) {
+    // No permitir espacios antes ni después del @ y formato estándar
+    const re =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    // Además, no permitir espacios en todo el email
+    if (/\s/.test(email)) return false;
+    // Además, no permitir espacios justo después del @
+    if (/@\s/.test(email)) return false;
+    return re.test(email.trim());
+  }
+
   const handleRecuperar = async () => {
     setError("");
     setMensaje("");
     setLoading(true); // mostrar spinner
 
-    if (!email || !email.includes("@")) {
-      setError("Por favor, ingresá un email válido.");
+    // Validación: campo vacío
+    if (!email || email.trim() === "") {
+      setError("Por favor, ingresá tu correo electrónico.");
+      setLoading(false);
+      return;
+    }
+    // Validación: formato de email
+    if (!esEmailValido(email)) {
+      setError("Ingresá un correo electrónico válido.");
+      setLoading(false);
+      return;
+    }
+
+    // Validación: evitar caracteres peligrosos para SQL injection
+    if (/['"=;()\\]/.test(email)) {
+      setError("El correo electrónico contiene caracteres no permitidos.");
+      setLoading(false);
       return;
     }
 
@@ -56,6 +82,7 @@ export default function RecuperarContrasenia() {
     } catch (err) {
       console.error(err);
       setError("Hubo un problema al intentar enviar el correo.");
+      setLoading(false);
     } finally {
       setLoading(false); // ocultar spinner
     }
@@ -82,7 +109,10 @@ export default function RecuperarContrasenia() {
               placeholder="Ingresá tu correo electrónico"
               placeholderTextColor={isDark ? "#ccc" : "#888"}
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                setLoading(false); // Oculta el spinner y habilita el botón al escribir
+              }}
               keyboardType="email-address"
               autoCapitalize="none"
             />

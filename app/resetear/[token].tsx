@@ -10,6 +10,7 @@ import {
   ScrollView,
   useColorScheme,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { resetearContrasenia } from "../../services/authService";
 
@@ -21,6 +22,7 @@ export default function ResetearContraseniaScreen() {
   const [nuevaContrasenia, setNuevaContrasenia] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
 
   const isDark = colorScheme === "dark";
 
@@ -93,6 +95,20 @@ export default function ResetearContraseniaScreen() {
             value={nuevaContrasenia}
             onChangeText={setNuevaContrasenia}
           />
+          <Pressable
+            onPress={() => setMostrarPassword(!mostrarPassword)}
+            style={{
+              position: "absolute",
+              right: 10,
+              top: 12,
+            }}
+          >
+            <Ionicons
+              name={mostrarPassword ? "eye-off" : "eye"}
+              size={22}
+              color={isDark ? "#ccc" : "#555"}
+            />
+          </Pressable>
 
           {error !== "" && <Text style={styles(isDark).error}>{error}</Text>}
           {mensaje !== "" && (
