@@ -2,19 +2,19 @@ import { Redirect, useRouter } from 'expo-router';
 import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Storage from '../../utils/storage';
 
 export default function PerfilesScreen() {
   const router = useRouter();
   const { logout, userInfo } = useAuth();
 
   const handleLogout = async () => {
-    await logout();
-    router.replace('/login');
-    const allKeys = await AsyncStorage.getAllKeys();
-    const allData = await AsyncStorage.multiGet(allKeys);
-    console.log('Contenido de AsyncStorage perfil:', allData);
-  };
-
+  await logout();
+  router.replace('/login');
+  const allKeys = await Storage.getAllKeys();
+  const allData = await Storage.multiGet(allKeys);
+  console.log('Contenido de Storage perfil:', allData);
+}
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
