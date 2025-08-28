@@ -112,13 +112,15 @@ export const generarHTMLComprobante = (data: any) => {
           <div class="factura">
             <strong>Factura B Nº 0001-${data.ventas_id}</strong><br />
             Fecha: ${data.fecha}<br />
-            Forma de Pago: ${data.formaPago ?? 'N/A'}
+            Forma de Pago: ${data.formaPago ?? "N/A"}
           </div>
         </div>
 
         <div class="section-title">INFORMACIÓN DEL CLIENTE</div>
         <table class="info-table">
-          <tr><td>Nombre:</td><td>${data.pasajeros[0]?.nombre} ${data.pasajeros[0]?.apellido}</td></tr>
+          <tr><td>Nombre:</td><td>${data.pasajeros[0]?.nombre} ${
+    data.pasajeros[0]?.apellido
+  }</td></tr>
           <tr><td>DNI:</td><td>${data.pasajeros[0]?.dni}</td></tr>
           <tr><td>Reserva N°:</td><td>${data.reserva_id}</td></tr>
         </table>
@@ -139,14 +141,18 @@ export const generarHTMLComprobante = (data: any) => {
             <th>Destino</th>
             <th>Precio</th>
           </tr>
-          ${data.pasajeros.map((p: any) => `
+          ${data.pasajeros
+            .map(
+              (p: any) => `
             <tr>
               <td>${p.nombre} ${p.apellido}</td>
               <td>${p.ubicacionOrigen}</td>
               <td>${p.ubicacionDestino}</td>
               <td>$${data.precio.toFixed(2)}</td>
             </tr>
-          `).join('')}
+          `
+            )
+            .join("")}
         </table>
 
         <div class="totales">

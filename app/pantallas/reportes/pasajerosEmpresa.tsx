@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { useAuth } from '../../../context/AuthContext';
-import { obtenerPasajerosPorEmpresa } from '../../../services/reportesService';
-import { Redirect } from 'expo-router';
-
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
+import { useAuth } from "../../../context/AuthContext";
+import { obtenerPasajerosPorEmpresa } from "../../../services/reportesService";
+import { Redirect } from "expo-router";
 
 interface ReservaViaje {
   reservaId: number;
@@ -24,30 +29,28 @@ interface PasajeroEmpresa {
   reserva: ReservaViaje | null;
 }
 
-
-
 export default function PasajerosPorEmpresaScreen() {
-  const {logout, userInfo } = useAuth();
+  const { logout, userInfo } = useAuth();
   const [pasajeros, setPasajeros] = useState<PasajeroEmpresa[]>([]);
   const [cantidad, setCantidad] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  if (userInfo?.perfil !== "usuarioEmpresa") {
+    logout();
+    return <Redirect href="/login" />;
+  }
 
-   if (userInfo?.perfil !== 'usuarioEmpresa') {
-           logout();
-          return <Redirect href="/login" />;
-        }
-
-        
   useEffect(() => {
     const cargarPasajeros = async () => {
       try {
-        const respuesta = await obtenerPasajerosPorEmpresa(userInfo?.empresa_id);
+        const respuesta = await obtenerPasajerosPorEmpresa(
+          userInfo?.empresa_id
+        );
         setPasajeros(respuesta.pasajeros);
         setCantidad(respuesta.cantidadPasajeros);
       } catch (err: any) {
-        setError(err?.response?.data?.mensaje || 'Error al obtener pasajeros');
+        setError(err?.response?.data?.mensaje || "Error al obtener pasajeros");
       } finally {
         setLoading(false);
       }
@@ -56,13 +59,16 @@ export default function PasajerosPorEmpresaScreen() {
     cargarPasajeros();
   }, []);
 
-   const formatDate = (fechaISO: string) => {
-  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
-  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
-};
+  const formatDate = (fechaISO: string) => {
+    const [year, month, day] = fechaISO.split("T")[0].split("-").map(Number);
+    return `${String(day).padStart(2, "0")}/${String(month).padStart(
+      2,
+      "0"
+    )}/${year}`;
+  };
 
   const formatTime = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':');
+    const [hours, minutes] = timeString.split(":");
     return `${hours}:${minutes}`;
   };
   if (loading) {
@@ -83,7 +89,9 @@ export default function PasajerosPorEmpresaScreen() {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Text style={styles.nombre}>{item.nombre} {item.apellido}</Text>
+            <Text style={styles.nombre}>
+              {item.nombre} {item.apellido}
+            </Text>
             <Text>DNI: {item.dni}</Text>
             <Text>Desde: {item.ubicacionOrigen}</Text>
             <Text>Hasta: {item.ubicacionDestino}</Text>
@@ -108,22 +116,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 14,
     borderRadius: 10,
     marginBottom: 16,
@@ -131,23 +139,23 @@ const styles = StyleSheet.create({
   },
   nombre: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
   },
   viajeBox: {
     marginTop: 10,
-    backgroundColor: '#e6f2ff',
+    backgroundColor: "#e6f2ff",
     padding: 10,
     borderRadius: 8,
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   error: {
-    color: 'red',
+    color: "red",
     marginTop: 20,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 16,
   },
 });

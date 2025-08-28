@@ -1,9 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Platform, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '@/context/AuthContext';
-import { crearTransporte } from '../../services/transporteService';
-import { Redirect, router } from 'expo-router';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Platform,
+  ActivityIndicator,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "@/context/AuthContext";
+import { crearTransporte } from "../../services/transporteService";
+import { Redirect, router } from "expo-router";
 
 type ErroresTransporte = {
   nombre?: string;
@@ -13,27 +22,27 @@ type ErroresTransporte = {
 };
 
 const CrearTransporte = () => {
-  const [nombre, setNombre] = useState('');
-  const [patente, setPatente] = useState('');
-  const [marca, setMarca] = useState('');
-  const [cantLugares, setCantLugares] = useState('');
+  const [nombre, setNombre] = useState("");
+  const [patente, setPatente] = useState("");
+  const [marca, setMarca] = useState("");
+  const [cantLugares, setCantLugares] = useState("");
   const [errores, setErrores] = useState<ErroresTransporte>({});
   const { isLoading, logout, userInfo } = useAuth();
-  
-
-
 
   const mostrarAlerta = (titulo: string, mensaje: string) => {
-    if (Platform.OS === 'web') {
+    if (Platform.OS === "web") {
       window.alert(`${titulo}: ${mensaje}`);
     } else {
       Alert.alert(titulo, mensaje);
-    }
-  };
+    }
+  };
 
   const handleGuardar = async () => {
     if (!nombre || !patente || !marca || !cantLugares) {
-      mostrarAlerta('Campos incompletos', 'Por favor, completa todos los campos');
+      mostrarAlerta(
+        "Campos incompletos",
+        "Por favor, completa todos los campos"
+      );
       return;
     }
 
@@ -48,12 +57,12 @@ const CrearTransporte = () => {
 
       await crearTransporte(nuevoTransporte);
 
-        if (Platform.OS === 'web') {
-      window.alert(`Transporte creado correctamente`);
-    } else {
-      Alert.alert('Exito','Transporte creado correctamente');
-    }
-      router.push({pathname:'/(tabs)/listarTransportes'})
+      if (Platform.OS === "web") {
+        window.alert(`Transporte creado correctamente`);
+      } else {
+        Alert.alert("Exito", "Transporte creado correctamente");
+      }
+      router.push({ pathname: "/(tabs)/listarTransportes" });
     } catch (error: any) {
       const erroresBackend = error?.response?.data?.errores;
 
@@ -64,18 +73,19 @@ const CrearTransporte = () => {
         });
         setErrores(erroresFormateados);
       } else {
-        const mensajeError = error?.response?.data?.error || 'Error al crear el transporte.';
-        mostrarAlerta('Error', mensajeError);
+        const mensajeError =
+          error?.response?.data?.error || "Error al crear el transporte.";
+        mostrarAlerta("Error", mensajeError);
       }
     }
   };
   useEffect(() => {
-    if (!isLoading && userInfo?.perfil !== 'usuarioMostrador') {
+    if (!isLoading && userInfo?.perfil !== "usuarioMostrador") {
       logout();
-      router.replace('/login');
+      router.replace("/login");
     }
   }, [isLoading, userInfo]);
-  
+
   if (isLoading || !userInfo) {
     return (
       <View style={styles.container}>
@@ -96,10 +106,12 @@ const CrearTransporte = () => {
           value={nombre}
           onChangeText={(text) => {
             setNombre(text);
-            setErrores((prev) => ({ ...prev, nombre: '' }));
+            setErrores((prev) => ({ ...prev, nombre: "" }));
           }}
         />
-        {errores.nombre && <Text style={styles.errorText}>{errores.nombre}</Text>}
+        {errores.nombre && (
+          <Text style={styles.errorText}>{errores.nombre}</Text>
+        )}
       </View>
 
       <View style={styles.inputGroup}>
@@ -111,10 +123,12 @@ const CrearTransporte = () => {
           value={patente}
           onChangeText={(text) => {
             setPatente(text);
-            setErrores((prev) => ({ ...prev, patente: '' }));
+            setErrores((prev) => ({ ...prev, patente: "" }));
           }}
         />
-        {errores.patente && <Text style={styles.errorText}>{errores.patente}</Text>}
+        {errores.patente && (
+          <Text style={styles.errorText}>{errores.patente}</Text>
+        )}
       </View>
 
       <View style={styles.inputGroup}>
@@ -126,7 +140,7 @@ const CrearTransporte = () => {
           value={marca}
           onChangeText={(text) => {
             setMarca(text);
-            setErrores((prev) => ({ ...prev, marca: '' }));
+            setErrores((prev) => ({ ...prev, marca: "" }));
           }}
         />
         {errores.marca && <Text style={styles.errorText}>{errores.marca}</Text>}
@@ -141,11 +155,13 @@ const CrearTransporte = () => {
           value={cantLugares}
           onChangeText={(text) => {
             setCantLugares(text);
-            setErrores((prev) => ({ ...prev, cantLugares: '' }));
+            setErrores((prev) => ({ ...prev, cantLugares: "" }));
           }}
           keyboardType="numeric"
         />
-        {errores.cantLugares && <Text style={styles.errorText}>{errores.cantLugares}</Text>}
+        {errores.cantLugares && (
+          <Text style={styles.errorText}>{errores.cantLugares}</Text>
+        )}
       </View>
 
       <TouchableOpacity style={styles.botonGuardar} onPress={handleGuardar}>
@@ -156,46 +172,46 @@ const CrearTransporte = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 16 },
+  container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 16 },
   inputGroup: { marginBottom: 8 },
   label: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
-    color: '#333',
+    color: "#333",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 8,
     padding: 10,
     marginBottom: 4,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 12,
     marginTop: 2,
     marginBottom: 4,
   },
   botonGuardar: {
-    backgroundColor: '#4c68d7',
+    backgroundColor: "#4c68d7",
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   botonTexto: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
     letterSpacing: 0.5,
   },

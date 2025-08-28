@@ -1,8 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { Redirect, useLocalSearchParams } from 'expo-router';
-import { obtenerPasajerosPorViaje } from '../../../services/reportesService';
-import { useAuth } from '../../../context/AuthContext';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
+import { Redirect, useLocalSearchParams } from "expo-router";
+import { obtenerPasajerosPorViaje } from "../../../services/reportesService";
+import { useAuth } from "../../../context/AuthContext";
 
 interface Viaje {
   origenLocalidad: string;
@@ -35,21 +41,21 @@ export default function PasajerosPorViajeScreen() {
   const [error, setError] = useState<string | null>(null);
   const { logout, userInfo } = useAuth();
 
+  if (userInfo?.perfil !== "usuarioEmpresa") {
+    logout();
+    return <Redirect href="/login" />;
+  }
 
-    if (userInfo?.perfil !== 'usuarioEmpresa') {
-        logout();
-           return <Redirect href="/login" />;
-         }
-         
   useEffect(() => {
     const cargarPasajeros = async () => {
       try {
-        const respuesta: RespuestaPasajerosPorViaje = await obtenerPasajerosPorViaje(Number(id));
+        const respuesta: RespuestaPasajerosPorViaje =
+          await obtenerPasajerosPorViaje(Number(id));
         setViaje(respuesta.viaje);
         setPasajeros(respuesta.pasajeros);
         setCantidad(respuesta.cantidadPasajeros);
       } catch (err: any) {
-        setError(err?.response?.data?.mensaje || 'Error al obtener pasajeros');
+        setError(err?.response?.data?.mensaje || "Error al obtener pasajeros");
       } finally {
         setLoading(false);
       }
@@ -60,13 +66,16 @@ export default function PasajerosPorViajeScreen() {
     }
   }, [id]);
 
-   const formatDate = (fechaISO: string) => {
-  const [year, month, day] = fechaISO.split('T')[0].split('-').map(Number);
-  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
-};
+  const formatDate = (fechaISO: string) => {
+    const [year, month, day] = fechaISO.split("T")[0].split("-").map(Number);
+    return `${String(day).padStart(2, "0")}/${String(month).padStart(
+      2,
+      "0"
+    )}/${year}`;
+  };
 
   const formatTime = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':');
+    const [hours, minutes] = timeString.split(":");
     return `${hours}:${minutes}`;
   };
   if (loading) {
@@ -82,11 +91,23 @@ export default function PasajerosPorViajeScreen() {
       <Text style={styles.title}>Pasajeros del Viaje</Text>
       {viaje && (
         <View style={styles.card}>
-          <Text><Text style={styles.label}>Origen:</Text> {viaje.origenLocalidad}</Text>
-          <Text><Text style={styles.label}>Destino:</Text> {viaje.destinoLocalidad}</Text>
-          <Text><Text style={styles.label}>Fecha:</Text> {formatDate(viaje.fechaViaje)}</Text>
-          <Text><Text style={styles.label}>Hora de salida:</Text> {formatTime(viaje.horarioSalida)}</Text>
-          <Text><Text style={styles.label}>Cantidad de pasajeros:</Text> {cantidad}</Text>
+          <Text>
+            <Text style={styles.label}>Origen:</Text> {viaje.origenLocalidad}
+          </Text>
+          <Text>
+            <Text style={styles.label}>Destino:</Text> {viaje.destinoLocalidad}
+          </Text>
+          <Text>
+            <Text style={styles.label}>Fecha:</Text>{" "}
+            {formatDate(viaje.fechaViaje)}
+          </Text>
+          <Text>
+            <Text style={styles.label}>Hora de salida:</Text>{" "}
+            {formatTime(viaje.horarioSalida)}
+          </Text>
+          <Text>
+            <Text style={styles.label}>Cantidad de pasajeros:</Text> {cantidad}
+          </Text>
         </View>
       )}
 
@@ -95,7 +116,9 @@ export default function PasajerosPorViajeScreen() {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.pasajeroCard}>
-            <Text style={styles.pasajeroNombre}>{item.nombre} {item.apellido}</Text>
+            <Text style={styles.pasajeroNombre}>
+              {item.nombre} {item.apellido}
+            </Text>
             <Text>DNI: {item.dni}</Text>
             <Text>Desde: {item.ubicacionOrigen}</Text>
             <Text>Hasta: {item.ubicacionDestino}</Text>
@@ -110,26 +133,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 14,
     borderRadius: 10,
     marginBottom: 20,
     elevation: 2,
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   pasajeroCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     padding: 12,
     borderRadius: 8,
     marginBottom: 10,
@@ -137,12 +160,12 @@ const styles = StyleSheet.create({
   },
   pasajeroNombre: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   error: {
-    color: 'red',
+    color: "red",
     marginTop: 20,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 16,
   },
 });
