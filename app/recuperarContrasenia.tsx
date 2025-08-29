@@ -94,7 +94,7 @@ export default function RecuperarContrasenia() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ImageBackground
-        source={require("../assets/images/fondo1.jpg")}
+        source={require("../assets/images/fondo3.jpg")}
         style={styles(isDark).backgroundImage}
       >
         <ScrollView
@@ -217,7 +217,8 @@ const styles = (isDark: boolean) =>
     },
     backgroundImage: {
       flex: 1,
+      width: "100%",
+      height: "100%",
       resizeMode: "cover",
-      justifyContent: "center",
     },
   });

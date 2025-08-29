@@ -77,7 +77,7 @@ export default function RootLayout() {
 
         {/* Imagen de fondo */}
         <ImageBackground
-          source={require("../assets/images/fondo1.jpg")} // coloca tu imagen aquí
+          source={require("../assets/images/fondo3.jpg")} // coloca tu imagen aquí
           style={styles.background}
           resizeMode="cover"
         >
@@ -139,6 +139,9 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     position: "relative",
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,

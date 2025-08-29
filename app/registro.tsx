@@ -166,6 +166,8 @@ export default function RegistroScreen() {
     },
     backgroundImage: {
       flex: 1,
+      width: "100%",
+      height: "100%",
       resizeMode: "cover",
     },
     overlay: {
@@ -181,7 +183,7 @@ export default function RegistroScreen() {
       keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
     >
       <ImageBackground
-        source={require("../assets/images/fondo1.jpg")}
+        source={require("../assets/images/fondo3.jpg")}
         style={styles.backgroundImage}
       >
         <ScrollView

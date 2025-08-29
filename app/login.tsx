@@ -241,7 +241,7 @@ export default function LoginScreen({
       keyboardVerticalOffset={Platform.OS === "ios" ? 50 : 0}
     >
       <ImageBackground
-        source={require("../assets/images/fondo1.jpg")}
+        source={require("../assets/images/fondo3.jpg")}
         style={styles.backgroundImage}
       >
         <View style={styles.overlay} />

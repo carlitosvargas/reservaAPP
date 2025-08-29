@@ -40,7 +40,7 @@ export default function Index() {
 
   return (
     <ImageBackground
-      source={require("../../assets/images/fondo1.jpg")}
+      source={require("../../assets/images/fondo3.jpg")}
       style={styles.background}
       resizeMode="cover"
     >
@@ -144,7 +144,10 @@ const styles = StyleSheet.create({
    */
 
   background: {
-    flex: 1,
+      flex: 1,
+      width: "100%",
+      height: "100%",
+      resizeMode: "cover",
   },
   overlay: {
     flex: 1,
