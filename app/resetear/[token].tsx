@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   useColorScheme,
+  ImageBackground,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -80,6 +81,10 @@ export default function ResetearContraseniaScreen() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+        <ImageBackground
+              source={require("../../assets/images/fondo3.jpg")}
+              style={styles(isDark).backgroundImage}
+            >
       <ScrollView
         contentContainerStyle={styles(isDark).wrapper}
         keyboardShouldPersistTaps="handled"
@@ -120,6 +125,7 @@ export default function ResetearContraseniaScreen() {
           </Pressable>
         </View>
       </ScrollView>
+      </ImageBackground>
     </KeyboardAvoidingView>
   );
 }
@@ -179,5 +185,11 @@ const styles = (isDark: boolean) =>
       color: "green",
       marginBottom: 10,
       textAlign: "center",
+    },
+   backgroundImage: {
+      flex: 1,
+      width: "100%",
+      height: "100%",
+      resizeMode: "cover",
     },
   });

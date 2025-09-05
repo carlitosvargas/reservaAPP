@@ -11,9 +11,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   ImageBackground,
+  Modal,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { registrarUsuario } from "../services/authService";
+import { Ionicons } from "@expo/vector-icons";
 
 // Definir el tipo para los errores
 type Errores = {
@@ -39,7 +41,8 @@ export default function RegistroScreen() {
   const [contrasenia, setContrasenia] = useState("");
   const [errores, setErrores] = useState<Errores>({}); // Especificar el tipo de errores
   const [cargando, setCargando] = useState(false);
-
+  const [showPasswordInfo, setShowPasswordInfo] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const isDark = colorScheme === "dark";
 
   const handleRegistro = async () => {
@@ -174,6 +177,32 @@ export default function RegistroScreen() {
       ...StyleSheet.absoluteFillObject,
       backgroundColor: "rgba(0,0,0,0.3)",
     },
+     modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  modalContent: {
+    width: "100%",
+    maxWidth: 350,
+    padding: 20,
+    borderRadius: 12,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 10,
+    color: "#007AFF",
+  },
+  closeButton: {
+    marginTop: 15,
+    backgroundColor: "#007AFF",
+    padding: 10,
+    borderRadius: 8,
+  },
   });
 
   return (
@@ -314,24 +343,78 @@ export default function RegistroScreen() {
             {errores.contrasenia && (
               <Text style={styles.errorText}>{errores.contrasenia}</Text>
             )}
+          <View style={{ position: "relative" }}>
             <TextInput
               style={[
                 styles.input,
                 {
                   color: isDark ? "#fff" : "#000",
                   backgroundColor: isDark ? "#1a1a1a" : "#fff",
+                  paddingRight: 80, // espacio para que no se tape el texto con los íconos
                 },
               ]}
               placeholder="Contraseña"
               placeholderTextColor={isDark ? "#ccc" : "#888"}
-              secureTextEntry
+              secureTextEntry={!showPassword} // acá controlás si se ve o no
               value={contrasenia}
-              onChangeText={(text) => {
-                setContrasenia(text);
-                setErrores((prev) => ({ ...prev, contrasenia: "" }));
-              }}
+              onChangeText={(text) => setContrasenia(text)}
             />
 
+            {/* Ícono para ver/ocultar contraseña */}
+            <Pressable
+              onPress={() => setShowPassword((prev) => !prev)}
+              style={{ position: "absolute", right: 40, top: "30%" }}
+            >
+              <Ionicons
+                name={showPassword ? "eye-off-outline" : "eye-outline"}
+                size={22}
+                color="#555"
+              />
+            </Pressable>
+
+            {/* Ícono de info */}
+            <Pressable
+              onPress={() => setShowPasswordInfo(true)}
+              style={{ position: "absolute", right: 10, top: "30%" }}
+            >
+              <Ionicons
+                name="information-circle-outline"
+                size={22}
+                color="#007AFF"
+              />
+            </Pressable>
+          </View>
+
+               <Modal
+            visible={showPasswordInfo}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowPasswordInfo(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View
+                style={[
+                  styles.modalContent,
+                  { backgroundColor: isDark ? "#333" : "#fff" },
+                ]}
+              >
+                <Text style={styles.modalTitle}>Condiciones de la contraseña:</Text>
+                <Text>- Mínimo 8 caracteres</Text>
+                <Text>- Máximo 12 caracteres</Text>
+                <Text>- Al menos una letra mayúscula</Text>
+                <Text>- Al menos una letra minúscula</Text>
+                <Text>- Al menos un número</Text>
+                <Text>- Al menos un carácter especial</Text>
+
+                <Pressable
+                  onPress={() => setShowPasswordInfo(false)}
+                  style={styles.closeButton}
+                >
+                  <Text style={{ color: "#fff", textAlign: "center" }}>Cerrar</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
             <Pressable
               style={styles.button}
               onPress={handleRegistro}

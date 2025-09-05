@@ -55,6 +55,13 @@ export default function DetalleViaje() {
     [key: string]: string;
   }>({});
 
+ const [focusedInput, setFocusedInput] = useState<string | null>(null);
+
+
+  const mensajesAyuda = {
+    ubicacionOrigen: "Ingrese calles con numero o intersecciones. Ej. Salta 1200; Laprida y Jujuy.",
+    ubicacionDestino: "Ingrese calles con numero o intersecciones. Ej. Salta 1200; Laprida y Jujuy.",
+  };
   const { isLoading, logout, userInfo } = useAuth();
 
   const usuarios_id = userInfo?.id;
@@ -192,7 +199,7 @@ export default function DetalleViaje() {
       const response = await crearReserva(reservaData);
       const mensaje =
         response?.mensaje ||
-        "Tu reserva fue creada en Mis Reservas pendiente de Confirmación.";
+        "Tu reserva fue creada en Mis Reservas.";
 
       if (Platform.OS === "web") {
         alert("Reserva exitosa: " + mensaje);
@@ -398,41 +405,64 @@ export default function DetalleViaje() {
                 </Text>
               )}
             </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label1}>Ubicación de Origen</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ubicación de Origen"
-                placeholderTextColor="#888"
-                value={pasajero.ubicacionOrigen}
-                onChangeText={(text) =>
-                  handleChangePasajero(index, "ubicacionOrigen", text)
-                }
-              />
+               <View style={styles.inputGroup}>
+        <Text style={styles.label1}>Ubicación de Origen</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ubicación de Origen"
+          placeholderTextColor="#888"
+          value={pasajero.ubicacionOrigen}
+          onFocus={() => setFocusedInput("ubicacionOrigen")}
+          onBlur={() => setFocusedInput(null)}
+          onChangeText={(text) => {
+            handleChangePasajero(index, "ubicacionOrigen", text);
+            if (text.length > 0) setFocusedInput(null); // desaparece cuando escribe
+          }}
+        />
+        {/* Mensaje de ayuda */}
+        {focusedInput === "ubicacionOrigen" && !pasajero.ubicacionOrigen && (
+          <Text style={{ color: "blue", fontSize: 12 }}>
+            {mensajesAyuda.ubicacionOrigen}
+          </Text>
+        )}
 
-              {erroresBackend[`personas[${index}].ubicacionOrigen`] && (
-                <Text style={{ color: "red", fontSize: 12 }}>
-                  {erroresBackend[`personas[${index}].ubicacionOrigen`]}
-                </Text>
-              )}
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label1}>Ubicación de Destino</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ubicación de Destino"
-                placeholderTextColor="#888"
-                value={pasajero.ubicacionDestino}
-                onChangeText={(text) =>
-                  handleChangePasajero(index, "ubicacionDestino", text)
-                }
-              />
-              {erroresBackend[`personas[${index}].ubicacionDestino`] && (
-                <Text style={{ color: "red", fontSize: 12 }}>
-                  {erroresBackend[`personas[${index}].ubicacionDestino`]}
-                </Text>
-              )}
-            </View>
+        {/* Error backend */}
+        {erroresBackend[`personas[${index}].ubicacionOrigen`] && (
+          <Text style={{ color: "red", fontSize: 12 }}>
+            {erroresBackend[`personas[${index}].ubicacionOrigen`]}
+          </Text>
+        )}
+      </View>
+
+      {/* Ubicación de Destino */}
+      <View style={styles.inputGroup}>
+        <Text style={styles.label1}>Ubicación de Destino</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ubicación de Destino"
+          placeholderTextColor="#888"
+          value={pasajero.ubicacionDestino}
+          onFocus={() => setFocusedInput("ubicacionDestino")}
+          onBlur={() => setFocusedInput(null)}
+          onChangeText={(text) => {
+            handleChangePasajero(index, "ubicacionDestino", text);
+            if (text.length > 0) setFocusedInput(null);
+          }}
+        />
+        {/* Mensaje de ayuda */}
+        {focusedInput === "ubicacionDestino" && !pasajero.ubicacionDestino && (
+          <Text style={{ color: "blue", fontSize: 12 }}>
+            {mensajesAyuda.ubicacionDestino}
+          </Text>
+        )}
+
+        {/* Error backend */}
+        {erroresBackend[`personas[${index}].ubicacionDestino`] && (
+          <Text style={{ color: "red", fontSize: 12 }}>
+            {erroresBackend[`personas[${index}].ubicacionDestino`]}
+          </Text>
+        )}
+      </View>
           </View>
         ))}
 

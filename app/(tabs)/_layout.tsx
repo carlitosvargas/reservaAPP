@@ -12,7 +12,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={({ route }) => ({
-        tabBarShowLabel: false,
+        tabBarShowLabel: true,
         headerStyle: { backgroundColor: "#000" },
         headerTintColor: "#007AFF",
         tabBarActiveTintColor: "#007AFF",
@@ -26,7 +26,7 @@ export default function TabLayout() {
           right: 0, // antes 20
           backgroundColor: "#000",
           borderTopColor: "#000",
-          height: 65,
+          height: 75,
           paddingBottom: 4,
           paddingTop: 4,
           borderRadius: 0,
@@ -93,7 +93,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="reserva"
         options={{
-          title: "Reservas",
+          title: "Mis Reservas",
           href: userInfo?.perfil === "usuarioCliente" ? undefined : null,
           lazy: true,
         }}
@@ -111,7 +111,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="crearEmpresa"
         options={{
-          title: "Empresa",
+          title: "Nueva Empresa",
           href: userInfo?.perfil === "usuarioAdministrador" ? undefined : null,
           lazy: true,
         }}
@@ -120,7 +120,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="listarEmpresas"
         options={{
-          title: "Listar Empresas",
+          title: "Ver Empresas",
           href: userInfo?.perfil === "usuarioAdministrador" ? undefined : null,
           lazy: true,
         }}

@@ -49,7 +49,18 @@ export default function PerfilesScreen() {
           >
             <Text style={styles.buttonText}>Cambiar Contraseña</Text>
           </TouchableOpacity>
-
+           {userInfo?.perfil === "usuarioCliente" && (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() =>
+                router.push({
+                  pathname: "/(tabs)/reserva",
+                })
+              }
+            >
+              <Text style={styles.buttonText}>Mis Reservas</Text>
+            </TouchableOpacity>
+          )}
           {userInfo?.perfil === "usuarioEmpresa" && (
             <TouchableOpacity
               style={styles.button}

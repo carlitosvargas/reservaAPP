@@ -92,6 +92,28 @@ export default function Index() {
                 <Text style={styles.buttonText}>Reservar ahora</Text>
               </Pressable>
             )}
+             {userInfo?.perfil === "usuarioAdministrador" && (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.button,
+                  pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
+                ]}
+                onPress={() => router.push("/(tabs)/crearEmpresa")}
+              >
+                <Text style={styles.buttonText}>Nueva Empresa</Text>
+              </Pressable>
+            )}
+            {userInfo?.perfil === "usuarioMostrador" && (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.button,
+                  pressed && { opacity: 0.85, transform: [{ scale: 0.98 }] },
+                ]}
+                onPress={() => router.push("/pantallas/crearViaje")}
+              >
+                <Text style={styles.buttonText}>Nuevo Viaje</Text>
+              </Pressable>
+            )}
           </Animatable.View>
         </Animatable.View>
       </View>

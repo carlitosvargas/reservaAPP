@@ -66,7 +66,8 @@ export default function UsuarioScreen() {
     try {
       if (!userInfo?.empresa_id) return;
       const data = await obtenerUsuariosPorEmpresa(userInfo.empresa_id);
-
+      
+      console.log('ver data', data)
       let filtrados: Usuario[] = [];
 
       if (userInfo.perfil === "usuarioEmpresa") {
@@ -78,6 +79,7 @@ export default function UsuarioScreen() {
       }
 
       setUsuarios(filtrados);
+      console.log('ver filtrados ', filtrados)
       setUsuariosFiltrados(filtrados);
     } catch (error) {
       console.error("Error al obtener usuarios:", error);

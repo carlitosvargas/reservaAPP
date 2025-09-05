@@ -255,7 +255,7 @@ export default function LoginScreen({
                 iterationCount="infinite"
                 source={require("../assets/images/bus-icon.png")}
                 style={styles.icon}
-              />
+              /> 
               <Text style={styles.titulo}>V&V Reservas</Text>
               <Animatable.Text
                 animation="pulse"
@@ -263,8 +263,8 @@ export default function LoginScreen({
                 duration={1200}
                 style={styles.sideText}
               >
-                {displayText}
-                <Text> </Text>
+                {displayText}...
+                
               </Animatable.Text>
             </View>
 
@@ -305,7 +305,7 @@ export default function LoginScreen({
                     }}
                   >
                     <Ionicons
-                      name={mostrarPassword ? "eye-off" : "eye"}
+                      name={mostrarPassword ? "eye-off-outline" : "eye-outline"}
                       size={22}
                       color={"#555"}
                     />
@@ -337,7 +337,7 @@ export default function LoginScreen({
                 </Pressable>
 
                 <Text style={styles.registroLink}>
-                  ¿No tenés cuenta?{" "}
+                  ¿No tenés cuenta? {" "}
                   <Text
                     style={styles.linkText}
                     onPress={() => router.push("/registro")}
