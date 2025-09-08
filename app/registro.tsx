@@ -12,6 +12,7 @@ import {
   Platform,
   ImageBackground,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { registrarUsuario } from "../services/authService";
@@ -202,6 +203,10 @@ export default function RegistroScreen() {
     backgroundColor: "#007AFF",
     padding: 10,
     borderRadius: 8,
+  },
+   text: {
+    
+    color: "#fff",
   },
   });
 
@@ -395,16 +400,16 @@ export default function RegistroScreen() {
               <View
                 style={[
                   styles.modalContent,
-                  { backgroundColor: isDark ? "#333" : "#fff" },
+                  { backgroundColor:  "#333"},
                 ]}
               >
                 <Text style={styles.modalTitle}>Condiciones de la contraseña:</Text>
-                <Text>- Mínimo 8 caracteres</Text>
-                <Text>- Máximo 12 caracteres</Text>
-                <Text>- Al menos una letra mayúscula</Text>
-                <Text>- Al menos una letra minúscula</Text>
-                <Text>- Al menos un número</Text>
-                <Text>- Al menos un carácter especial</Text>
+                <Text style={styles.text}>- Mínimo 8 caracteres</Text>
+                <Text style={styles.text}>- Máximo 12 caracteres</Text>
+                <Text style={styles.text}>- Al menos una letra mayúscula</Text>
+                <Text style={styles.text}>- Al menos una letra minúscula</Text>
+                <Text style={styles.text}>- Al menos un número</Text>
+                <Text style={styles.text}>- Al menos un carácter especial</Text>
 
                 <Pressable
                   onPress={() => setShowPasswordInfo(false)}
@@ -415,16 +420,17 @@ export default function RegistroScreen() {
               </View>
             </View>
           </Modal>
-            <Pressable
+           <Pressable
               style={styles.button}
               onPress={handleRegistro}
               disabled={cargando}
             >
-              <Text style={styles.buttonText}>
-                {cargando ? "Registrando..." : "Registrar"}
-              </Text>
-            </Pressable>
-
+              {cargando ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>Registrar</Text>
+              )}
+          </Pressable>
             <Text style={styles.volverLogin}>
               ¿Ya tenés cuenta?{" "}
               <Text

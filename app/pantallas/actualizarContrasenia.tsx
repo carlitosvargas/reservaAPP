@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 15,
     backgroundColor: "white",
+    color: "black"
   },
   button: {
     backgroundColor: "#4c68d7",
