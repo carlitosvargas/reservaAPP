@@ -96,16 +96,14 @@ export default function ResetearContraseniaScreen() {
             style={styles(isDark).input}
             placeholder="Nueva contraseña"
             placeholderTextColor={isDark ? "#ccc" : "#888"}
-            secureTextEntry
+             secureTextEntry={!mostrarPassword}
             value={nuevaContrasenia}
             onChangeText={setNuevaContrasenia}
           />
           <Pressable
-            onPress={() => setMostrarPassword(!mostrarPassword)}
+            onPress={() => setMostrarPassword((prev) => !prev)}
             style={{
-              position: "absolute",
-              right: 10,
-              top: 12,
+              position: "absolute", right: 30, top: "40%" 
             }}
           >
             <Ionicons
@@ -136,7 +134,7 @@ const styles = (isDark: boolean) =>
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: isDark ? "#000" : "#fff",
+     // backgroundColor: isDark ? "#000" : "#fff",
       paddingHorizontal: 20,
     },
     formContainer: {
