@@ -27,10 +27,11 @@ export default function ModificarContrasenia() {
   const [nuevaContraseña, setNuevaContraseña] = useState("");
   const [repetirContraseña, setRepetirContraseña] = useState("");
   const [errores, setErrores] = useState<Errores>({});
+    const { logout, userInfo } = useAuth();
 
   const handleGuardar = async () => {
     const nuevosErrores: Errores = {};
-    const { logout, userInfo } = useAuth();
+  
 
     // Validación de campos vacíos
     if (!contraseñaActual) {

@@ -71,6 +71,8 @@ export default function UsuariosScreen() {
   const [erroresAsociacion, setErroresAsociacion] = useState<{
     [key: number]: string | null;
   }>({});
+  
+const ultimaEmpresaSeleccionada = useRef<{ [key: number]: number | null }>({});
 
   const ultimaSeleccionRef = useRef<{
     usuarioId: number;
@@ -182,12 +184,12 @@ export default function UsuariosScreen() {
   ) => {
     try {
       await asociarUsuarioEmpresa(usuarioId, empresaId);
-
+  console.log("paso despues del await")
       const nuevosUsuarios = usuarios.map((u) =>
         u.id === usuarioId ? { ...u, empresa_id: empresaId } : u
       );
       setUsuarios(nuevosUsuarios);
-
+     console.log("paso despues del set usuarios", nuevosUsuarios)
       if (filtro === null) {
         setUsuariosFiltrados(nuevosUsuarios);
       } else {
@@ -381,8 +383,10 @@ export default function UsuariosScreen() {
                       textAlign: "center",
                     }}
                     onChange={(option) => {
+                    if (ultimaEmpresaSeleccionada.current[item.id] !== option.key) {
+                      ultimaEmpresaSeleccionada.current[item.id] = option.key;
                       asociarEmpresaUsuario(item.id, option.key);
-                      //setEmpresaAsociadaMap((prev) => ({ ...prev, [item.id]: option.key }));
+                    }
                     }}
                   />
                 </>
